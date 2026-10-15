@@ -17,6 +17,9 @@ def parse_money(value):
     except Exception: raise BusinessError('Valor inválido.')
     if c < 0: raise BusinessError('Valor não pode ser negativo.')
     return c
+def parse_qty(value, label='Quantidade'):
+    try: return int(str(value).strip())
+    except ValueError: raise BusinessError(f'{label} inválida: use um número inteiro.')
 
 class Store:
     def __init__(self, path):
@@ -47,17 +50,17 @@ class Store:
     def add_product(self,name,price,pack_size):
         name=name.strip()
         if not name: raise BusinessError('Informe o nome do produto.')
-        pack_size=int(pack_size)
+        pack_size=parse_qty(pack_size,'Unidades por caixa/fardo')
         if pack_size<=0: raise BusinessError('Unidades por caixa/fardo deve ser maior que zero.')
         try:
             with self.db: self.db.execute('INSERT INTO products(name,price,pack_size) VALUES(?,?,?)',(name,parse_money(price),pack_size))
         except sqlite3.IntegrityError: raise BusinessError('Já existe produto com esse nome.')
     def update_product(self,pid,price,pack_size):
-        self.product(pid); ps=int(pack_size)
+        self.product(pid); ps=parse_qty(pack_size,'Unidades por caixa/fardo')
         if ps<=0: raise BusinessError('Unidades por caixa/fardo inválido.')
         with self.db: self.db.execute('UPDATE products SET price=?,pack_size=? WHERE id=?',(parse_money(price),ps,pid))
     def adjust_stock(self,pid,quantity,kind,reason):
-        p=self.product(pid); quantity=int(quantity)
+        p=self.product(pid); quantity=parse_qty(quantity)
         if quantity<=0: raise BusinessError('Quantidade deve ser positiva.')
         if kind=='Caixa/Fardo (entrada)': delta=quantity*p['pack_size']
         elif kind=='Unidade (entrada)': delta=quantity
@@ -81,7 +84,7 @@ class Store:
         if not t: raise BusinessError('Comanda não está aberta.')
         return t
     def add_to_tab(self,tid,pid,qty):
-        self.require_tab(tid); p=self.product(pid); qty=int(qty)
+        self.require_tab(tid); p=self.product(pid); qty=parse_qty(qty)
         if qty<=0: raise BusinessError('Quantidade inválida.')
         with self.db:
             if p['stock']-self.reserved(pid)<qty: raise BusinessError('Estoque livre insuficiente para reservar.')
@@ -122,7 +125,7 @@ class Store:
             self.db.execute('UPDATE tabs SET status="PAID",closed_at=? WHERE id=?',(now(),tid))
             return sid
     def direct_sale(self,pid,qty,payment):
-        p=self.product(pid); qty=int(qty)
+        p=self.product(pid); qty=parse_qty(qty)
         if qty<=0: raise BusinessError('Quantidade inválida.')
         with self.db:
             if p['stock']-self.reserved(pid)<qty: raise BusinessError('Estoque livre insuficiente.')
@@ -136,7 +139,7 @@ class Store:
         s=self.active_session()
         if not s: raise BusinessError('Não há caixa aberto.')
         counted=parse_money(counted_cash)
-        # Primeiro criar backup consistente ANTES de fechar; depois criar backup final após commit.
+        # Fecha o caixa e depois copia o banco, para que o backup já contenha o fechamento.
         backup_dir=Path(backup_dir); backup_dir.mkdir(parents=True,exist_ok=True)
         filename=f"salva_ai_backup_caixa_{s['id']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.sqlite3"
         dest=backup_dir/filename
@@ -148,6 +151,8 @@ class Store:
             finally: out.close()
         except Exception as e:
             # Manter caixa fechado e sinalizar que backup falhou: não afirmar que backup existe.
+            dest.unlink(missing_ok=True)
+            with self.db: self.db.execute('UPDATE cash_sessions SET backup_path=NULL WHERE id=?',(s['id'],))
             raise BusinessError('Caixa fechado, mas BACKUP FALHOU: '+str(e))
         return dest
     def day_sales(self,limit=100):

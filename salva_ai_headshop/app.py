@@ -2,39 +2,25 @@ import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog, filedialog
 from pathlib import Path
 from datetime import datetime
-import sqlite3
-from core import Store, BusinessError, money
+import os
+import subprocess
+import sys
+from core import Store, BusinessError, money, parse_qty
 from reports import export as export_xlsx
-from finance import (migrate, add_expense, set_paid, set_product_cost, reopen_paid_tab,
+from finance import (backup_before_upgrade, migrate, add_expense, set_paid, set_product_cost, reopen_paid_tab,
                      month_summary, replenish, profitability, get_payment_rates,
                      get_setting, update_settings, CATEGORIES, PAYMENTS)
 
 ROOT=Path.home()/'SalvaAiHeadshop'
-STORE=Store(ROOT/'dados'/'bar.sqlite3')
+# Aberto em main(); importar este módulo (ex.: nos testes) não toca no banco real.
+STORE=None
 PAYMENTS=('Dinheiro','Pix','Débito','Crédito')
 
-def backup_before_upgrade(store):
-    """Consistent SQLite snapshot before adding new schema columns (only once per database)."""
-    existing={r[1] for r in store.db.execute('PRAGMA table_info(sale_items)')}
-    cols={r[1] for r in store.db.execute('PRAGMA table_info(sales)')}
-    expenses={r[1] for r in store.db.execute('PRAGMA table_info(expenses)')}
-    if 'payment_fee' in cols and 'incurred_date' in expenses: return
-    folder=ROOT/'backups'
-    folder.mkdir(parents=True,exist_ok=True)
-    path=folder/('antes_atualizacao_034_'+datetime.now().strftime('%Y%m%d_%H%M%S_%f')+'.sqlite3')
-    dest=sqlite3.connect(str(path))
-    try:
-        store.db.backup(dest)
-        if dest.execute('PRAGMA integrity_check').fetchone()[0]!='ok':
-            raise RuntimeError('A cópia de segurança não passou na verificação.')
-    except Exception:
-        dest.close()
-        path.unlink(missing_ok=True)
-        raise
-    else: dest.close()
-
-backup_before_upgrade(STORE)
-migrate(STORE)
+def open_folder(folder):
+    """Abre a pasta no gerenciador de arquivos do sistema (Windows, macOS ou Linux)."""
+    if sys.platform.startswith('win'): os.startfile(str(folder))
+    elif sys.platform=='darwin': subprocess.run(['open',str(folder)],check=True)
+    else: subprocess.run(['xdg-open',str(folder)],check=True)
 
 class App(tk.Tk):
     def __init__(self):
@@ -198,7 +184,7 @@ class App(tk.Tk):
         ttk.Button(p,style='Accent.TButton',text='Registrar venda e baixar estoque',command=self.confirm_direct).pack(anchor='w',pady=12)
     def confirm_direct(self):
         def go():
-            pid=self.pid(self.directproduct);qty=int(self.directqty.get());p=STORE.product(pid)
+            pid=self.pid(self.directproduct);qty=parse_qty(self.directqty.get());p=STORE.product(pid)
             if messagebox.askyesno('Confirmar venda',f"Vender {qty} × {p['name']} por {money(qty*p['price'])} em {self.directpayment.get()}?"):
                 STORE.direct_sale(pid,qty,self.directpayment.get())
         self.safe(go)
@@ -347,9 +333,8 @@ class App(tk.Tk):
             try: export_xlsx(STORE,dest);messagebox.showinfo('Relatório gerado','Planilha salva em:\n'+dest,parent=self)
             except Exception as e: messagebox.showerror('Falha na exportação',str(e),parent=self)
     def show_backups(self):
-        import os
         folder=ROOT/'backups';folder.mkdir(parents=True,exist_ok=True)
-        try: os.startfile(str(folder))
+        try: open_folder(folder)
         except Exception as e: messagebox.showerror('Não foi possível abrir',str(e),parent=self)
     def refresh(self):
         products=STORE.products()
@@ -392,4 +377,11 @@ class App(tk.Tk):
         self.fill(self.history_tree,[(h['id'],(h['movement_at'],h['name'],f"{h['delta']:+d}",h['reason'])) for h in STORE.history()])
     def quit_app(self): STORE.close();self.destroy()
 
-if __name__=='__main__': App().mainloop()
+def main():
+    global STORE
+    STORE=Store(ROOT/'dados'/'bar.sqlite3')
+    backup_before_upgrade(STORE,ROOT/'backups')
+    migrate(STORE)
+    App().mainloop()
+
+if __name__=='__main__': main()

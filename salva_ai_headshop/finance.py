@@ -1,7 +1,9 @@
 """Finanças gerenciais offline. Valores em centavos; taxas em pontos-base (0,01%).
 Não substitui apuração tributária nem conciliação de pagamentos externos.
 """
-from datetime import date
+import sqlite3
+from datetime import date, datetime
+from pathlib import Path
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from core import BusinessError, now, parse_money
 
@@ -18,6 +20,29 @@ def valid_month(value):
         date.fromisoformat(value+'-01')
     except (TypeError,ValueError): raise BusinessError('Mês inválido. Utilize AAAA-MM.')
     return value
+
+def backup_before_upgrade(store,backup_dir):
+    """Consistent SQLite snapshot before adding new schema columns (only once per database).
+    Retorna o caminho do backup, ou None quando não há nada a preservar."""
+    cols={r[1] for r in store.db.execute('PRAGMA table_info(sales)')}
+    expenses={r[1] for r in store.db.execute('PRAGMA table_info(expenses)')}
+    if 'payment_fee' in cols and 'incurred_date' in expenses: return None
+    # Banco recém-criado (instalação nova): não há dados antigos para proteger.
+    if not any(store.one(f'SELECT 1 FROM {t} LIMIT 1') for t in ('products','tabs','cash_sessions','sales')): return None
+    folder=Path(backup_dir)
+    folder.mkdir(parents=True,exist_ok=True)
+    path=folder/('antes_atualizacao_034_'+datetime.now().strftime('%Y%m%d_%H%M%S_%f')+'.sqlite3')
+    dest=sqlite3.connect(str(path))
+    try:
+        store.db.backup(dest)
+        if dest.execute('PRAGMA integrity_check').fetchone()[0]!='ok':
+            raise RuntimeError('A cópia de segurança não passou na verificação.')
+    except Exception:
+        dest.close()
+        path.unlink(missing_ok=True)
+        raise
+    else: dest.close()
+    return path
 
 def migrate(store):
     db=store.db
