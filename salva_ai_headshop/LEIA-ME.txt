@@ -1,0 +1,31 @@
+SALVA AI HEADSHOP — PROTÓTIPO 0.3.4 BETA
+
+LEIA PRIMEIRO: COMECE_AQUI.txt
+
+Funciona offline no Windows com Python 3 e tkinter (normalmente incluído).
+Execute INICIAR.bat na pasta extraída que contém app.py, core.py, finance.py,
+reports.py e a pasta xlsxwriter. Não abra pelo WinRAR e não mova o .bat sozinho.
+
+Armazenamento: %USERPROFILE%\SalvaAiHeadshop\dados\bar.sqlite3
+Backups: %USERPROFILE%\SalvaAiHeadshop\backups
+
+EVOLUÇÕES NESTA VERSÃO
+- Data de realização da despesa, vencimento e pagamento, com opção de quitação.
+- Taxa de maquininha/Pix configurável por forma de pagamento, registrada
+  no momento da venda, preservando o histórico após mudanças de taxa.
+- Provisão de DAS mensal opcional; deixar em branco se não confirmada.
+- Resultado financeiro por mês sem descontar compras de estoque duas vezes.
+- Relatório de lucratividade com contribuição por produto e rateio estimado
+  das despesas operacionais e do DAS proporcionalmente ao faturamento.
+- Excel com campos financeiros adicionais e aba Lucro por produto.
+
+LIMITAÇÕES CONHECIDAS
+- Somente previsão, sem apuração fiscal automática ou emissão de nota fiscal.
+- Não consulta taxas da operadora; proprietário precisa configurá-las.
+- Não acompanha o recebimento efetivo das operadoras no banco.
+- Valores de custos antigos podem não refletir os custos originais.
+- Rateio por receita é uma convenção gerencial, não definição legal de lucro.
+- Sem conciliação bancária, autenticação final ou dispositivo externo para backup.
+- O relatório "Lucro por produto" do Excel usa o mês corrente do computador.
+
+TESTE APENAS COM LANÇAMENTOS FICTÍCIOS. Não é versão de produção.

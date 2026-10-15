@@ -1,0 +1,58 @@
+SALVA AI HEADSHOP — PROTÓTIPO 0.3.4 BETA (WINDOWS, OFFLINE)
+=========================================================
+
+ANTES DE ABRIR
+1. Feche qualquer versão anterior do Salva ai headshop.
+2. No Explorador de Arquivos, abra: %USERPROFILE%\SalvaAiHeadshop
+3. Copie a pasta INTEIRA SalvaAiHeadshop (dados e backups) para um local separado,
+   preferencialmente também para um pendrive. NÃO substitua a original.
+4. Extraia TODO o ZIP novo em uma pasta DIFERENTE de versões anteriores.
+5. Abra a subpasta salva_ai_headshop. INICIAR.bat precisa estar junto de
+   app.py, core.py, finance.py, reports.py e xlsxwriter.
+6. Execute INICIAR.bat; o programa deve mostrar "0.3.4-beta".
+
+ESTA ATUALIZACAO
+- Preserva produtos, caixas, comandas e vendas anteriores, inclusive comandas abertas.
+- Faz backup consistente automático ANTES de modificar o esquema de banco antigo
+  (nome iniciando por antes_atualizacao_034_, dentro da pasta backups).
+- Financeiro mensal: data do gasto, vencimento, data do pagamento e
+  alteração de conta PENDENTE para PAGA usando a data escolhida.
+- Aba Lucro por produto: acompanha CMV, taxas registradas na venda,
+  margem de contribuição e lucro estimado após rateio das despesas e DAS.
+- Taxas de Dinheiro, Pix, Débito e Crédito, com configuração percentual.
+- Valor de provisão mensal de DAS configurável; DEIXE EM BRANCO enquanto
+  não houver valor confirmado com o contador.
+- Relatório Excel inclui custo atual, datas, taxas históricas e análise do mês.
+
+COMO TESTAR (USE DADOS FICTÍCIOS)
+1. Na aba Financeiro mensal, registre uma despesa TESTE com data de gasto,
+   vencimento e situação a pagar. Selecione-a, informe data em "Pago em"
+   e clique em "Quitar selecionada".
+2. Na aba Lucro por produto, deixe o DAS em branco até confirmação.
+   Defina taxas FICTÍCIAS apenas para teste (ex.: Débito 1,50; Crédito 3,50),
+   clique em "Salvar taxas e DAS".
+3. Abra um caixa de TESTE se não houver um caixa aberto e registre uma venda
+   fictícia em Débito ou Crédito; a taxa somente incide sobre vendas NOVAS.
+4. Clique em "Calcular margens" e em "Calcular resumo mensal".
+5. Na aba Histórico, use Exportar Excel e verifique os novos campos.
+
+REGRAS IMPORTANTES
+- O valor pago em Pix/cartão pode ser repassado depois; este sistema ainda
+  NÃO concilia bancos nem conhece o saldo real disponível na conta.
+- Taxas antigas sem registro não são inventadas nem recalculadas.
+- Custo de produtos em vendas anteriores pode estar ausente.
+- Compra de estoque é saída financeira; o CMV é apropriado ao vender a mercadoria.
+  Não desconte a mesma compra novamente do lucro.
+- Categoria DAS MEI registra a despesa/pagamento; a provisão mensal
+  configurada é usada no resultado, sem contar o mesmo DAS em duplicidade.
+- O lucro individual após rateio é ESTIMATIVA GERENCIAL, não lucro líquido
+  contábil/fiscal. Valor oficial dos impostos depende da contabilidade.
+- As datas das despesas antigas passam a usar o vencimento como aproximação
+  da data do gasto, porque essa informação não era armazenada.
+- Reabertura de comanda funciona somente no mesmo caixa original ainda aberto.
+  O estorno no sistema NÃO realiza devolução de Pix/cartão.
+
+SEGURANÇA
+- O arquivo .sqlite3 é um banco de dados, NÃO um PDF.
+- Não renomeie extensões nem apague a pasta %USERPROFILE%\SalvaAiHeadshop.
+- Não use esta versão BETA para operações comerciais reais sem validação adicional.
