@@ -1,0 +1,3 @@
+SALVA AI HEADSHOP 0.3.4-beta
+Windows / Python 3 / offline
+Atualização de controle financeiro: 3 datas, taxas históricas, DAS configurável, lucro estimado por produto.
