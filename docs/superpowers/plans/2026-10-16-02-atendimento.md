@@ -173,5 +173,3 @@ self.assertEqual(view.total_cents, 0)
   acumulada `python3 -m unittest discover -s tests_v2 -t .` (usar Xvfb se houver UI).
 - [ ] **5. Revisar e registrar.** `git diff --check`; revisar arquivos da tarefa,
   adicionar somente esses arquivos e fazer commit `feat: entrega atendimento e estoque na interface`. Não fazer push/merge.
-
-

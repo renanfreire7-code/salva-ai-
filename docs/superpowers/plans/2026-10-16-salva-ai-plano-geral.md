@@ -173,4 +173,3 @@ foi executado ou declarado aprovado. O plano não autoriza merge nem release.
   contexto e mais verificações independentes intermediárias.
 
 Não iniciar execução antes da revisão deste plano e escolha do método.
-
