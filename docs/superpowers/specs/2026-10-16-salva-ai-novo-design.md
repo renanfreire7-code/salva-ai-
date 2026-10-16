@@ -27,7 +27,8 @@ Referências verificadas:
 Primeira versão completa com oito áreas: comandas, venda direta, produtos e
 estoque, caixa, histórico, financeiro mensal, lucro por produto e previsão de
 compras. Inclui promoções por quantidade, backups, restauração, relatórios,
-recorrência de despesas e autorização administrativa.
+recorrência de despesas e autorização administrativa. Delivery integra atendimento,
+estoque, caixa e financeiro conforme a seção 6.1.
 
 Entregas de desenvolvimento serão incrementais e verificáveis; não representam
 liberação parcial para operação real sem validação do conjunto.
@@ -138,6 +139,53 @@ de fechamento recuperável: em falha de arquivo, não confirmar sucesso nem perm
 novo fechamento/atendimento conflitante; oferecer retentativa sem duplicar eventos.
 O backup final precisa conter o fechamento e suas diferenças. Detalhar esse
 protocolo no plano técnico e testar falhas entre cada etapa.
+
+### 6.1. Delivery e acerto com entregador
+
+Controle manual offline para pedidos recebidos pelo operador. Primeira versão
+sem integração de WhatsApp, plataformas externas, mapas ou rastreamento.
+Um entregador próprio recebe valor fixo por corrida, sem acesso individual ao PDV.
+
+Pedido registra número, nome, telefone, endereço, referência, produtos, promoções,
+taxa de entrega, modalidade e situação do pagamento. Usar regras comuns de preços
+e promoções; detalhar o congelamento das condições ao confirmar o pedido no plano.
+
+Taxa cobrada do cliente e remuneração do entregador são dois valores fixos
+configuráveis e independentes. Guardar ambos no pedido; alterações de configuração
+não reescrevem pedidos nem corridas anteriores.
+
+Estados: Novo → Em preparação → Saiu para entrega → Entregue, além de cancelado.
+Entrega, pagamento e acerto têm estados separados. Reserva de estoque ao confirmar
+pedido; baixa na saída, sem duplicar a reserva. Antes da saída, cancelamento libera
+reservas; depois dela, mercadoria só retorna ao estoque por conferência explícita.
+Preservar histórico, motivo e autorização para cancelamentos sensíveis.
+
+O cliente pode pagar ao bar antes da saída ou pagar ao entregador na entrega.
+Registrar modalidade e destino do recebimento. Pix confirmado na conta do bar é
+recebimento pelo bar, mesmo quando solicitado pelo entregador. Dinheiro em posse
+do entregador fica como valor sob sua responsabilidade, sem aumentar a gaveta.
+Entrega marcada como concluída não confirma automaticamente pagamento.
+
+Ao registrar a saída, gerar uma única obrigação pelo custo da corrida. O entregador
+recebe mesmo em cancelamento posterior ou tentativa sem sucesso. Retentativa da
+mesma operação não gera outra corrida nem outra baixa. O plano distinguirá
+retentativa técnica de uma nova saída física que possa exigir outra corrida.
+
+Tela de pedidos em andamento com ação de acerto: listar entregas, recebimentos em
+posse do entregador, corridas devidas e acertos anteriores. Conferir o dinheiro que
+ele entrega ao bar e registrar sua entrada na gaveta. Pagar remuneração é uma
+saída própria e vinculada. Se houver compensação, registrar explicitamente valores
+brutos e compensados, para não criar entrada/saída física fictícia na gaveta.
+
+Bloquear fechamento do caixa enquanto houver pedidos em andamento ou dinheiro do
+entregador sem conferir. Mostrar pendências e não oferecer baixa automática.
+Corridas não pagas podem permanecer como obrigação financeira identificada após
+o fechamento, sem alterar posteriormente o caixa encerrado.
+
+Relatórios separam receita dos produtos, taxa cobrada e custo do entregador.
+Gerar o custo uma vez na saída e quitar a obrigação no acerto; não reconhecer
+novamente a despesa ao pagar. Cancelamento exige conciliar receita, eventual
+devolução ao cliente, estoque e corrida devida, sem apagar fatos já registrados.
 
 ## 7. Produtos, compras e estoque
 
@@ -255,6 +303,11 @@ número de testes da referência; reportar executados, falhas e pulos separadame
 - Promoções: 1/2/3/4/6 unidades, sobras, alteração e condição congelada.
 - Caixa: modalidades, troco, movimentos, despesa vinculada, divergência e bloqueio
   por comandas; falhas de relatório/backup e recuperação de fechamento.
+- Delivery: reserva/baixa, confirmação de saída repetida, pagamento antecipado e
+  na entrega, cancelamento antes/depois da saída e devolução conferida. Verificar
+  corrida devida mesmo sem sucesso, valores fixos históricos, acerto parcial ou
+  repetido sem duplicações, compensação explícita e bloqueio do fechamento por
+  pedidos ou dinheiro pendentes. Remuneração a pagar não bloqueia fechamento.
 - Custo médio com compras de custos diferentes, estoque zerado, perdas e
   arredondamentos; histórico de venda preservado após mudança de custo/preço/taxa.
 - Despesas: dois aluguéis fictícios de R$ 1.000; excluir um deixa R$ 1.000 ativo e
@@ -277,8 +330,9 @@ número de testes da referência; reportar executados, falhas e pulos separadame
 3. Produtos, compras, estoque e custo médio.
 4. Caixa, atendimento, comandas, promoções e recebimento.
 5. Financeiro, recorrência e integrações com caixa/compras.
-6. Resultados, reposição, histórico e relatórios.
-7. Backup/restauração, testes de falha, interface e distribuição Windows.
+6. Delivery, reservas/saídas, recebimentos e acertos com entregador.
+7. Resultados, reposição, histórico e relatórios.
+8. Backup/restauração, testes de falha, interface e distribuição Windows.
 
 Cada etapa exige testes e revisão. A próxima ação após aprovação desta
 especificação será elaborar o plano técnico e seus testes; implementação depende
@@ -296,12 +350,18 @@ alternativas no planejamento e consultar o responsável quando mudarem a operaç
 - Vencimentos recorrentes em meses curtos e edição de ocorrências futuras.
 - Precificação de um carrinho em edição e produto removido/reincluído em comanda.
 - Tratamento de compras com frete, devoluções e correções de entradas incorretas.
+- Delivery: tentativas físicas adicionais, devoluções e reembolsos, confirmação
+  de cartão recebido fora do balcão, bases de taxas e rateio de receita/custo de
+  entrega no resultado por produto. Não confundir modalidade com custódia do valor.
 
 ## 14. Registro de aprovação
 
 O responsável aprovou em conversa: reconstrução do zero, oito áreas, banco vazio,
 tecnologia atual, monólito modular e blocos de atendimento/promoções, caixa,
-estoque/compras, financeiro, resultados/relatórios e segurança/backups.
+estoque/compras, financeiro, resultados/relatórios e segurança/backups. Aprovou
+também o desenho de delivery: taxa e corrida fixas independentes, remuneração
+devida na saída, pagamento antecipado ou ao entregador, acerto explícito e
+bloqueio do fechamento por pedidos em andamento ou dinheiro não conferido.
 
 Este documento consolida os blocos; requer revisão explícita antes do plano de
 implementação. Nenhuma funcionalidade nova foi implementada nesta etapa.
