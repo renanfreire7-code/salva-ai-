@@ -7,6 +7,15 @@ from ..common.errors import BusinessError
 
 
 class SalesService(Service):
+    def record_delivery_sale(self, order_id, command_id):
+        def perform():
+            order=self.one('orders',order_id)
+            if order['kind']!='DELIVERY' or order['state']!='PREPARING':
+                raise BusinessError('Pedido não está em preparação.')
+            details=self.db.conn.execute('SELECT * FROM delivery_orders WHERE order_id=?',(order_id,)).fetchone()
+            return self._record_sale(order_id,Payment(details['method']),collect=False,delivery_fee_cents=details['delivery_fee_cents'])
+        return SaleResult(**self.run(command_id,'delivery.sale',dict(order_id=order_id),perform))
+
     def __init__(self, db, inventory, pricing, cash, security):
         super().__init__(db, security)
         self.inventory, self.pricing, self.cash = inventory, pricing, cash
