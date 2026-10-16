@@ -5,6 +5,7 @@ from .models import ExpenseDraft,ExpenseFilter,ExpenseRow,ExpenseTotals
 from ..common.service import Service,integer,valid_date
 from ..common.errors import BusinessError
 from ..inventory.queries import normalize
+from .payments import PaymentsMixin
 
 
 class DuplicateExpenseError(BusinessError):
@@ -13,7 +14,7 @@ class DuplicateExpenseError(BusinessError):
         super().__init__("Possível despesa duplicada. Confira os lançamentos antes de confirmar.")
 
 
-class FinanceService(Service):
+class FinanceService(PaymentsMixin, Service):
     def __init__(self,db,cash,security,clock=None):
         super().__init__(db,security)
         self.cash,self.clock=cash,clock or db.clock

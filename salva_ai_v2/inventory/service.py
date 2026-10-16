@@ -6,6 +6,22 @@ from ..common.errors import BusinessError
 
 
 class InventoryService(Service):
+    def receive_and_pay_purchase(self, lines, freight_cents, incurred_on, due_on, payment, grant, command_id):
+        payload = dict(lines=[asdict(line) for line in lines], freight=freight_cents,
+                       incurred=valid_date(incurred_on), due=valid_date(due_on),
+                       payment=asdict(payment) if payment else None)
+        def perform():
+            purchase = self.receive_purchase(lines, freight_cents, incurred_on, due_on, command_id + ':receive')
+            if payment:
+                obligation = self.db.conn.execute("SELECT id,amount_cents FROM obligations WHERE source_type='PURCHASE' AND source_id=?", (str(purchase),)).fetchone()
+                finance = getattr(self, 'finance', None)
+                if finance is None:
+                    raise BusinessError('Pagamento de compras ainda não foi configurado.')
+                finance.pay_obligation(obligation['id'], obligation['amount_cents'], self.db.clock.today(), payment.method,
+                                       payment.method == 'MONEY', grant, command_id + ':pay')
+            return purchase
+        return self.run(command_id, 'purchase.received_and_paid', payload, perform)
+
     def assign_shortcut(self, key, product_id, command_id):
         integer(key, 'Tecla', 1)
         if key > 12:
