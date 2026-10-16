@@ -6,6 +6,19 @@ from ..common.errors import BusinessError
 
 
 class InventoryService(Service):
+    def assign_shortcut(self, key, product_id, command_id):
+        integer(key, 'Tecla', 1)
+        if key > 12:
+            raise BusinessError('Escolha uma tecla de F1 a F12.')
+        def perform():
+            self.one('products', product_id)
+            self.db.conn.execute('INSERT INTO product_shortcuts VALUES(?,?) ON CONFLICT(key) DO UPDATE SET product_id=excluded.product_id', (key, product_id))
+            return key
+        return self.run(command_id, 'shortcut.assigned', dict(key=key, product_id=product_id), perform)
+
+    def shortcut(self, key):
+        return self.db.conn.execute('SELECT p.* FROM product_shortcuts s JOIN products p ON p.id=s.product_id WHERE s.key=? AND p.active=1', (key,)).fetchone()
+
     def create_product(self, name, price_cents, pack_size, min_stock, command_id):
         name = str(name).strip()
         if not name:

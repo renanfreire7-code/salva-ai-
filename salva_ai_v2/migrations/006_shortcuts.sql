@@ -1,0 +1,2 @@
+CREATE TABLE product_shortcuts(key INTEGER PRIMARY KEY CHECK(key BETWEEN 1 AND 12), product_id INTEGER NOT NULL REFERENCES products(id));
+
