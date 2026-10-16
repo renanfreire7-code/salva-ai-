@@ -3,9 +3,10 @@ from .models import DeliveryOrder,DeliveryDraft
 from ..sales.models import Payment
 from ..common.service import Service,integer
 from ..common.errors import BusinessError
+from .receipts import ReceiptsMixin
 
 
-class DeliveryService(Service):
+class DeliveryService(ReceiptsMixin, Service):
     def __init__(self,db,inventory,pricing,sales,cash,finance,security,clock=None):
         super().__init__(db,security)
         self.inventory,self.pricing,self.sales=inventory,pricing,sales

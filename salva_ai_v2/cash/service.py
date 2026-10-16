@@ -64,6 +64,8 @@ class CashService(Service):
                 result.append("Comandas abertas")
             if self.db.conn.execute("SELECT 1 FROM orders WHERE kind='DELIVERY' AND state NOT IN ('DELIVERED','CANCELED')").fetchone():
                 result.append("Pedidos em andamento")
+            if 'collections' in tables and self.db.conn.execute("SELECT 1 FROM orders o JOIN delivery_orders d ON d.order_id=o.id WHERE o.state='DELIVERED' AND NOT EXISTS(SELECT 1 FROM collections c WHERE c.order_id=o.id)").fetchone():
+                result.append('Pedidos sem pagamento confirmado')
         if "custody_entries" in tables:
             if self.db.conn.execute("SELECT COALESCE(SUM(delta_cents),0) FROM custody_entries").fetchone()[0]:
                 result.append("Dinheiro do entregador sem conferir")
