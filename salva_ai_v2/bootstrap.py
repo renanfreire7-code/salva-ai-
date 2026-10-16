@@ -2,6 +2,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from tkinter import ttk
 from .common.db import Database
+from .common.errors import BusinessError
 from .security.service import SecurityService
 from .ui.app import MainWindow
 from .ui.dialogs import AdminDialog
@@ -53,6 +54,10 @@ class Application:
             reports=ReportingQueries(self.db), settings=FinancialSettings(self.db,self.security))
         for widget in self.window.body.winfo_children():
             widget.destroy()
+        from .maintenance.backup import BackupService
+        from .cash.closing import ClosingService
+        self.services.backups = BackupService(self.db, self.data_dir / "backups")
+        self.services.closing = ClosingService(self.db, cash, self.services.backups, self.services.reports)
         self.notebook = ttk.Notebook(self.window.body)
         self.notebook.pack(fill="both", expand=True)
         self.views = []
@@ -65,6 +70,12 @@ class Application:
             self.views.append(view)
         for key in range(1,13):
             self.window.bind(f"<F{key}>",lambda event,k=key:self.shortcut(k))
+        self.refresh()
+        for pending in self.services.closing.pending():
+            try:
+                self.services.closing.resume(pending)
+            except (OSError, BusinessError):
+                self.notify("Fechamento pendente. Use Retomar fechamento na aba Caixa.")
         self.refresh()
 
     def notify(self, message):

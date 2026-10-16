@@ -1,4 +1,6 @@
 import tkinter as tk
+import sqlite3
+from decimal import InvalidOperation
 from tkinter import ttk, simpledialog, messagebox
 from uuid import uuid4
 from ..common.errors import BusinessError
@@ -67,8 +69,9 @@ class View(ttk.Frame):
             value=func()
             self.s.application.refresh()
             return value
-        except (BusinessError,ValueError) as error:
+        except (BusinessError,ValueError,OSError,sqlite3.Error,InvalidOperation) as error:
             messagebox.showerror("Não foi possível concluir",str(error),parent=self)
+            self.s.application.refresh()
 
     def selected(self,tree):
         rows=tree.selection()

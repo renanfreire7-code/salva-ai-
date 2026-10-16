@@ -13,6 +13,8 @@ class CashView(View):
         for label,callback in (("Abrir caixa",self.open),("Reforço",lambda:self.move("REINFORCEMENT")),("Retirada",lambda:self.move("WITHDRAWAL"))):
             ttk.Button(row,text=label,command=lambda f=callback:self.act(f)).pack(side="left",padx=(0,8))
         self.actions=row
+        for label,callback in (("Fechar caixa",self.close_session),("Retomar fechamento",self.resume_close),("Último relatório",self.last_report)):
+            ttk.Button(row,text=label,command=lambda f=callback:self.act(f)).pack(side='left',padx=(0,8))
         self.tree=table(self,["Data","Movimento","Valor","Motivo"])
 
     def open(self):
@@ -34,4 +36,28 @@ class CashView(View):
         else:
             self.summary.configure(text="Caixa fechado — abra antes de atender")
             fill(self.tree,[])
+        if hasattr(self.s,'closing') and self.s.closing.pending():
+            self.summary.configure(text='Fechamento pendente — retome antes de abrir ou atender')
+
+    def close_session(self):
+        session=self.s.cash.require_open()
+        values=ask_fields(self,'Conferir fechamento',[("counted","Dinheiro contado na gaveta (R$)","")])
+        if values:
+            counted=parse_money(values['counted'])
+            different=counted!=self.s.cash.position(session['id']).expected_cents
+            result=self.s.closing.begin(counted,self.grant('cash.close') if different else None,self.reason() if different else None,command())
+            self.s.application.notify('Caixa fechado com relatório e backup verificado.' + (' Cópia externa indisponível.' if result.external_copy_ok is False else ''))
+
+    def resume_close(self):
+        for id in self.s.closing.pending():
+            self.s.closing.resume(id)
+        self.s.application.notify('Recuperação do fechamento concluída.')
+
+    def last_report(self):
+        import webbrowser
+        paths=sorted(self.s.closing.report_dir.glob('caixa_*.html'),key=lambda p:p.stat().st_mtime,reverse=True)
+        if not paths:
+            from ..common.errors import BusinessError
+            raise BusinessError('Nenhum relatório de fechamento foi gerado.')
+        webbrowser.open(paths[0].resolve().as_uri())
 
