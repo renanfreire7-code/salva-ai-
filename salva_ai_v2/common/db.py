@@ -41,12 +41,26 @@ class Database:
             self.conn.execute("ROLLBACK")
             raise
 
+    def upgrade(self, backups):
+        from uuid import uuid4
+        exists=self.conn.execute("SELECT 1 FROM sqlite_master WHERE name='schema_migrations'").fetchone()
+        if exists:
+            applied={r[0] for r in self.conn.execute('SELECT version FROM schema_migrations')}
+            known={p.name for p in (Path(__file__).resolve().parents[1]/'migrations').glob('*.sql')}
+            if applied-known:
+                raise BusinessError('Este banco foi criado por uma versão mais recente.')
+            if known-applied:
+                backups.create('antes_atualizacao',str(uuid4()))
+        self.migrate()
+
     def migrate(self):
         folder = Path(__file__).resolve().parents[1] / "migrations"
         with self.transaction():
             self.conn.execute(f"PRAGMA application_id={APPLICATION_ID}")
             exists = self.conn.execute("SELECT 1 FROM sqlite_master WHERE name='schema_migrations'").fetchone()
             applied = dict(self.conn.execute("SELECT version, checksum FROM schema_migrations")) if exists else {}
+            if set(applied)-{p.name for p in folder.glob("*.sql")}:
+                raise BusinessError("Este banco pertence a uma versão mais recente.")
             for path in sorted(folder.glob("*.sql")):
                 sql = path.read_text(encoding="utf-8")
                 checksum = hashlib.sha256(sql.encode()).hexdigest()

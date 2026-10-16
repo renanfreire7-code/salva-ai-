@@ -20,6 +20,7 @@ class HistoryView(View):
         ttk.Button(row,text='Consultar',command=lambda:self.act(self.refresh)).pack(side='left',padx=6)
         ttk.Button(row,text='Corrigir venda / reabrir comanda',command=lambda:self.act(self.reverse)).pack(side='left',padx=6)
         self.actions=row
+        ttk.Button(row,text='Backups',command=lambda:self.act(self.backup_center)).pack(side='left',padx=6)
         self.tree=table(self,['Data','Operação','Registro','Motivo'])
 
     def refresh(self):
@@ -34,3 +35,42 @@ class HistoryView(View):
             method=methods.get(values['method'].casefold())
             refund=Payment(method,parse_money(values['amount']) if method=='MONEY' else None) if values['refund'].casefold()=='sim' else None
             self.s.sales.reverse_sale(int(values['sale']),values['returned'].casefold()=='sim',refund,values['reopen'].casefold()=='sim',self.grant('sale.reverse'),self.reason(),command())
+
+    def backup_center(self):
+        from tkinter import filedialog
+        from pathlib import Path
+        window=tk.Toplevel(self);window.title('Backups e recuperação');window.geometry('880x480')
+        root=View(window,self.s);root.pack(fill='both',expand=True)
+        ttk.Label(root,text='Restauração substitui os dados atuais. Uma cópia do banco atual será preservada. Backups podem conter um PIN anterior.',wraplength=800).pack(anchor='w',pady=8)
+        tree=table(root,['Arquivo','Integridade'],height=10)
+        paths={}
+        def refresh():
+            paths.clear()
+            paths.update({i:p for i,p in enumerate(self.s.backups.list_backups())})
+            fill(tree,[(i,(p.name,'Não verificada nesta consulta')) for i,p in paths.items()])
+        def manual():
+            info=self.s.backups.create('manual',command())
+            self.s.application.notify('Backup local verificado.'+(' Cópia externa indisponível.' if info.external_copy_ok is False else ''))
+            refresh()
+        def verify():
+            id=root.selected(tree);info=self.s.backups.verify(paths[id])
+            tree.item(str(id),values=(info.path.name,'Integridade OK'))
+        def external():
+            path=filedialog.askdirectory(parent=window,title='Pasta adicional para backups')
+            if path:
+                self.s.backups.set_external_dir(Path(path),self.grant('backup.configure'),command())
+                self.s.application.notify('Destino externo configurado. A próxima cópia informará o resultado.')
+        def restore():
+            path=filedialog.askopenfilename(parent=window,title='Escolher backup para restaurar',filetypes=[('Backup SQLite','*.sqlite3')])
+            if not path:
+                return
+            preview=self.s.restore.prepare(Path(path),self.grant('backup.restore'))
+            confirmed=messagebox.askyesno('Confirmar substituição',f'Backup: {preview.source.name}\nVersão de estrutura: {preview.schema_version}\n\nSubstituir os dados atuais?\nO aplicativo será fechado após a restauração.',parent=window)
+            self.s.restore.apply(preview,confirmed)
+            if confirmed:
+                messagebox.showinfo('Restauração concluída','A cópia anterior foi preservada. Abra o aplicativo novamente. O PIN será o existente no backup.',parent=window)
+                self.s.application.close()
+        row=ttk.Frame(root);row.pack(fill='x',pady=6)
+        for label,callback in (('Criar backup',manual),('Verificar selecionado',verify),('Pasta adicional',external),('Restaurar arquivo',restore),('Recuperar PIN',self.s.application.admin.recover)):
+            ttk.Button(row,text=label,command=lambda f=callback:root.act(f)).pack(side='left',padx=4)
+        refresh()

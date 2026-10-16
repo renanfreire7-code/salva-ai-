@@ -7,6 +7,7 @@ import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 from ..common.db import APPLICATION_ID
+from ..common.clock import Clock
 from ..common.commands import CommandBus
 from ..common.audit import Audit
 from ..common.errors import BusinessError,ConflictError
@@ -64,7 +65,25 @@ class BackupService:
     def list_backups(self):
         return sorted(self.backup_dir.glob("*.sqlite3"),key=lambda p:p.stat().st_mtime,reverse=True) if self.backup_dir.exists() else []
 
+    def set_external_dir(self,path,grant,command_id):
+        path=Path(path).resolve()
+        if not path.is_dir():
+            raise BusinessError('Escolha uma pasta existente para a cópia adicional.')
+        def perform():
+            self.db_security.consume(grant,'backup.configure')
+            self.db.conn.execute("INSERT INTO maintenance_settings VALUES('external_backup',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",(str(path),))
+            Audit(self.db).record('backup.configured',command_id,{},dict(destination=str(path)),None)
+            return str(path)
+        result=CommandBus(self.db).execute(command_id,'backup.configure',dict(destination=str(path)),perform)
+        self._external_dir=None
+        return result
+
     def verify(self,path):
+        return self.verify_path(path,self.db.clock)
+
+    @staticmethod
+    def verify_path(path,clock=None):
+        clock=clock or Clock()
         path=Path(path).resolve()
         if not path.is_file() or path.suffix!=".sqlite3":
             raise BusinessError("Selecione um arquivo de backup SQLite existente.")
@@ -77,10 +96,10 @@ class BackupService:
                 raise BusinessError("O backup não passou na verificação de integridade.")
             migrations=dict(conn.execute("SELECT version,checksum FROM schema_migrations"))
             known={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (Path(__file__).resolve().parents[1]/"migrations").glob("*.sql")}
-            if not migrations or any(known.get(version)!=checksum for version,checksum in migrations.items()):
+            if not migrations or sorted(migrations)!=sorted(known)[:len(migrations)] or any(known.get(version)!=checksum for version,checksum in migrations.items()):
                 raise BusinessError("Versão de backup incompatível ou esquema alterado.")
             version=max(migrations)
-            return BackupInfo(path,version,self.db.clock.now().isoformat(),True)
+            return BackupInfo(path,version,clock.now().isoformat(),True)
         except (sqlite3.Error,OSError) as error:
             raise BusinessError("Não foi possível verificar o backup.") from error
         finally:

@@ -65,9 +65,7 @@ class SecurityService:
         self._grants[grant.id] = grant
         return grant
 
-    def consume(self, grant, action):
-        if not self.db.conn.in_transaction:
-            raise RuntimeError("Autorização exige a transação da operação")
+    def validate(self, grant, action):
         if not isinstance(grant, AdminGrant) or self._grants.get(grant.id) != grant or grant.action != action:
             raise AuthorizationError("Confirme o PIN para esta operação.")
         row = self.db.conn.execute("SELECT last_time FROM admin_credentials WHERE id=1").fetchone()
@@ -75,6 +73,12 @@ class SecurityService:
         fingerprint = hashlib.sha256(grant.id.encode()).hexdigest()
         if now >= grant.expires_at or self.db.conn.execute("SELECT 1 FROM consumed_grants WHERE id=?", (fingerprint,)).fetchone():
             raise AuthorizationError("Autorização expirada ou já utilizada.")
+
+    def consume(self, grant, action):
+        if not self.db.conn.in_transaction:
+            raise RuntimeError("Autorização exige a transação da operação")
+        self.validate(grant, action)
+        fingerprint = hashlib.sha256(grant.id.encode()).hexdigest()
         self.db.conn.execute("INSERT INTO consumed_grants VALUES(?)", (fingerprint,))
 
     def recover(self, recovery_key, new_pin):

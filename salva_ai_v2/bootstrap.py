@@ -11,9 +11,13 @@ from .ui.dialogs import AdminDialog
 class Application:
     def __init__(self, data_dir):
         self.data_dir = Path(data_dir)
+        from .maintenance.restore import recover_restore
+        recover_restore(self.data_dir)
         self.db = Database(self.data_dir / "dados" / "salva_ai.sqlite3")
         try:
-            self.db.migrate()
+            from .maintenance.restore import recover_restore
+            from .maintenance.backup import BackupService
+            self.db.upgrade(BackupService(self.db,self.data_dir / "backups"))
             self.security = SecurityService(self.db)
             self.window = MainWindow(self.close)
             self.admin = AdminDialog(self.window, self.security)
@@ -57,6 +61,9 @@ class Application:
         from .maintenance.backup import BackupService
         from .cash.closing import ClosingService
         self.services.backups = BackupService(self.db, self.data_dir / "backups")
+        self.services.backups.db_security = self.security
+        from .maintenance.restore import RestoreService
+        self.services.restore = RestoreService(self.data_dir,self.services.backups,self.security)
         self.services.closing = ClosingService(self.db, cash, self.services.backups, self.services.reports)
         self.notebook = ttk.Notebook(self.window.body)
         self.notebook.pack(fill="both", expand=True)
