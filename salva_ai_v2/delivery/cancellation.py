@@ -48,7 +48,7 @@ class CancellationMixin:
                     raise BusinessError("Devolução acima da quantidade que saiu.")
                 cost=line["cogs_cents"]-old[1] if item.qty==line["qty"]-old[0] else round_half_up(line["cogs_cents"]*item.qty,line["qty"])
                 self.inventory._movement(item.product_id,item.qty,cost,"DELIVERY_RETURN",order_id,reason)
-                self.db.conn.execute("INSERT INTO delivery_returns(order_id,product_id,qty,cogs_cents) VALUES(?,?,?,?)",(order_id,item.product_id,item.qty,cost))
+                self.db.conn.execute("INSERT INTO delivery_returns(order_id,product_id,qty,cogs_cents,returned_at) VALUES(?,?,?,?,?)",(order_id,item.product_id,item.qty,cost,self.clock.now().isoformat()))
             return order_id
         return self.run(command_id,"delivery.returned",dict(order_id=order_id,returned=[asdict(r) for r in returned],reason=reason),perform)
 

@@ -109,13 +109,13 @@ class InventoryService(Service):
             raise RuntimeError("Liberação exige transação")
         self.db.conn.execute("DELETE FROM reservations WHERE product_id=? AND owner_type=? AND owner_id=?", (product_id,owner_type,owner_id))
 
-    def consume(self, product_id, qty):
+    def consume(self, product_id, qty, kind="CONSUMPTION", source_id=None, reason=None):
         integer(qty, "Quantidade", 1)
         pos = self.position(product_id)
         if qty > pos.available:
             raise BusinessError("Estoque disponível insuficiente.")
         cost = pos.value_cents if qty == pos.physical else round_half_up(pos.value_cents * qty, pos.physical)
-        self._movement(product_id, -qty, -cost, "CONSUMPTION")
+        self._movement(product_id, -qty, -cost, kind, source_id, reason)
         return cost
 
     def adjust(self, product_id, delta, reason, grant, command_id):
@@ -125,7 +125,7 @@ class InventoryService(Service):
             self.protect(grant, "stock.adjust", reason)
             pos = self.position(product_id)
             if delta < 0:
-                cost = self.consume(product_id, -delta)
+                cost = self.consume(product_id, -delta, "LOSS", reason=reason)
             else:
                 if not pos.physical:
                     raise BusinessError("Registre uma compra com custo para iniciar este estoque.")
@@ -156,7 +156,7 @@ class InventoryService(Service):
                 row = self.db.conn.execute("SELECT * FROM purchase_items WHERE purchase_id=? AND product_id=?", (purchase_id,line.product_id)).fetchone()
                 if row is None or line.qty > row["qty"] - row["returned_qty"]:
                     raise BusinessError("Quantidade acima da compra disponível para devolução.")
-                self.consume(line.product_id,line.qty)
+                self.consume(line.product_id,line.qty,"SUPPLIER_RETURN",purchase_id,reason)
                 credit += round_half_up(row["total_cents"] * line.qty, row["qty"])
                 self.db.conn.execute("UPDATE purchase_items SET returned_qty=returned_qty+? WHERE id=?", (line.qty,row["id"]))
             return self.db.conn.execute("INSERT INTO supplier_credits(purchase_id,amount_cents,reason) VALUES(?,?,?)",(purchase_id,credit,reason)).lastrowid
