@@ -2,7 +2,8 @@
 
 Data: 16/10/2026. Branch: `projeto/salva-ai-novo`.
 
-Estado: desenho consolidado para revisão do responsável; implementação não iniciada.
+Estado: especificação aprovada pelo responsável em conversa, incluindo delivery;
+plano de implementação preparado para revisão; implementação não iniciada.
 
 ## 1. Objetivo e contexto
 
@@ -363,5 +364,6 @@ também o desenho de delivery: taxa e corrida fixas independentes, remuneração
 devida na saída, pagamento antecipado ou ao entregador, acerto explícito e
 bloqueio do fechamento por pedidos em andamento ou dinheiro não conferido.
 
-Este documento consolida os blocos; requer revisão explícita antes do plano de
-implementação. Nenhuma funcionalidade nova foi implementada nesta etapa.
+O responsável aprovou a especificação consolidada e autorizou a preparação do
+plano de implementação. O plano ainda requer revisão e escolha do método de
+execução antes de programar. Nenhuma funcionalidade nova foi implementada.
