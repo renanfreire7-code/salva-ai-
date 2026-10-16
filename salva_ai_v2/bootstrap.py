@@ -29,6 +29,9 @@ class Application:
         from .ui.tabs import TabsView
         from .ui.cash import CashView
         from .ui.finance import FinanceView
+        from .ui.delivery import DeliveryView
+        from .delivery.service import DeliveryService
+        from .delivery.settlement import SettlementService
         from .finance.service import FinanceService
         from .finance.recurrence import RecurrenceService
         inventory = InventoryService(self.db, self.security)
@@ -38,9 +41,11 @@ class Application:
         finance = FinanceService(self.db, cash, self.security)
         inventory.finance = finance
         recurrence = RecurrenceService(self.db, finance)
+        delivery = DeliveryService(self.db, inventory, pricing, sales, cash, finance, self.security)
+        settlements = SettlementService(self.db, cash, finance, self.security)
         self.services = SimpleNamespace(application=self, inventory=inventory, pricing=pricing,
             cash=cash, sales=sales, security=self.security, clock=self.db.clock,
-            finance=finance, recurrence=recurrence)
+            finance=finance, recurrence=recurrence, delivery=delivery, settlements=settlements)
         for widget in self.window.body.winfo_children():
             widget.destroy()
         self.notebook = ttk.Notebook(self.window.body)
@@ -48,7 +53,7 @@ class Application:
         self.views = []
         for cls, label, attr in ((SalesView,"Venda direta","sales_view"),
                 (TabsView,"Comandas","tabs_view"),(ProductsView,"Produtos e estoque","products_view"),
-                (CashView,"Caixa","cash_view"),(FinanceView,"Financeiro mensal","finance_view")):
+                (CashView,"Caixa","cash_view"),(FinanceView,"Financeiro mensal","finance_view"),(DeliveryView,"Delivery","delivery_view")):
             view = cls(self.notebook, self.services)
             self.notebook.add(view, text=label)
             setattr(self,attr,view)

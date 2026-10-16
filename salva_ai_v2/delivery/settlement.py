@@ -11,6 +11,9 @@ class SettlementService(Service):
     def pending_custody_cents(self):
         return self.db.conn.execute("SELECT COALESCE(SUM(delta_cents),0) FROM custody_entries").fetchone()[0]
 
+    def floats_pending(self):
+        return [dict(r) for r in self.db.conn.execute('SELECT * FROM courier_floats WHERE amount_cents>returned_cents')]
+
     def collections_pending(self):
         return [dict(r) for r in self.db.conn.execute("SELECT * FROM collections WHERE custodian='COURIER' AND method='MONEY' AND amount_cents>settled_cents+courier_refunded_cents")]
 
