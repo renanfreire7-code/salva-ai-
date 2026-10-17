@@ -94,3 +94,6 @@ SHA-256: `e5349ea6a370e287c622a29c0758b314f8f05e5f9f16eed0e07b0b0dd99a4965`.
 
 Entrega somente na branch `feat/salva-ai-v2`, preservando os pacotes anteriores.
 Download: https://github.com/renanfreire7-code/salva-ai-/raw/refs/heads/feat/salva-ai-v2/dist/Bar_Simples_0.3.0-dev.zip
+
+Download remoto verificado após o envio: HTTP200,3277149 bytes e SHA-256
+idêntico ao ZIP testado. Branch remota confirmada; checkout sem mudanças pendentes.
