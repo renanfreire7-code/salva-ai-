@@ -57,12 +57,12 @@ class AttendanceUITest(unittest.TestCase):
         history.tree.selection_set('1')
         history.select_purchase()
         history.items_tree.selection_set(str(self.pid))
-        with patch('salva_ai_v2.ui.purchases.ask_fields',return_value={'qty':'2'}),patch.object(history,'grant',side_effect=lambda action:self.app.security.authorize('681942',action)),patch.object(history,'reason',return_value='Mercadoria conferida'):
+        with patch('salva_ai_v2.ui.purchases.ask_fields',side_effect=lambda *args,**kwargs:kwargs['on_submit']({'qty':'2'})),patch.object(history,'grant',side_effect=lambda action:self.app.security.authorize('681942',action)),patch.object(history,'reason',return_value='Mercadoria conferida'):
             history.return_item()
         history.refresh()
         credit=self.app.services.inventory.supplier_credits()[0]
         history.credits_tree.selection_set(str(credit['id']))
-        with patch('salva_ai_v2.ui.purchases.ask_fields',return_value={'amount':'4,00','mode':'abatimento','method':'Pix','date':self.app.services.clock.today().isoformat()}),patch.object(history,'grant',side_effect=lambda action:self.app.security.authorize('681942',action)),patch.object(history,'reason',return_value='Abatimento confirmado'):
+        with patch('salva_ai_v2.ui.purchases.ask_fields',side_effect=lambda *args,**kwargs:kwargs['on_submit']({'amount':'4,00','mode':'abatimento','method':'Pix','date':self.app.services.clock.today().isoformat()})),patch.object(history,'grant',side_effect=lambda action:self.app.security.authorize('681942',action)),patch.object(history,'reason',return_value='Abatimento confirmado'):
             history.settle_credit()
         self.assertEqual(self.app.services.finance.paid_cents(1),400)
         self.assertEqual(self.app.services.inventory.position(self.pid).physical,18)

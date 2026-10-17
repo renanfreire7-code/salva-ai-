@@ -1,5 +1,5 @@
 from tkinter import ttk,messagebox
-from .shared import View,table,fill,ask_fields,command
+from .shared import View,table,fill,ask_fields,command,FieldSpec
 from ..common.money import money,parse_money
 from ..common.errors import BusinessError
 from ..inventory.models import CartLine
@@ -46,23 +46,23 @@ class PurchasesView(View):
         self.s.application.notify('Compra revertida. Consulte créditos se já havia pagamento; registre a entrada correta.')
 
     def return_item(self):
-        purchase=self.selected(self.tree);product=self.selected(self.items_tree)
-        values=ask_fields(self,'Devolver ao fornecedor',[('qty','Quantidade em unidades',1)])
-        if values:
-            self.s.inventory.return_to_supplier(purchase,[CartLine(product,int(values['qty']))],self.grant('purchase.return'),self.reason(),command())
-            self.refresh()
-            self.s.application.notify('Devolução registrada. Confira o crédito na aba Créditos do fornecedor.')
+        purchase=self.selected(self.tree);product=self.selected(self.items_tree);cmd=command()
+        def submit(values):
+            result=self.s.inventory.return_to_supplier(purchase,[CartLine(product,int(values['qty']))],self.grant('purchase.return'),self.reason(),cmd)
+            self.refresh();self.s.application.notify('Devolução registrada. Confira o crédito na aba Créditos do fornecedor.');return result
+        return ask_fields(self,'Devolver ao fornecedor',[FieldSpec('qty','Quantidade em unidades',1,validator=int)],on_submit=submit)
 
     def settle_credit(self):
-        credit=self.selected(self.credits_tree)
-        values=ask_fields(self,'Confirmar crédito do fornecedor',[('amount','Valor confirmado (R$)',''),('mode','Recebimento ou abatimento?','recebimento'),('method','Pix / Dinheiro na gaveta / Dinheiro fora / Débito / Crédito','Pix'),('date','Data da confirmação (AAAA-MM-DD)',self.s.clock.today().isoformat())])
-        if not values:
-            return
-        mode={'recebimento':'RECEIPT','abatimento':'OFFSET'}.get(values['mode'].casefold())
-        modes={'pix':'PIX','dinheiro na gaveta':'MONEY','dinheiro fora':'MONEY','débito':'DEBIT','crédito':'CREDIT'}
-        method=modes.get(values['method'].casefold())
-        if not mode or (mode=='RECEIPT' and not method):
-            raise BusinessError('Escolha uma das opções indicadas.')
-        self.s.inventory.settle_supplier_credit(credit,parse_money(values['amount']),mode,method if mode=='RECEIPT' else None,mode=='RECEIPT' and values['method'].casefold()=='dinheiro na gaveta',values['date'],self.grant('purchase.credit.settle'),self.reason(),command())
-        self.refresh()
-        self.s.application.notify('Crédito liquidado com registro no histórico.')
+        credit=self.selected(self.credits_tree);cmd=command()
+        def submit(values):
+            mode={'recebimento':'RECEIPT','abatimento':'OFFSET'}.get(values['mode'].casefold())
+            modes={'pix':'PIX','dinheiro na gaveta':'MONEY','dinheiro fora':'MONEY','débito':'DEBIT','crédito':'CREDIT'}
+            method=modes.get(values['method'].casefold())
+            if not mode or (mode=='RECEIPT' and not method):raise BusinessError('Escolha uma das opções indicadas.')
+            result=self.s.inventory.settle_supplier_credit(credit,parse_money(values['amount']),mode,method if mode=='RECEIPT' else None,mode=='RECEIPT' and values['method'].casefold()=='dinheiro na gaveta',values['date'],self.grant('purchase.credit.settle'),self.reason(),cmd)
+            self.refresh();self.s.application.notify('Crédito liquidado com registro no histórico.');return result
+        return ask_fields(self,'Confirmar crédito do fornecedor',[
+            FieldSpec('amount','Valor confirmado (R$)',required=True,validator=parse_money),
+            FieldSpec('mode','Forma de confirmação','Recebimento',kind='choice',choices=('Recebimento','Abatimento')),
+            FieldSpec('method','Forma do recebimento','Pix',kind='choice',choices=('Pix','Dinheiro na gaveta','Dinheiro fora','Débito','Crédito')),
+            FieldSpec('date','Data da confirmação (AAAA-MM-DD)',self.s.clock.today().isoformat())],on_submit=submit)

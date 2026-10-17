@@ -86,21 +86,22 @@ class ProductsView(View):
 
     def promotion(self):
         pid=self.selected(self.tree)
-        values=ask_fields(self,"Promoção por quantidade",[("qty","Quantidade do grupo",3),("price","Preço do grupo (R$)","12,00"),("active","Ativa? (sim/não)","sim")])
-        if values:
-            self.s.pricing.set_promotion(pid,int(values["qty"]),parse_money(values["price"]),values["active"].casefold()=="sim",command())
+        cmd=command()
+        return ask_fields(self,'Promoção por quantidade',[
+            FieldSpec('qty','Quantidade do grupo',3,validator=lambda value:integer(int(value),'Quantidade',2)),
+            FieldSpec('price','Preço do grupo (R$)','12,00',validator=parse_money),
+            FieldSpec('active','Promoção ativa?','Sim',kind='choice',choices=('Sim','Não'))],
+            on_submit=lambda values:self.s.pricing.set_promotion(pid,int(values['qty']),parse_money(values['price']),values['active']=='Sim',cmd))
 
     def adjust(self):
-        pid=self.selected(self.tree)
-        values=ask_fields(self,"Ajuste de estoque",[("delta","Variação em unidades (+ ou -)",""),("reason","Motivo","")])
-        if values:
-            self.s.inventory.adjust(pid,int(values["delta"]),values["reason"],self.grant("stock.adjust"),command())
+        pid=self.selected(self.tree);cmd=command()
+        return ask_fields(self,'Ajuste de estoque',[FieldSpec('delta','Variação em unidades (+ ou -)',validator=int,required=True),FieldSpec('reason','Motivo',required=True)],
+            on_submit=lambda values:self.s.inventory.adjust(pid,int(values['delta']),values['reason'],self.grant('stock.adjust'),cmd))
 
     def shortcut(self):
-        pid=self.selected(self.tree)
-        values=ask_fields(self,"Selecionar por atalho",[("key","Número da tecla F1 a F12",1)])
-        if values:
-            self.s.inventory.assign_shortcut(int(values["key"]),pid,command())
+        pid=self.selected(self.tree);cmd=command()
+        return ask_fields(self,'Selecionar por atalho',[FieldSpec('key','Número da tecla F1 a F12','1',kind='choice',choices=tuple(str(i) for i in range(1,13)))],
+            on_submit=lambda values:self.s.inventory.assign_shortcut(int(values['key']),pid,cmd))
 
     def deactivate(self):
         self.s.inventory.deactivate(self.selected(self.tree),self.grant("product.deactivate"),self.reason(),command())

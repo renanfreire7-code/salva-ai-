@@ -134,7 +134,7 @@ class Application:
         if self._closed:
             return
         session=self.services.cash.active()
-        self.window.cash_state.set(f"Caixa #{session['id']} aberto" if session else 'Caixa fechado')
+        self.window.cash_state.set('Fechamento pendente' if self.services.closing.pending() else f"Caixa #{session['id']} aberto" if session else 'Caixa fechado')
         for view in self.views:
             try:
                 view.refresh()
