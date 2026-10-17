@@ -101,3 +101,26 @@ class SecurityService:
             Audit(self.db).record("security.recovered", "admin", {}, {"recovery_key_rotated": True}, None)
         self._grants.clear()
         return new_key
+
+    def remaining_wait(self):
+        from math import ceil
+        row=self.db.conn.execute('SELECT blocked_until,last_time FROM admin_credentials WHERE id=1').fetchone()
+        return max(0,ceil(row['blocked_until']-max(self.clock.now().timestamp(),row['last_time']))) if row else 0
+
+    def authorize_recovery(self,key,action):
+        row=self.db.conn.execute('SELECT * FROM admin_credentials WHERE id=1').fetchone()
+        if not row or not isinstance(key,str) or not hmac.compare_digest(self._hash(key,row['recovery_salt'],row['iterations']),row['recovery_hash']):
+            raise AuthorizationError('Chave de recuperação inválida.')
+        if not isinstance(action,str) or not action.strip():raise AuthorizationError('Ação inválida.')
+        now=max(self.clock.now().timestamp(),row['last_time'])
+        grant=AdminGrant(secrets.token_urlsafe(32),action,now+60);self._grants[grant.id]=grant
+        return grant
+
+    def replace_pin(self,pin,proof,action):
+        self._pin(pin)
+        key=secrets.token_urlsafe(32);salt=secrets.token_bytes(16);recovery_salt=secrets.token_bytes(16)
+        with self.db.transaction():
+            self.consume(proof,action)
+            self.db.conn.execute('UPDATE admin_credentials SET salt=?,pin_hash=?,recovery_salt=?,recovery_hash=?,iterations=?,pin_length=3,failures=0,blocked_until=0 WHERE id=1',
+                (salt,self._hash(pin,salt),recovery_salt,self._hash(key,recovery_salt),ITERATIONS))
+        return key

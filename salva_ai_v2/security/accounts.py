@@ -1,0 +1,85 @@
+"""Uma conta local; sessões em memória e transição de credenciais atômica."""
+import hmac
+import secrets
+from math import ceil
+from .models import LoginSession
+from .service import ITERATIONS
+from ..common.audit import Audit
+from ..common.errors import BusinessError,AuthorizationError
+
+
+class AccountService:
+    def __init__(self,db,security,clock=None):
+        self.db,self.security,self.clock=db,security,clock or db.clock
+        self._sessions={}
+
+    @property
+    def configured(self):
+        return self.db.conn.execute('SELECT 1 FROM establishment_account WHERE id=1').fetchone() is not None
+
+    @property
+    def mode(self):
+        return 'LOGIN' if self.configured else 'TRANSITION' if self.security.configured else 'SETUP'
+
+    def _password(self,password):
+        if not isinstance(password,str) or len(password)<8:
+            raise BusinessError('Use uma senha com pelo menos oito caracteres.')
+
+    def create(self,username,password,pin,proof=None):
+        username=username.strip().casefold() if isinstance(username,str) else ''
+        if not 1<=len(username)<=64:raise BusinessError('Informe um usuário com até 64 caracteres.')
+        self._password(password);self.security._pin(pin)
+        salt=secrets.token_bytes(16)
+        with self.db.transaction():
+            if self.configured:raise BusinessError('A conta do estabelecimento já foi criada.')
+            if self.security.configured:
+                key=self.security.replace_pin(pin,proof,'access.configure')
+            else:key=self.security.setup(pin)
+            self.db.conn.execute('INSERT INTO establishment_account(id,username,salt,password_hash,iterations) VALUES(1,?,?,?,?)',
+                (username,salt,self.security._hash(password,salt),ITERATIONS))
+            Audit(self.db).record('access.created','establishment',{}, {'configured':True},None)
+        self.logout()
+        return key
+
+    def remaining_wait(self):
+        row=self.db.conn.execute('SELECT blocked_until,last_time FROM establishment_account WHERE id=1').fetchone()
+        return max(0,ceil(row['blocked_until']-max(self.clock.now().timestamp(),row['last_time']))) if row else 0
+
+    def login(self,username,password):
+        error=None
+        with self.db.transaction():
+            row=self.db.conn.execute('SELECT * FROM establishment_account WHERE id=1').fetchone()
+            if not row:raise AuthorizationError('Configure a conta do estabelecimento.')
+            now=max(self.clock.now().timestamp(),row['last_time'])
+            self.db.conn.execute('UPDATE establishment_account SET last_time=? WHERE id=1',(now,))
+            if now<row['blocked_until']:error='Aguarde antes de tentar novamente.'
+            else:
+                user=username.strip().casefold() if isinstance(username,str) else ''
+                hashed=self.security._hash(password if isinstance(password,str) else '',row['salt'],row['iterations'])
+                if not hmac.compare_digest(hashed,row['password_hash']) or user!=row['username']:
+                    failures=row['failures']+1;wait=min(900,30*2**min(max(0,failures-5),5)) if failures>=5 else 0
+                    self.db.conn.execute('UPDATE establishment_account SET failures=?,blocked_until=? WHERE id=1',(failures,now+wait))
+                    error='Usuário ou senha incorretos.'
+                else:self.db.conn.execute('UPDATE establishment_account SET failures=0,blocked_until=0 WHERE id=1')
+        if error:raise AuthorizationError(error)
+        session=LoginSession(secrets.token_urlsafe(32),row['revision']);self._sessions[session.id]=session
+        return session
+
+    def validate_session(self,session):
+        row=self.db.conn.execute('SELECT revision FROM establishment_account WHERE id=1').fetchone()
+        if not isinstance(session,LoginSession) or self._sessions.get(session.id) is not session or not row or row['revision']!=session.revision:
+            raise AuthorizationError('Entre novamente no Bar Simples.')
+
+    def logout(self):
+        self._sessions.clear();self.security._grants.clear()
+
+    def recover(self,recovery_key,new_password,new_pin):
+        self._password(new_password);self.security._pin(new_pin)
+        salt=secrets.token_bytes(16)
+        with self.db.transaction():
+            if not self.configured:raise AuthorizationError('Conclua a configuração do acesso.')
+            key=self.security.recover(recovery_key,new_pin)
+            self.db.conn.execute('UPDATE establishment_account SET salt=?,password_hash=?,iterations=?,revision=revision+1,failures=0,blocked_until=0 WHERE id=1',
+                (salt,self.security._hash(new_password,salt),ITERATIONS))
+            Audit(self.db).record('access.recovered','establishment',{}, {'recovery_key_rotated':True},None)
+        self.logout();return key
