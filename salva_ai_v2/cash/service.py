@@ -74,4 +74,3 @@ class CashService(Service):
         if "closing_jobs" in tables and self.db.conn.execute("SELECT 1 FROM closing_jobs WHERE complete=0").fetchone():
             result.append("Fechamento pendente")
         return result
-

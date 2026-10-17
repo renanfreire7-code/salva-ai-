@@ -26,4 +26,3 @@ def export_xlsx(path,report):
             if rows:
                 sheet.autofilter(0,0,len(rows)-1,len(rows[0])-1)
     return path
-

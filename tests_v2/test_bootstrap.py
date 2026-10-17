@@ -6,7 +6,6 @@ from unittest.mock import patch
 
 class BootstrapTest(unittest.TestCase):
     def setUp(self):
-        self.assertTrue(Path('salva_ai_v2/bootstrap.py').exists(), 'Inicialização ainda não implementada')
         from salva_ai_v2.bootstrap import build_application
         self.build = build_application
         self.tmp = tempfile.TemporaryDirectory()

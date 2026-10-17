@@ -7,5 +7,8 @@ def normalize(value):
 
 def search_products(products, query):
     text = normalize(query)
-    return [p for p in products if not text or text in normalize(p["name"]) or text == str(p["id"]) or text == f'{p["id"]:03d}']
+    return [p for p in products if not text or text in normalize(p["name"]) or text == str(p["id"]) or text == f'{p["id"]:03d}' or text==normalize(product_label(p))]
 
+
+def product_label(product):
+    return f'{product["id"]:03d} - {product["name"]}'

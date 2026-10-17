@@ -21,4 +21,3 @@ class PurchaseLine:
     product_id: int
     qty: int
     total_cents: int
-

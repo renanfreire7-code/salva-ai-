@@ -7,4 +7,3 @@ class Clock:
 
     def today(self):
         return self.now().date()
-

@@ -5,7 +5,6 @@ from tests_v2.support import DatabaseCase
 class BackupTest(DatabaseCase):
     def setUp(self):
         super().setUp()
-        self.assertTrue(Path('salva_ai_v2/maintenance/backup.py').exists(), 'Backup ainda não implementado')
         from salva_ai_v2.maintenance.backup import BackupService
         self.backups = BackupService(self.db, self.root/'backups')
 
@@ -36,3 +35,7 @@ class BackupTest(DatabaseCase):
         info=self.backups.create('manual','backup1')
         self.assertTrue(info.integrity_ok)
         self.assertFalse(info.external_copy_ok)
+
+    def test_same_directory_is_not_an_additional_copy(self):
+        self.backups.external_dir=self.root/'backups'
+        self.assertFalse(self.backups.create('manual','backup1').external_copy_ok)

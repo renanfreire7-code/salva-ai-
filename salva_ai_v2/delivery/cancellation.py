@@ -99,4 +99,3 @@ class CancellationMixin:
             self.db.conn.execute("UPDATE delivery_orders SET previous_order_id=? WHERE order_id=?",(order_id,new.id))
             return self.dispatch(new.id,command_id+":dispatch")
         return self.run(command_id,"delivery.redelivered",dict(order_id=order_id,reason=reason),perform)
-

@@ -1,5 +1,27 @@
 # Salva ai headshop
 
+## Reconstrução: nova aplicação em validação
+
+A nova aplicação está em `salva_ai_v2/`, com **banco vazio e separado do legado**.
+Inclui atendimento, comandas, promoções por quantidade, estoque com custo médio,
+caixa, financeiro auditável, delivery/acertos, resultados e backups.
+
+- **Iniciar:** `python3 -m salva_ai_v2`; no Windows, `INICIAR_V2.bat`.
+- **Ensaio isolado:** `python3 -m scripts.demo_v2`.
+- **Gerar ZIP:** `python3 -m scripts.build_v2`.
+- **Documentação:** [manual da nova aplicação](docs/manual-v2.md).
+- **Desenho e tarefas:** [plano geral](docs/superpowers/plans/2026-10-16-salva-ai-plano-geral.md).
+- **Testes novos:** `python3 -m unittest discover -s tests_v2 -t . -v` com display;
+  no Linux sem monitor, usar Xvfb conforme o manual.
+
+Requer Python 3.12 ou superior com Tkinter. A versão `0.1.0-dev` identifica a
+reconstrução, ainda pendente de validação no Windows e ensaio com o operador.
+Não use o banco do estabelecimento para testes. Não foi feita release nem merge.
+
+## Referência: aplicativo anterior
+
+As instruções abaixo se referem ao código anterior em `salva_ai_headshop/`.
+
 Sistema **offline** de vendas, estoque e gestão financeira para uma headshop: comandas por cliente, venda direta, controle de caixa com backup automático, despesas, taxas de maquininha, provisão de DAS MEI, lucro estimado por produto e exportação para Excel.
 
 Aplicativo desktop em **Python 3 + Tkinter + SQLite**. Usa só a biblioteca padrão do Python; a única dependência externa, o [XlsxWriter](https://github.com/jmcnamara/XlsxWriter), já vem dentro da pasta. Não precisa de internet, servidor nem `pip install`.

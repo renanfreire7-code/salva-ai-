@@ -69,6 +69,8 @@ class BackupService:
         path=Path(path).resolve()
         if not path.is_dir():
             raise BusinessError('Escolha uma pasta existente para a cópia adicional.')
+        if path==self.backup_dir.resolve():
+            raise BusinessError('Escolha uma pasta diferente da cópia local.')
         def perform():
             self.db_security.consume(grant,'backup.configure')
             self.db.conn.execute("INSERT INTO maintenance_settings VALUES('external_backup',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",(str(path),))
@@ -149,10 +151,11 @@ class BackupService:
                 if not external.is_dir():
                     raise OSError("Destino externo indisponível")
                 target=(external/path.name).resolve()
-                if target!=path:
-                    temp=target.with_name(target.stem+".tmp.sqlite3")
-                    shutil.copyfile(path,temp)
-                    self.verify(temp);sync_file(temp);promote(temp,target)
+                if target==path:
+                    raise OSError('O destino não é uma cópia adicional')
+                temp=target.with_name(target.stem+".tmp.sqlite3")
+                shutil.copyfile(path,temp)
+                self.verify(temp);sync_file(temp);promote(temp,target)
                 external_ok=True
             except (OSError,BusinessError):
                 external_ok=False
@@ -163,4 +166,3 @@ class BackupService:
             return result
         CommandBus(self.db).execute(command_id,"backup.created",payload,record)
         return BackupInfo(path,info.schema_version,info.created_at,True,external_ok)
-

@@ -131,4 +131,3 @@ class RestoreService:
             if self.db.conn is None:
                 self._reopen()
             raise
-

@@ -5,7 +5,6 @@ from tests_v2.support import DatabaseCase
 class CashTest(DatabaseCase):
     def setUp(self):
         super().setUp()
-        self.assertTrue(Path('salva_ai_v2/cash/service.py').exists(), 'Caixa ainda não implementado')
         from salva_ai_v2.cash.service import CashService
         from salva_ai_v2.security.service import SecurityService
         self.security = SecurityService(self.db)

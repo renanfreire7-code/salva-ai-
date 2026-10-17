@@ -29,4 +29,3 @@ class Settlement:
     handed_in_cents: int
     paid_out_cents: int
     offset_cents: int
-

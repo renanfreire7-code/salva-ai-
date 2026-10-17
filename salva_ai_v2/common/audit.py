@@ -14,4 +14,3 @@ class Audit:
             (event_id, self.db.clock.now().isoformat(), kind, str(object_id),
              canonical(before), canonical(after), reason))
         return event_id
-

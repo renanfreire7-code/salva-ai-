@@ -5,7 +5,6 @@ import unittest
 
 class AttendanceUITest(unittest.TestCase):
     def setUp(self):
-        self.assertTrue(Path('salva_ai_v2/ui/sales.py').exists(), 'Telas de atendimento ainda não implementadas')
         from salva_ai_v2.bootstrap import build_application
         from salva_ai_v2.inventory.models import PurchaseLine
         self.tmp = tempfile.TemporaryDirectory()
@@ -45,5 +44,6 @@ class AttendanceUITest(unittest.TestCase):
         self.assertEqual(search_products(self.app.services.inventory.products(), 'cerveja')[0]['id'], self.pid)
         self.app.services.inventory.assign_shortcut(1, self.pid, 'key1')
         self.app.sales_view.select_shortcut(1)
+        self.app.sales_view.filter_products()
         self.assertEqual(self.app.sales_view.selected_product(), self.pid)
         self.assertEqual(self.app.sales_view.total_cents, 0)

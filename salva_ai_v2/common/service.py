@@ -53,4 +53,3 @@ class Service:
         if row is None:
             raise BusinessError("Registro não encontrado.")
         return row
-

@@ -152,6 +152,8 @@ class SalesService(Service):
             session = self.cash.require_open()
             sale = self.one("sales",sale_id)
             order = self.one("orders",sale["order_id"])
+            if order['kind']=='DELIVERY':
+                raise BusinessError('Cancele e confira a devolução pela tela Delivery.')
             if sale["reversed"]:
                 raise BusinessError("Venda já estornada.")
             if reopen_tab and (order["kind"]!="TAB" or session["id"]!=sale["session_id"] or not return_items):
@@ -181,3 +183,23 @@ class SalesService(Service):
             return correction
         return self.run(command_id,"sale.reversed",dict(sale_id=sale_id,return_items=bool(return_items),refund=asdict(refund) if refund else None,reopen_tab=bool(reopen_tab),reason=reason),perform)
 
+    def confirm_refund(self,sale_id,payment,grant,reason,command_id):
+        def perform():
+            self.cash.require_open()
+            self.protect(grant,'sale.refund',reason)
+            sale=self.one('sales',sale_id)
+            order=self.one('orders',sale['order_id'])
+            if order['kind']=='DELIVERY':
+                raise BusinessError('Reembolse este pedido pela tela Delivery.')
+            refund=self.db.conn.execute('SELECT * FROM refunds WHERE sale_id=? AND pending_cents>0',(sale_id,)).fetchone()
+            if not refund or payment.method!=sale['method']:
+                raise BusinessError('Confira a venda e a modalidade do reembolso pendente.')
+            if payment.method=='MONEY':
+                if payment.tendered_cents!=refund['pending_cents']:
+                    raise BusinessError('Informe o valor pendente completo do reembolso.')
+                self.cash.entry(-refund['pending_cents'],'REFUND','refund-completed:'+str(refund['id']),reason)
+            elif payment.tendered_cents is not None:
+                raise BusinessError('Informe valor em dinheiro apenas para reembolso em dinheiro.')
+            self.db.conn.execute('UPDATE refunds SET refunded_cents=refunded_cents+pending_cents,pending_cents=0 WHERE id=?',(refund['id'],))
+            return refund['id']
+        return self.run(command_id,'sale.refunded',dict(sale_id=sale_id,payment=asdict(payment),reason=reason),perform)

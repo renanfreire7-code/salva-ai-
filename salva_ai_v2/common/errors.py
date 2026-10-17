@@ -8,4 +8,3 @@ class ConflictError(BusinessError):
 
 class AuthorizationError(BusinessError):
     pass
-

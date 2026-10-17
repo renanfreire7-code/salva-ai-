@@ -13,4 +13,3 @@ class SaleResult:
     id: int
     total_cents: int
     change_cents: int
-

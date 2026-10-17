@@ -9,8 +9,11 @@ class ProductsView(View):
         super().__init__(parent,services)
         ttk.Label(self,text="Produtos e estoque",style="Title.TLabel").pack(anchor="w")
         actions=ttk.Frame(self);actions.pack(fill="x",pady=8)
-        for label,callback in (("Novo produto",self.create),("Entrada / compra",self.purchase),("Promoção",self.promotion),("Ajustar estoque",self.adjust),("Atalho F1–F12",self.shortcut),("Desativar",self.deactivate)):
+        for label,callback in (("Novo produto",self.create),("Editar produto",self.edit),("Promoção",self.promotion),("Atalho F1–F12",self.shortcut),("Desativar",self.deactivate)):
             ttk.Button(actions,text=label,command=lambda f=callback:self.act(f)).pack(side="left",padx=(0,6))
+        actions=ttk.Frame(self);actions.pack(fill='x',pady=(0,4))
+        for label,callback in (("Entrada / compra",self.purchase),("Ajustar estoque",self.adjust)):
+            ttk.Button(actions,text=label,command=lambda f=callback:self.act(f)).pack(side='left',padx=(0,6))
         self.tree=table(self,["Código","Produto","Preço","Físico","Reservado","Disponível","Mínimo","Custo médio"])
 
     def refresh(self):
@@ -30,10 +33,32 @@ class ProductsView(View):
     def purchase(self):
         pid=self.selected(self.tree)
         today=self.s.clock.today().isoformat()
-        values=ask_fields(self,"Entrada de mercadoria",[("qty","Quantidade de unidades",1),("cost","Custo total dos produtos (R$)",""),("freight","Frete (R$)","0,00"),("date","Data do gasto (AAAA-MM-DD)",today),("due","Vencimento (AAAA-MM-DD)",today)])
+        values=ask_fields(self,"Entrada de mercadoria",[("qty","Quantidade",1),("unit","Unidade ou caixa/fardo?","unidade"),("cost","Custo total dos produtos (R$)",""),("freight","Frete (R$)","0,00"),("date","Data do gasto (AAAA-MM-DD)",today),("due","Vencimento (AAAA-MM-DD)",today),("payment","Pendente / Pix / Dinheiro da gaveta / Débito / Crédito","Pendente")])
         if values:
-            self.s.inventory.receive_purchase([PurchaseLine(pid,int(values["qty"]),parse_money(values["cost"]))],parse_money(values["freight"]),values["date"],values["due"],command())
-            self.s.application.notify("Compra registrada no estoque e nas contas a pagar.")
+            from ..sales.models import Payment
+            from ..common.errors import BusinessError
+            unit=values['unit'].casefold()
+            if unit not in ('unidade','caixa','fardo','caixa/fardo'):
+                raise BusinessError('Escolha unidade ou caixa/fardo.')
+            product=next(p for p in self.s.inventory.products() if p['id']==pid)
+            qty=int(values['qty'])*(product['pack_size'] if unit!='unidade' else 1)
+            modes={'pendente':None,'pix':'PIX','dinheiro da gaveta':'MONEY','débito':'DEBIT','crédito':'CREDIT'}
+            if values['payment'].casefold() not in modes:
+                raise BusinessError('Escolha uma das formas de pagamento indicadas.')
+            method=modes[values['payment'].casefold()]
+            payment=Payment(method) if method else None
+            purchase=self.s.inventory.receive_and_pay_purchase([PurchaseLine(pid,qty,parse_money(values['cost']))],parse_money(values['freight']),values['date'],values['due'],payment,self.grant('cash.withdraw') if method=='MONEY' else None,command())
+            self.s.application.notify(f'Compra #{purchase} registrada no estoque e no financeiro.')
+
+    def edit(self):
+        pid=self.selected(self.tree)
+        product=next(p for p in self.s.inventory.products() if p['id']==pid)
+        values=ask_fields(self,'Editar produto',[('name','Nome',product['name']),('price','Preço normal (R$)',money(product['price_cents']).replace('R$ ','')),('pack','Unidades por caixa/fardo',product['pack_size']),('minimum','Estoque mínimo',product['min_stock'])])
+        if values:
+            before=self.s.pricing.snapshot(pid)
+            self.s.inventory.update_product(pid,values['name'],parse_money(values['price']),int(values['pack']),int(values['minimum']),self.grant('product.edit'),self.reason(),command())
+            disabled=before.group_qty is not None and self.s.pricing.snapshot(pid).group_qty is None
+            self.s.application.notify('Produto atualizado.'+(' A promoção foi desativada porque deixou de oferecer economia.' if disabled else ''))
 
     def promotion(self):
         pid=self.selected(self.tree)
@@ -55,4 +80,3 @@ class ProductsView(View):
 
     def deactivate(self):
         self.s.inventory.deactivate(self.selected(self.tree),self.grant("product.deactivate"),self.reason(),command())
-

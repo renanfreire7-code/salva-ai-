@@ -107,4 +107,3 @@ class FinanceService(PaymentsMixin, Service):
         return ExpenseTotals(sum(r.paid_cents for r in rows),sum(r.draft.amount_cents-r.paid_cents for r in rows),
             sum(r.draft.amount_cents-r.paid_cents for r in rows if r.status=="OVERDUE"),
             sum(r.draft.amount_cents for r in rows),categories)
-

@@ -12,4 +12,3 @@ class PriceCondition:
 class PriceQuote:
     total_cents: int
     savings_cents: int
-

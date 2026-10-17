@@ -96,4 +96,3 @@ class SecurityService:
             Audit(self.db).record("security.recovered", "admin", {}, {"recovery_key_rotated": True}, None)
         self._grants.clear()
         return new_key
-

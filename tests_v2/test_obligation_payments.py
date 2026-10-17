@@ -7,7 +7,6 @@ class ObligationPaymentsTest(DatabaseCase):
     def setUp(self):
         super().setUp()
         from salva_ai_v2.finance.service import FinanceService
-        self.assertTrue(hasattr(FinanceService, 'pay_obligation'), 'Pagamento ainda não implementado')
         from salva_ai_v2.security.service import SecurityService
         from salva_ai_v2.cash.service import CashService
         from salva_ai_v2.finance.models import ExpenseDraft
@@ -40,3 +39,9 @@ class ObligationPaymentsTest(DatabaseCase):
         self.finance.correct_payment(p, 'VOID', 0, self.grant('payment.correct'), 'Pagamento incorreto', 'correct1')
         self.assertEqual(self.cash.position(self.session).expected_cents, 8000)
         self.assertEqual(self.finance.paid_cents(self.expense), 0)
+
+    def test_edit_payment_date_preserves_physical_entry(self):
+        p=self.finance.pay_obligation(self.expense,2000,self.clock.today(),'MONEY',True,self.grant('cash.withdraw'),'paid1')
+        self.finance.edit_payment_details(p,date(2026,10,15),'MONEY',self.grant('payment.edit'),'Data corrigida','edit1')
+        self.assertEqual(self.scalar('SELECT paid_on FROM obligation_payments WHERE id=?',(p,)),'2026-10-15')
+        self.assertEqual(self.cash.position(self.session).expected_cents,8000)

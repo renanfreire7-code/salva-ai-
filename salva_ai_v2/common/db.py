@@ -77,4 +77,3 @@ class Database:
         if self.conn is not None:
             self.conn.close()
             self.conn = None
-

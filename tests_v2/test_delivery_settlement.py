@@ -4,7 +4,6 @@ from tests_v2.delivery_support import DeliveryCase
 class DeliverySettlementTest(DeliveryCase):
     def setUp(self):
         super().setUp()
-        self.assertTrue(hasattr(self.delivery, 'record_payment'), 'Recebimento ainda não implementado')
         from salva_ai_v2.delivery.settlement import SettlementService
         self.settlements = SettlementService(self.db, self.cash, self.finance, self.security)
         self.order = self.delivery.confirm(self.draft(), 'order1')

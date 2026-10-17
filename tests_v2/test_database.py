@@ -7,7 +7,6 @@ from pathlib import Path
 
 class DatabaseTest(unittest.TestCase):
     def setUp(self):
-        self.assertTrue(Path('salva_ai_v2/common/db.py').exists(), 'Banco v2 ainda não implementado')
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.path = Path(self.tmp.name) / 'novo.sqlite3'
@@ -75,5 +74,7 @@ class DatabaseTest(unittest.TestCase):
 
     def test_invalid_destination_does_not_fallback(self):
         from salva_ai_v2.common.errors import BusinessError
+        blocked=self.path.parent/'nao_e_pasta'
+        blocked.write_text('arquivo, não diretório')
         with self.assertRaises(BusinessError):
-            self.Database(Path('/proc/salva-ai-not-writable/db.sqlite3'))
+            self.Database(blocked/'db.sqlite3')

@@ -5,7 +5,6 @@ from tests_v2.support import DatabaseCase
 class PricingTest(DatabaseCase):
     def setUp(self):
         super().setUp()
-        self.assertTrue(Path('salva_ai_v2/pricing/service.py').exists(), 'Promoções ainda não implementadas')
         from salva_ai_v2.inventory.service import InventoryService
         from salva_ai_v2.security.service import SecurityService
         from salva_ai_v2.pricing.service import PricingService

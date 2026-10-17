@@ -113,9 +113,9 @@ class ProductPicker:
         self.products_map={}
 
     def filter_products(self):
-        from ..inventory.queries import search_products
+        from ..inventory.queries import search_products,product_label
         products=search_products(self.s.inventory.products(),self.search.get())
-        self.products_map={f'{p["id"]:03d} — {p["name"]}':p["id"] for p in products}
+        self.products_map={product_label(p):p["id"] for p in products}
         self.picker.configure(values=list(self.products_map))
 
     def selected_product(self):
@@ -129,9 +129,9 @@ class ProductPicker:
         return matches[0]["id"]
 
     def select_shortcut(self,key):
+        from ..inventory.queries import product_label
         row=self.s.inventory.shortcut(key)
         if row:
-            self.search.set(f'{row["id"]:03d} — {row["name"]}')
+            self.search.set(product_label(row))
             self.products_map[self.search.get()]=row["id"]
             self.qty.focus_set()
-

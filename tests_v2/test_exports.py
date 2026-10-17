@@ -7,7 +7,6 @@ import zipfile
 
 class ExportsTest(unittest.TestCase):
     def test_xlsx_text_is_not_formula_and_period_is_recorded(self):
-        self.assertTrue(Path('salva_ai_v2/reporting/xlsx.py').exists(), 'Exportação ainda não implementada')
         from salva_ai_v2.reporting.models import ReportBundle
         from salva_ai_v2.reporting.xlsx import export_xlsx
         with tempfile.TemporaryDirectory() as directory:
@@ -21,7 +20,6 @@ class ExportsTest(unittest.TestCase):
             self.assertIn('2025-01-01', strings)
 
     def test_html_escapes_reason(self):
-        self.assertTrue(Path('salva_ai_v2/reporting/html.py').exists(), 'HTML ainda não implementado')
         from salva_ai_v2.reporting.models import CashReport
         from salva_ai_v2.reporting.html import cash_html
         with tempfile.TemporaryDirectory() as directory:

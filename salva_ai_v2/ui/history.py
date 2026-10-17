@@ -18,7 +18,9 @@ class HistoryView(View):
         for label,var in (('De',self.start),('Até',self.end),('ID do registro',self.object_id)):
             ttk.Label(row,text=label).pack(side='left');ttk.Entry(row,textvariable=var,width=12).pack(side='left',padx=6)
         ttk.Button(row,text='Consultar',command=lambda:self.act(self.refresh)).pack(side='left',padx=6)
+        row=ttk.Frame(self);row.pack(fill='x',pady=(0,6))
         ttk.Button(row,text='Corrigir venda / reabrir comanda',command=lambda:self.act(self.reverse)).pack(side='left',padx=6)
+        ttk.Button(row,text='Concluir reembolso',command=lambda:self.act(self.finish_refund)).pack(side='left',padx=6)
         self.actions=row
         ttk.Button(row,text='Backups',command=lambda:self.act(self.backup_center)).pack(side='left',padx=6)
         self.tree=table(self,['Data','Operação','Registro','Motivo'])
@@ -74,3 +76,11 @@ class HistoryView(View):
         for label,callback in (('Criar backup',manual),('Verificar selecionado',verify),('Pasta adicional',external),('Restaurar arquivo',restore),('Recuperar PIN',self.s.application.admin.recover)):
             ttk.Button(row,text=label,command=lambda f=callback:root.act(f)).pack(side='left',padx=4)
         refresh()
+
+    def finish_refund(self):
+        from ..common.money import parse_money
+        values=ask_fields(self,'Confirmar reembolso realizado',[('sale','Número da venda',''),('method','Dinheiro / Pix / Débito / Crédito','Dinheiro'),('amount','Valor devolvido em dinheiro (R$)','0,00')])
+        if values:
+            methods={'dinheiro':'MONEY','pix':'PIX','débito':'DEBIT','debito':'DEBIT','crédito':'CREDIT','credito':'CREDIT'}
+            method=methods.get(values['method'].casefold())
+            self.s.sales.confirm_refund(int(values['sale']),Payment(method,parse_money(values['amount']) if method=='MONEY' else None),self.grant('sale.refund'),self.reason(),command())

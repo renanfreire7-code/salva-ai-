@@ -5,7 +5,6 @@ import unittest
 
 class DeliveryUITest(unittest.TestCase):
     def test_delivery_states_are_separate_from_payment(self):
-        self.assertTrue(Path('salva_ai_v2/ui/delivery.py').exists(), 'Tela delivery ainda não implementada')
         from salva_ai_v2.bootstrap import build_application
         with tempfile.TemporaryDirectory() as directory:
             app = build_application(Path(directory))

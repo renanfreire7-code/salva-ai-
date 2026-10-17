@@ -36,7 +36,8 @@ class ResultsView(View):
 
     def configure(self):
         rates=self.s.settings.rates()
-        values=ask_fields(self,'Taxas confirmadas e provisão de DAS',[(key,label,'' if rates[key] is None else str(Decimal(rates[key])/100).replace('.',',')) for key,label in (('PIX','Taxa Pix (%)'),('DEBIT','Taxa débito (%)'),('CREDIT','Taxa crédito à vista (%)'))]+[('das','DAS mensal (R$); vazio se desconhecido','')])
+        das=self.s.settings.das()
+        values=ask_fields(self,'Taxas confirmadas e provisão de DAS',[(key,label,'' if rates[key] is None else str(Decimal(rates[key])/100).replace('.',',')) for key,label in (('PIX','Taxa Pix (%)'),('DEBIT','Taxa débito (%)'),('CREDIT','Taxa crédito à vista (%)'))]+[('das','DAS mensal (R$); vazio se desconhecido',money(das).replace('R$ ','') if das is not None else '')])
         if not values:
             return
         parsed={'MONEY':0}
@@ -49,8 +50,7 @@ class ResultsView(View):
                     raise BusinessError('Taxa inválida; use até duas casas decimais e valor entre 0 e 100%.')
                 parsed[key]=int(amount)
         reason=self.reason()
-        self.s.settings.set_rates(parsed,self.grant('settings.finance'),reason,command())
-        self.s.settings.set_das(parse_money(values['das']) if values['das'] else None,self.grant('settings.finance'),reason,command())
+        self.s.settings.configure(parsed,parse_money(values['das']) if values['das'] else None,self.grant('settings.finance'),reason,command())
 
 
 class ReplenishmentView(View):

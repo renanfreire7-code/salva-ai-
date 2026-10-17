@@ -60,4 +60,3 @@ class CashView(View):
             from ..common.errors import BusinessError
             raise BusinessError('Nenhum relatório de fechamento foi gerado.')
         webbrowser.open(paths[0].resolve().as_uri())
-

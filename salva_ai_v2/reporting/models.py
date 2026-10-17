@@ -77,4 +77,3 @@ class CashReport:
     reason: str | None
     payments: dict[str,int]
     entries: list[dict]
-

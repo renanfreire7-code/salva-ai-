@@ -99,4 +99,3 @@ class SettlementService(Service):
                 offset_left-=offset;paid_left-=payout
             return dict(id=id,handed_in_cents=handed_in_cents,paid_out_cents=paid_out_cents,offset_cents=offset_cents)
         return Settlement(**self.run(command_id,"delivery.settled",dict(collection_ids=collection_ids,trip_ids=trip_ids,handed_in_cents=handed_in_cents,paid_out_cents=paid_out_cents,offset_cents=offset_cents),perform))
-

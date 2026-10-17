@@ -6,7 +6,6 @@ from tests_v2.support import DatabaseCase
 class RecurrenceTest(DatabaseCase):
     def setUp(self):
         super().setUp()
-        self.assertTrue(Path('salva_ai_v2/finance/recurrence.py').exists(), 'Recorrência ainda não implementada')
         from salva_ai_v2.finance.recurrence import RecurrenceService
         from salva_ai_v2.finance.service import FinanceService
         from salva_ai_v2.security.service import SecurityService

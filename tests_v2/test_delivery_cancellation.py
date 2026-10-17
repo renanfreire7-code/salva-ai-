@@ -4,7 +4,6 @@ from tests_v2.delivery_support import DeliveryCase
 class DeliveryCancellationTest(DeliveryCase):
     def setUp(self):
         super().setUp()
-        self.assertTrue(hasattr(self.delivery, 'cancel'), 'Cancelamento ainda não implementado')
 
     def test_cancel_before_dispatch_releases_stock_without_trip(self):
         order = self.delivery.confirm(self.draft(), 'order1')
@@ -38,3 +37,11 @@ class DeliveryCancellationTest(DeliveryCase):
         self.delivery.confirm_return(order.id, [CartLine(self.pid, 8)], self.grant('delivery.return'), 'Retorno conferido', 'ret1')
         with self.assertRaises(BusinessError):
             self.delivery.confirm_return(order.id, [CartLine(self.pid, 1)], self.grant('delivery.return'), 'Retorno duplicado', 'ret2')
+
+    def test_counter_sale_reversal_cannot_bypass_delivery_flow(self):
+        from salva_ai_v2.common.errors import BusinessError
+        order=self.delivery.confirm(self.draft(),'order1')
+        self.delivery.dispatch(order.id,'dispatch1')
+        sale=self.scalar('SELECT id FROM sales WHERE order_id=?',(order.id,))
+        with self.assertRaises(BusinessError):
+            self.sales.reverse_sale(sale,True,None,False,self.grant('sale.reverse'),'Correção pelo fluxo errado','wrong1')

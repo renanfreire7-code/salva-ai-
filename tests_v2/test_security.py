@@ -5,7 +5,6 @@ from tests_v2.support import DatabaseCase
 class SecurityTest(DatabaseCase):
     def setUp(self):
         super().setUp()
-        self.assertTrue(Path('salva_ai_v2/security/service.py').exists(), 'Segurança ainda não implementada')
         from salva_ai_v2.security.service import SecurityService
         self.Service = SecurityService
         self.security = self.Service(self.db, self.clock)

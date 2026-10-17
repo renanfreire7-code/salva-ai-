@@ -45,4 +45,3 @@ class ReceiptsMixin:
             self.db.conn.execute("UPDATE orders SET state='DELIVERED' WHERE id=?", (order_id,))
             return order_id
         return self.run(command_id,"delivery.delivered",dict(order_id=order_id),perform)
-

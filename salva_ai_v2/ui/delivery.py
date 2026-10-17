@@ -183,4 +183,3 @@ class DeliveryView(View):
         for label,callback in (("Conferir acerto",settle),("Enviar troco",fund),("Receber troco de volta",return_float)):
             ttk.Button(actions,text=label,command=lambda f=callback:root.act(f)).pack(side="left",padx=6)
         refresh()
-

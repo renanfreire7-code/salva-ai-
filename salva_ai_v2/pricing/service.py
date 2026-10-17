@@ -30,4 +30,3 @@ class PricingService(Service):
         else:
             total = condition.unit_cents * qty
         return PriceQuote(total,condition.unit_cents * qty - total)
-

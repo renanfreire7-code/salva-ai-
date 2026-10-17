@@ -82,4 +82,3 @@ class ClosingService:
         result=ClosingResult(session_id,True,path,backup.path,backup.external_copy_ok)
         self._finish(job,result)
         return result
-

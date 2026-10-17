@@ -31,4 +31,3 @@ class DatabaseCase(unittest.TestCase):
 
     def scalar(self, sql, params=()):
         return self.db.conn.execute(sql, params).fetchone()[0]
-

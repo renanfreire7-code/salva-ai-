@@ -15,4 +15,3 @@ def cash_html(path,report):
 <table><tr><th>Data</th><th>Movimento</th><th>Valor</th><th>Motivo</th></tr>{rows}</table></html>"""
     path.write_text(content,encoding="utf-8")
     return path
-

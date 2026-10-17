@@ -44,4 +44,3 @@ class ExpenseTotals:
     overdue_cents: int
     commitments_cents: int
     by_category: dict[str, int]
-

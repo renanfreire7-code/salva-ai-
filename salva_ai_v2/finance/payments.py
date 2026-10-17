@@ -3,6 +3,27 @@ from ..common.errors import BusinessError
 
 
 class PaymentsMixin:
+    def payment_history(self, obligation_id):
+        self.one('obligations',obligation_id)
+        return [dict(r) for r in self.db.conn.execute('SELECT * FROM obligation_payments WHERE obligation_id=? ORDER BY id',(obligation_id,))]
+
+    def edit_payment_details(self, payment_id, paid_on, method, grant, reason, command_id):
+        paid_on=valid_date(paid_on)
+        if paid_on>self.clock.today().isoformat() or method not in ('MONEY','PIX','DEBIT','CREDIT'):
+            raise BusinessError('Confira a data e a modalidade do pagamento.')
+        def perform():
+            self.protect(grant,'payment.edit',reason)
+            old=self.one('obligation_payments',payment_id)
+            obligation=self.one('obligations',old['obligation_id'])
+            if old['corrected'] or obligation['source_type']=='TRIP':
+                raise BusinessError('Pagamento corrigido ou gerenciado pelo acerto de entregas.')
+            if old['from_drawer'] and method!=old['method']:
+                raise BusinessError('Corrija primeiro a saída física antes de trocar a modalidade.')
+            self.db.conn.execute('UPDATE obligation_payments SET paid_on=?,method=? WHERE id=?',(paid_on,method,payment_id))
+            self.audit.record('payment.details_changed',payment_id,dict(old),dict(self.one('obligation_payments',payment_id)),reason)
+            return payment_id
+        return self.run(command_id,'payment.edit',dict(payment_id=payment_id,paid_on=paid_on,method=method,reason=reason),perform)
+
     def pay_obligation(self, obligation_id, amount_cents, paid_on, method, from_drawer, grant, command_id):
         integer(amount_cents, 'Valor pago', 1)
         paid_on = valid_date(paid_on)

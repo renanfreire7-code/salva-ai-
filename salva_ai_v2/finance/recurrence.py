@@ -55,4 +55,3 @@ class RecurrenceService(Service):
             self.audit.record("recurrence.changed",rule_id,dict(old),dict(self.one("recurring_rules",rule_id)),reason)
             return rule_id
         return self.run(command_id,"recurrence.updated",dict(rule_id=rule_id,template=asdict(template),due_day=due_day,active=bool(active),reason=reason),perform)
-

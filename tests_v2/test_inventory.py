@@ -6,7 +6,6 @@ from tests_v2.support import DatabaseCase
 class InventoryTest(DatabaseCase):
     def setUp(self):
         super().setUp()
-        self.assertTrue(Path('salva_ai_v2/inventory/service.py').exists(), 'Estoque ainda não implementado')
         from salva_ai_v2.inventory.service import InventoryService
         from salva_ai_v2.security.service import SecurityService
         self.security = SecurityService(self.db)
@@ -77,3 +76,12 @@ class InventoryTest(DatabaseCase):
         with self.assertRaises(BusinessError):
             with self.db.transaction():
                 self.inventory.reserve(self.pid, 'TAB', 1, 1)
+
+    def test_price_edit_preserves_existing_quote_and_disables_invalid_promotion(self):
+        from salva_ai_v2.pricing.service import PricingService
+        pricing=PricingService(self.db)
+        pricing.set_promotion(self.pid,3,1200,True,'promo1')
+        old=pricing.snapshot(self.pid)
+        self.inventory.update_product(self.pid,'Lata',300,12,6,self.grant('product.edit'),'Preço atualizado','edit1')
+        self.assertEqual(pricing.quote(old,3).total_cents,1200)
+        self.assertEqual(pricing.quote(pricing.snapshot(self.pid),3).total_cents,900)

@@ -6,7 +6,6 @@ from tests_v2.delivery_support import DeliveryCase
 class ClosingRecoveryTest(DeliveryCase):
     def setUp(self):
         super().setUp()
-        self.assertTrue(Path('salva_ai_v2/cash/closing.py').exists(), 'Fechamento ainda não implementado')
         from salva_ai_v2.maintenance.backup import BackupService
         from salva_ai_v2.cash.closing import ClosingService
         from salva_ai_v2.reporting.queries import ReportingQueries

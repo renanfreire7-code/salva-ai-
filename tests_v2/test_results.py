@@ -6,7 +6,6 @@ from tests_v2.delivery_support import DeliveryCase
 class ResultsTest(DeliveryCase):
     def setUp(self):
         super().setUp()
-        self.assertTrue(Path('salva_ai_v2/reporting/queries.py').exists(), 'Resultados ainda não implementados')
         from salva_ai_v2.reporting.queries import ReportingQueries
         self.reports = ReportingQueries(self.db)
 

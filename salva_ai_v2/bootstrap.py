@@ -10,7 +10,21 @@ from .ui.dialogs import AdminDialog
 
 class Application:
     def __init__(self, data_dir):
-        self.data_dir = Path(data_dir)
+        self._closed = False
+        self.window = None
+        self.db = None
+        self.instance_lock = None
+        self.views = []
+        self.data_dir = Path(data_dir).resolve()
+        from .common.instance import InstanceLock
+        self.instance_lock = InstanceLock(self.data_dir)
+        try:
+            self._initialize()
+        except BaseException:
+            self.close()
+            raise
+
+    def _initialize(self):
         from .maintenance.restore import recover_restore
         recover_restore(self.data_dir)
         self.db = Database(self.data_dir / "dados" / "salva_ai.sqlite3")
@@ -68,11 +82,25 @@ class Application:
         self.notebook = ttk.Notebook(self.window.body)
         self.notebook.pack(fill="both", expand=True)
         self.views = []
-        for cls, label, attr in ((SalesView,"Venda direta","sales_view"),
-                (TabsView,"Comandas","tabs_view"),(ProductsView,"Produtos e estoque","products_view"),
-                (CashView,"Caixa","cash_view"),(FinanceView,"Financeiro mensal","finance_view"),(DeliveryView,"Delivery","delivery_view"),(HistoryView,"Histórico","history_view"),(ResultsView,"Lucro por produto","results_view"),(ReplenishmentView,"Previsão de compras","replenishment_view")):
-            view = cls(self.notebook, self.services)
-            self.notebook.add(view, text=label)
+        self.groups = {}
+        for name in ("Atendimento", "Controle", "Gestão"):
+            group=ttk.Notebook(self.notebook)
+            self.notebook.add(group,text=name)
+            self.groups[name]=group
+        definitions=(
+            (SalesView,"Venda direta","sales_view","Atendimento"),
+            (TabsView,"Comandas","tabs_view","Atendimento"),
+            (DeliveryView,"Delivery","delivery_view","Atendimento"),
+            (ProductsView,"Produtos e estoque","products_view","Controle"),
+            (CashView,"Caixa","cash_view","Controle"),
+            (HistoryView,"Histórico","history_view","Controle"),
+            (FinanceView,"Financeiro mensal","finance_view","Gestão"),
+            (ResultsView,"Lucro por produto","results_view","Gestão"),
+            (ReplenishmentView,"Previsão de compras","replenishment_view","Gestão"))
+        for cls,label,attr,group in definitions:
+            container=self.groups[group]
+            view=cls(container,self.services)
+            container.add(view,text=label)
             setattr(self,attr,view)
             self.views.append(view)
         for key in range(1,13):
@@ -86,16 +114,29 @@ class Application:
         self.refresh()
 
     def notify(self, message):
-        self.window.status.set(message)
+        if not self._closed:
+            self.window.status.set(message)
+
+    def show_view(self, view):
+        self.notebook.select(view.master)
+        view.master.select(view)
+        view.refresh()
 
     def shortcut(self, key):
-        selected=self.window.nametowidget(self.notebook.select())
+        group=self.window.nametowidget(self.notebook.select())
+        selected=self.window.nametowidget(group.select())
         if hasattr(selected,"select_shortcut"):
             selected.select_shortcut(key)
 
     def refresh(self):
+        if self._closed:
+            return
         for view in self.views:
-            view.refresh()
+            try:
+                view.refresh()
+            except (BusinessError,ValueError):
+                # Um filtro em edição não invalida uma operação já confirmada.
+                continue
 
     def run(self):
         if not self.security.configured and not self.admin.setup():
@@ -109,12 +150,14 @@ class Application:
             return
         self._closed = True
         try:
-            if hasattr(self, "window"):
+            if self.window is not None:
                 self.window.destroy()
         finally:
-            self.db.close()
+            if self.db is not None:
+                self.db.close()
+            if self.instance_lock is not None:
+                self.instance_lock.close()
 
 
 def build_application(data_dir=None):
     return Application(Path(data_dir) if data_dir is not None else Path.home() / "SalvaAiHeadshopV2")
-

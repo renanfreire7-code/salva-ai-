@@ -37,7 +37,7 @@ class FinanceView(View):
         ttk.Checkbutton(row,text="Mostrar excluídas",variable=self.include_deleted,command=lambda:self.act(self.refresh)).pack(side="left",padx=8)
         self.summary=ttk.Label(self,text="",wraplength=1050);self.summary.pack(anchor="w",pady=4)
         row=ttk.Frame(self);row.pack(side="bottom",fill="x",pady=8)
-        for label,callback in (("Nova despesa",self.create),("Editar",self.edit),("Quitar",self.pay),("Excluir",self.delete),("Contas mensais",self.recurring)):
+        for label,callback in (("Nova despesa",self.create),("Editar",self.edit),("Quitar",self.pay),("Pagamentos",self.payments),("Excluir",self.delete),("Contas mensais",self.recurring)):
             ttk.Button(row,text=label,command=lambda f=callback:self.act(f)).pack(side="left",padx=(0,8))
         self.tree=table(self,["ID","Descrição","Categoria","Valor","Data gasto","Vencimento","Pago em","Situação"])
         for tag,color in (("PAID","#176a37"),("PENDING","#565f68"),("OVERDUE","#ad2727")):
@@ -136,3 +136,26 @@ class FinanceView(View):
             ttk.Button(row,text=label,command=lambda f=callback:root.act(f)).pack(side="left",padx=5)
         refresh()
 
+    def payments(self):
+        id=self.selected(self.tree)
+        window=tk.Toplevel(self);window.title('Pagamentos da obrigação');window.geometry('820x400')
+        root=View(window,self.s);root.pack(fill='both',expand=True)
+        tree=table(root,['ID','Data','Modalidade','Valor','Origem','Situação'],height=7)
+        methods={'MONEY':'Dinheiro','PIX':'Pix','DEBIT':'Débito','CREDIT':'Crédito'}
+        def refresh():
+            fill(tree,[(p['id'],(p['id'],date.fromisoformat(p['paid_on']).strftime('%d/%m/%Y'),methods[p['method']],money(p['amount_cents']),'Gaveta' if p['from_drawer'] else 'Fora da gaveta','Anulado' if p['corrected'] else 'Confirmado')) for p in self.s.finance.payment_history(id)])
+        def edit():
+            pid=root.selected(tree);p=next(p for p in self.s.finance.payment_history(id) if p['id']==pid)
+            values=ask_fields(window,'Corrigir dados sem movimentar dinheiro',[('date','Pago em (DD/MM/AAAA)',date.fromisoformat(p['paid_on']).strftime('%d/%m/%Y')),('method','Modalidade',methods[p['method']])])
+            if values:
+                method=next((key for key,value in methods.items() if value.casefold()==values['method'].casefold()),None)
+                self.s.finance.edit_payment_details(pid,date_input(values['date']),method,self.grant('payment.edit'),self.reason(),command());refresh()
+        def void():
+            pid=root.selected(tree)
+            values=ask_fields(window,'Anular registro do pagamento',[('return','Dinheiro realmente devolvido à gaveta (R$)','0,00')])
+            if values:
+                self.s.finance.correct_payment(pid,'VOID',parse_money(values['return']),self.grant('payment.correct'),self.reason(),command());refresh()
+        row=ttk.Frame(root);row.pack(fill='x')
+        for label,callback in (('Corrigir data/modalidade',edit),('Anular pagamento',void)):
+            ttk.Button(row,text=label,command=lambda f=callback:root.act(f)).pack(side='left',padx=6)
+        refresh()

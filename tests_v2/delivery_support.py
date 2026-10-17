@@ -5,7 +5,6 @@ from pathlib import Path
 class DeliveryCase(DatabaseCase):
     def setUp(self):
         super().setUp()
-        self.assertTrue(Path('salva_ai_v2/delivery/service.py').exists(), 'Delivery ainda não implementado')
         from salva_ai_v2.security.service import SecurityService
         from salva_ai_v2.inventory.service import InventoryService
         from salva_ai_v2.inventory.models import PurchaseLine

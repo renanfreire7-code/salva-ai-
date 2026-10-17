@@ -89,4 +89,3 @@ class SalesView(View,ProductPicker):
                     rows.append((line["product_id"],(line["name"],line["qty"],money(quote.total_cents),money(quote.savings_cents))))
         fill(self.tree,rows)
         self.total_label.configure(text="Total: "+money(self.total_cents))
-

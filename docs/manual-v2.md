@@ -1,24 +1,223 @@
-# Salva AI novo — manual em desenvolvimento
+# Salva AI novo — guia de instalação e operação
 
-Esta reconstrução está em desenvolvimento e ainda não é uma versão para operar a loja.
+## Estado desta entrega
 
-## Dados separados
+Reconstrução **0.1.0-dev**, separada do aplicativo antigo. É uma versão de
+desenvolvimento para validação com dados fictícios. Os testes automatizados são
+executados no Linux com interface Tkinter real e display virtual.
+A execução no Windows, escalas de tela e ensaio com o proprietário ainda precisam
+ser feitos antes de usar com dados reais. Não há merge nem release autorizados.
 
-O novo aplicativo usa `~/SalvaAiHeadshopV2/dados/salva_ai.sqlite3`.
-Ele não abre nem importa o banco antigo em `~/SalvaAiHeadshop`.
-Nunca copie o banco antigo para esse diretório.
+A identificação 0.1.0-dev pertence à reconstrução; não substitui a identificação
+0.3.6-beta do ZIP de referência.
 
-Executar: `python -m salva_ai_v2`. No Windows: `py -3 -m salva_ai_v2`.
-Para ensaios: `python -m salva_ai_v2 --data-dir CAMINHO_TEMPORARIO`.
-Python precisa incluir Tkinter; nenhum serviço de internet é necessário.
+## Instalação no Windows
 
-## PIN e recuperação
+1. Instale Python 3.12 ou superior com Tkinter pelo instalador oficial.
+2. Extraia todo o ZIP em uma pasta própria, diferente da versão antiga.
+3. Execute **INICIAR_V2.bat**. Não mova o BAT para fora da pasta extraída.
+4. Crie um PIN de seis dígitos; confirme e guarde a chave de recuperação fora do computador.
+5. Cadastre os produtos e entradas com dados fictícios para o ensaio inicial.
 
-No primeiro uso crie um PIN de seis dígitos e guarde a chave de recuperação
-fora do computador. O aplicativo não guarda o PIN nem a chave em texto puro.
-A recuperação troca o PIN e emite uma nova chave; a antiga deixa de funcionar.
-O PIN protege ações pelo aplicativo e não criptografa o arquivo SQLite.
+Não é necessário pip, servidor, conexão com internet ou conta em serviço externo.
+O ZIP contém o código, a biblioteca XlsxWriter com licença e manifesto SHA-256.
+Ainda não foi produzido um instalador executável independente do Python.
 
-As funções de atendimento, financeiro, delivery e manutenção serão documentadas
-junto de suas respectivas entregas e validações.
+## Dados separados e início para desenvolvimento
 
+Banco novo: `~/SalvaAiHeadshopV2/dados/salva_ai.sqlite3`.
+Backups: `~/SalvaAiHeadshopV2/backups/`.
+Fechamentos imprimíveis: `~/SalvaAiHeadshopV2/relatorios/`.
+
+O aplicativo não abre nem importa `~/SalvaAiHeadshop`. Não copie o banco antigo
+para o diretório novo. Apenas uma instância pode abrir cada pasta de dados.
+
+Na raiz do checkout:
+
+```bash
+python3 -m salva_ai_v2
+python3 -m salva_ai_v2 --data-dir /tmp/salva-ai-ensaio
+python3 -m scripts.demo_v2
+python3 -m scripts.build_v2
+```
+
+A demonstração usa uma pasta temporária e dados fictícios, removidos ao fechar.
+Use um PIN fictício no ensaio. Não altere HOME para testar.
+
+## Organização das telas
+
+- **Atendimento:** Venda direta, Comandas e Delivery.
+- **Controle:** Produtos e estoque, Caixa e Histórico.
+- **Gestão:** Financeiro mensal, Lucro por produto e Previsão de compras.
+
+Os formulários indicam o formato da data. Valores aceitam formato brasileiro,
+por exemplo `1.234,56`. Quantidades são unidades inteiras.
+
+## Produtos, entradas e promoções
+
+Cadastre nome, preço normal, unidades por caixa/fardo e estoque mínimo.
+Entradas podem ser em unidades ou caixas/fardos; informe o custo total e frete.
+Indique compra pendente ou já paga. Dinheiro da gaveta exige caixa aberto, saldo
+e PIN. A entrada registra estoque e obrigação financeira uma única vez.
+
+O custo médio é calculado a partir de quantidade e valor do estoque; vendas
+guardam o custo histórico. Alterar um preço não muda vendas anteriores.
+Editar cadastro, ajustar perdas e desativar produtos exige autorização e motivo.
+
+Configure uma promoção por produto: por exemplo, unidade R$ 5 e grupo de três
+por R$ 12. Quatro unidades custam R$ 17; seis custam R$ 24.
+Produtos diferentes não se misturam. A comanda preserva a condição da primeira
+inclusão, inclusive se o item for retirado e incluído de novo. Editar preço normal
+desativa uma promoção que deixe de oferecer economia para novos atendimentos.
+
+Associe F1–F12 a produtos. A tecla seleciona o produto e leva à quantidade;
+**não registra venda automaticamente**.
+
+## Atendimento e recebimentos
+
+Abra o caixa com troco inicial antes de vender. Na venda direta, adicione produtos,
+confira quantidades e promoções e use Receber pagamento. Dinheiro informa
+valor entregue e troco. Pix, débito e crédito à vista exigem confirmação de
+recebimento; o aplicativo não consulta bancos nem maquininhas.
+
+Comandas são identificadas por nome e número. Nomes iguais geram aviso.
+Adicionar itens reserva estoque. Pagar converte reserva em baixa definitiva.
+Reduzir/remover itens registrados ou cancelar exige PIN e motivo.
+
+Sem fiado, desconto manual, parcelamento ou divisão do pagamento da venda.
+
+## Caixa
+
+Somente dinheiro recebido na gaveta altera o saldo físico esperado.
+Pix/cartões ficam separados. Reforços e retiradas têm motivo e autorização;
+não são receita/despesa automaticamente.
+
+Fechamento exige resolver comandas, pedidos de entrega e dinheiro a conferir.
+Informe o valor efetivamente contado. Diferença exige PIN e justificativa.
+
+O fechamento gera relatório HTML imprimível e backup local verificado.
+Se houver falha, o sistema bloqueia operações conflitantes até recuperar os
+artefatos. Reinicie ou use **Retomar fechamento**; não abra outro caixa para
+contornar a pendência. Corridas ainda não pagas podem continuar como contas a pagar.
+
+## Financeiro mensal
+
+Cadastre descrição, categoria, valor, data do gasto e vencimento.
+Use Quitar para informar data e modalidade reais. Se saiu da gaveta, o sistema
+vincula a retirada ao pagamento, sem exigir um segundo lançamento manual.
+
+- Editar preserva ID e histórico de antes/depois, motivo e autorização.
+- Excluir retira dos cálculos ativos; não apaga histórico nem devolve dinheiro.
+- Pagamentos permite corrigir data/modalidade e anular registro com motivo.
+  Corrigir uma saída física exige conferir o que realmente voltou à gaveta.
+- Verde/Paga, cinza/Pendente e vermelho/Vencida sempre têm texto.
+  Vencimento hoje não é considerado atraso.
+- O aviso de possível duplicidade permite confirmar repetições legítimas.
+
+A consulta abre no mês atual por data do gasto. É possível escolher intervalo,
+vencimento ou pagamento, categoria, descrição e situação. Vencido é parte do
+pendente; não some os dois novamente.
+
+Em Contas mensais, crie regras e gere o mês selecionado explicitamente.
+A ocorrência nasce pendente. Dia 31 vira o último dia válido nos meses curtos.
+Editar a regra só afeta ocorrências futuras ainda não geradas.
+
+Use **DAS MEI** para o lançamento correspondente. Despesa de DAS da competência
+substitui a provisão, sem dedução em dobro. Compra de estoque não é deduzida
+novamente como despesa operacional: seu custo entra no CMV ao vender.
+
+## Delivery e acerto com entregador
+
+Pedidos são cadastrados manualmente; não há integração com WhatsApp, mapas ou
+plataformas. Configure dois valores fixos independentes: taxa do cliente e
+remuneração do entregador. O pedido guarda os valores combinados.
+
+Ao confirmar, reserva estoque. **Saiu para entrega** baixa os produtos e gera
+a obrigação da corrida, mesmo se a entrega falhar depois.
+Entregue não significa pago. Confirme pagamento antecipado ao bar ou recebimento
+pelo entregador. Pix/cartão pertence à conta/maquininha do bar; só dinheiro físico
+fica sob custódia do entregador.
+
+Em **Acertar entregas**, selecione recebimentos e corridas, confira dinheiro
+entregue à gaveta, pagamento da gaveta e eventual compensação combinada.
+Exemplo: recebeu R$ 45, deve receber R$ 7 por corrida e entrega R$ 38 ao bar.
+O caixa recebe apenas R$ 38 físicos; os outros R$ 7 quitam a corrida por compensação.
+
+Enviar e devolver troco são transferências registradas, não despesas.
+Sem troco registrado suficiente, não confirme recebimento que exija devolução.
+
+Cancelar depois da saída não elimina a corrida. Confira separadamente retorno de
+mercadoria em condição de revenda e reembolso efetivamente realizado.
+Uma nova tentativa cria pedido vinculado, nova saída e nova corrida com valores
+atuais, após resolver o anterior.
+
+## Resultado e relatórios
+
+Margem de contribuição = faturamento após promoções − custo histórico − taxas.
+Resultado por produto desconta rateio de despesas e DAS pelo faturamento.
+Entrega tem receita/custo separados. Pagamento de corrida não registra a despesa
+uma segunda vez.
+
+O resultado é estimativa gerencial, não saldo disponível nem apuração fiscal.
+Configure taxas confirmadas em Lucro por produto → Taxas e DAS. Dados
+desconhecidos geram avisos. Correções entram no período da operação, sem mudar
+o fato original. Relatórios Excel identificam o período e usam valores em reais.
+
+Previsão de compras usa estoque disponível e mínimo e sugere caixas completas.
+Não gera compra nem pagamento automaticamente.
+
+## Histórico, estorno e reembolso
+
+Histórico permite filtrar período e ID e consultar motivos de alterações.
+Corrigir venda exige PIN; devolução de produtos e devolução de dinheiro são
+confirmações distintas. Reabrir comanda paga só é permitido no caixa original
+ainda aberto. Após fechar, a correção financeira entra no caixa atual, preservando
+o anterior.
+
+Se o reembolso ficar pendente, use **Concluir reembolso** após realizá-lo.
+Para delivery, use exclusivamente cancelamento, devolução e reembolso na tela
+Delivery. O programa não transfere Pix nem devolve cartão automaticamente.
+
+## Backup, restauração e PIN
+
+Histórico → Backups oferece cópia manual, verificação e pasta adicional.
+A cópia local verificada é obrigatória no fechamento. Falha na pasta adicional
+é informada separadamente. Uma pasta no mesmo disco não protege contra perda
+do equipamento; prefira uma cópia fora dele.
+
+Restaurar exige PIN, consulta e confirmação explícita. O banco atual é copiado
+antes da substituição. Feche outras ferramentas que estejam usando o arquivo.
+Depois, abra o aplicativo novamente; o PIN será o existente no backup.
+Um journal permite recuperar uma substituição interrompida.
+
+O PIN e a chave não são armazenados em texto puro. Após cinco erros há espera
+progressiva. A chave permite trocar o PIN e é renovada após uso.
+Sem PIN e sem chave não há senha mestre oculta.
+O PIN não criptografa o banco; proteja acesso ao computador e aos backups.
+
+## Verificações de desenvolvimento
+
+Linux sem monitor:
+
+```bash
+PATH=/workspace/.cloud-setup/x11/usr/bin:$PATH xvfb-run -a -s '-screen 0 1366x768x24' python3 -m unittest discover -s tests_v2 -t . -v
+```
+
+Windows com display:
+
+```bat
+py -3 -m unittest discover -s tests_v2 -t . -v
+```
+
+Também preservar a suíte do legado. O pacote final exclui bancos, backups, testes
+e caches e inclui manifesto de integridade. Não publicar uma release nem
+substituir o aplicativo em uso sem autorização.
+
+## Ensaio pendente com o proprietário no Windows
+
+- Abrir o pacote extraído em caminho com espaços/acentos.
+- Conferir 1366 × 768 com escalas de 100% e 125%, teclado e visibilidade de ações.
+- Cadastrar, comprar, vender, usar promoção, receber/cancelar comanda e conferir caixa.
+- Corrigir despesas, gerar recorrência, operar entrega e acertar com entregador.
+- Simular backup externo ausente e restauração de dados fictícios.
+- Registrar dificuldades encontradas antes de colocar dados reais.

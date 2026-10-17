@@ -6,7 +6,6 @@ from tests_v2.delivery_support import DeliveryCase
 class RestoreTest(DeliveryCase):
     def setUp(self):
         super().setUp()
-        self.assertTrue(Path('salva_ai_v2/maintenance/restore.py').exists(), 'Restauração ainda não implementada')
         from salva_ai_v2.maintenance.backup import BackupService
         from salva_ai_v2.maintenance.restore import RestoreService
         self.backups=BackupService(self.db,self.root/'backups')

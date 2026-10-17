@@ -6,7 +6,6 @@ import tempfile
 
 class FinanceUITest(unittest.TestCase):
     def test_default_period_and_text_states(self):
-        self.assertTrue(Path('salva_ai_v2/ui/finance.py').exists(), 'Tela financeira ainda não implementada')
         from salva_ai_v2.bootstrap import build_application
         from salva_ai_v2.finance.models import ExpenseDraft
         with tempfile.TemporaryDirectory() as folder:

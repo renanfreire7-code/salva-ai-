@@ -74,4 +74,3 @@ class DeliveryService(CancellationMixin, ReceiptsMixin, Service):
             self.db.conn.execute("UPDATE orders SET state='OUT' WHERE id=?", (order_id,))
             return trip
         return self.run(command_id,"delivery.dispatched",dict(order_id=order_id),perform)
-

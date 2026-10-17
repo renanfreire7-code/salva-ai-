@@ -6,6 +6,20 @@ from ..common.errors import BusinessError
 
 
 class InventoryService(Service):
+    def update_product(self, product_id, name, price_cents, pack_size, min_stock, grant, reason, command_id):
+        name=str(name).strip()
+        if not name:
+            raise BusinessError('Informe o nome do produto.')
+        integer(price_cents,'Preço',1);integer(pack_size,'Unidades por caixa',1);integer(min_stock,'Estoque mínimo')
+        def perform():
+            self.protect(grant,'product.edit',reason)
+            old=dict(self.one('products',product_id))
+            self.db.conn.execute('UPDATE products SET name=?,price_cents=?,pack_size=?,min_stock=? WHERE id=?',(name,price_cents,pack_size,min_stock,product_id))
+            self.db.conn.execute('UPDATE promotions SET active=0 WHERE product_id=? AND group_cents>=group_qty*?',(product_id,price_cents))
+            self.audit.record('product.changed',product_id,old,dict(self.one('products',product_id)),reason)
+            return product_id
+        return self.run(command_id,'product.edit',dict(product_id=product_id,name=name,price_cents=price_cents,pack_size=pack_size,min_stock=min_stock,reason=reason),perform)
+
     def receive_and_pay_purchase(self, lines, freight_cents, incurred_on, due_on, payment, grant, command_id):
         payload = dict(lines=[asdict(line) for line in lines], freight=freight_cents,
                        incurred=valid_date(incurred_on), due=valid_date(due_on),
@@ -179,4 +193,3 @@ class InventoryService(Service):
             self.db.conn.execute("UPDATE obligations SET deleted_at=? WHERE source_type='PURCHASE' AND source_id=?", (self.db.clock.now().isoformat(),str(purchase_id)))
             return purchase_id
         return self.run(command_id,"purchase.reversed",dict(purchase_id=purchase_id,reason=reason),perform)
-

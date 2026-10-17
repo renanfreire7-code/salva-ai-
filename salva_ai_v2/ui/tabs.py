@@ -70,4 +70,3 @@ class TabsView(View,ProductPicker):
                     total=self.s.pricing.quote(PriceCondition(line["unit_cents"],line["group_qty"],line["group_cents"]),line["qty"]).total_cents
                     rows.append((line["product_id"],(line["name"],line["qty"],money(total))))
         fill(self.items_tree,rows)
-

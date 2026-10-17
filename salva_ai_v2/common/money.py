@@ -42,4 +42,3 @@ def money(cents: int) -> str:
     sign = "-" if cents < 0 else ""
     whole, fraction = divmod(abs(cents), 100)
     return f"R$ {sign}{whole:,},{fraction:02d}".replace(",", ".", f"{whole:,}".count(","))
-

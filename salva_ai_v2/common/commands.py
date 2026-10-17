@@ -26,4 +26,3 @@ class CommandBus:
             self.db.conn.execute("INSERT INTO command_results VALUES(?,?,?,?)",
                                  (command_id, kind, fingerprint, encoded))
             return json.loads(encoded)
-

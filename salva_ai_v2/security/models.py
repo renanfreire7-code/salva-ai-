@@ -6,4 +6,3 @@ class AdminGrant:
     id: str
     action: str
     expires_at: float
-

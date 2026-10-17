@@ -46,4 +46,3 @@ class AdminDialog:
             raise BusinessError("Os números não coincidem.")
         new_key = self.security.recover(key, pin)
         messagebox.showinfo("Nova chave de recuperação", "A chave anterior não funciona mais. Guarde a nova chave:\n\n" + new_key, parent=self.parent)
-

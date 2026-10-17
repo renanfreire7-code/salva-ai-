@@ -11,4 +11,3 @@ def month_range(month):
         return start,date(start.year,start.month,calendar.monthrange(start.year,start.month)[1])
     except (ValueError,TypeError):
         raise BusinessError("Mês inválido. Utilize AAAA-MM.") from None
-
