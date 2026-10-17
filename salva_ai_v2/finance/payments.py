@@ -15,8 +15,9 @@ class PaymentsMixin:
             self.protect(grant,'payment.edit',reason)
             old=self.one('obligation_payments',payment_id)
             obligation=self.one('obligations',old['obligation_id'])
-            if old['corrected'] or obligation['source_type']=='TRIP':
-                raise BusinessError('Pagamento corrigido ou gerenciado pelo acerto de entregas.')
+            credit=self.db.conn.execute('SELECT 1 FROM supplier_credit_settlements WHERE payment_id=?',(payment_id,)).fetchone()
+            if old['corrected'] or obligation['source_type']=='TRIP' or credit or (obligation['source_type']=='PURCHASE' and obligation['deleted_at']):
+                raise BusinessError('Pagamento corrigido ou vinculado a acerto, crédito ou compra revertida. Consulte o processo de origem.')
             if old['from_drawer'] and method!=old['method']:
                 raise BusinessError('Corrija primeiro a saída física antes de trocar a modalidade.')
             self.db.conn.execute('UPDATE obligation_payments SET paid_on=?,method=? WHERE id=?',(paid_on,method,payment_id))
@@ -53,6 +54,10 @@ class PaymentsMixin:
         def perform():
             self.protect(grant, 'payment.correct', reason)
             payment = self.one('obligation_payments', payment_id)
+            obligation=self.one('obligations',payment['obligation_id'])
+            credit=self.db.conn.execute('SELECT 1 FROM supplier_credit_settlements WHERE payment_id=?',(payment_id,)).fetchone()
+            if obligation['source_type']=='TRIP' or credit or (obligation['source_type']=='PURCHASE' and obligation['deleted_at']):
+                raise BusinessError('Pagamento vinculado a acerto, crédito ou compra revertida. Consulte o processo de origem.')
             if payment['corrected']:
                 raise BusinessError('Pagamento já corrigido.')
             if physical_return_cents > payment['amount_cents'] or (physical_return_cents and not payment['from_drawer']):

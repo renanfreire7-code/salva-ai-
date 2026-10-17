@@ -104,6 +104,10 @@ class FinanceService(PaymentsMixin, Service):
         categories={}
         for row in rows:
             categories[row.draft.category]=categories.get(row.draft.category,0)+row.draft.amount_cents
-        return ExpenseTotals(sum(r.paid_cents for r in rows),sum(r.draft.amount_cents-r.paid_cents for r in rows),
+        paid=sum(r.paid_cents for r in rows)
+        if filters.date_basis=='payment':
+            paid=sum(self.db.conn.execute('SELECT COALESCE(SUM(amount_cents),0) FROM obligation_payments WHERE obligation_id=? AND corrected=0 AND paid_on BETWEEN ? AND ?',
+                (r.id,valid_date(filters.start),valid_date(filters.end))).fetchone()[0] for r in rows)
+        return ExpenseTotals(paid,sum(r.draft.amount_cents-r.paid_cents for r in rows),
             sum(r.draft.amount_cents-r.paid_cents for r in rows if r.status=="OVERDUE"),
             sum(r.draft.amount_cents for r in rows),categories)

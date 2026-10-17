@@ -4,6 +4,7 @@ from ..pricing.models import PriceCondition
 from ..common.service import Service, integer
 from ..common.money import round_half_up
 from ..common.errors import BusinessError
+from ..cash.receipts import record_receipt
 
 
 class SalesService(Service):
@@ -116,6 +117,8 @@ class SalesService(Service):
                 (sale_id,row["product_id"],row["qty"],price,cost,row["unit_cents"],row["group_qty"],row["group_cents"]))
         if collect and payment.method=="MONEY":
             self.cash.entry(total,"SALE","sale:"+str(sale_id))
+        if collect:
+            record_receipt(self.db,session['id'],payment.method,total,'sale:'+str(sale_id))
         self.db.conn.execute("UPDATE orders SET state='PAID' WHERE id=?", (order_id,))
         return dict(id=sale_id,total_cents=total,change_cents=change)
 
@@ -170,6 +173,7 @@ class SalesService(Service):
                     if refund.tendered_cents!=sale["total_cents"]:
                         raise BusinessError("Informe o valor total do reembolso.")
                     self.cash.entry(-sale["total_cents"],"REFUND","refund:"+str(sale_id),reason)
+                record_receipt(self.db,session['id'],sale['method'],-sale['total_cents'],'sale-refund:'+command_id)
             self.db.conn.execute("INSERT INTO refunds(sale_id,order_id,pending_cents,refunded_cents) VALUES(?,?,?,?)",
                 (sale_id,order["id"],sale["total_cents"] if refund is None else 0,0 if refund is None else sale["total_cents"]))
             self.db.conn.execute("UPDATE sales SET reversed=1 WHERE id=?", (sale_id,))
@@ -185,7 +189,7 @@ class SalesService(Service):
 
     def confirm_refund(self,sale_id,payment,grant,reason,command_id):
         def perform():
-            self.cash.require_open()
+            session=self.cash.require_open()
             self.protect(grant,'sale.refund',reason)
             sale=self.one('sales',sale_id)
             order=self.one('orders',sale['order_id'])
@@ -200,6 +204,7 @@ class SalesService(Service):
                 self.cash.entry(-refund['pending_cents'],'REFUND','refund-completed:'+str(refund['id']),reason)
             elif payment.tendered_cents is not None:
                 raise BusinessError('Informe valor em dinheiro apenas para reembolso em dinheiro.')
+            record_receipt(self.db,session['id'],sale['method'],-refund['pending_cents'],'sale-refund:'+command_id)
             self.db.conn.execute('UPDATE refunds SET refunded_cents=refunded_cents+pending_cents,pending_cents=0 WHERE id=?',(refund['id'],))
             return refund['id']
         return self.run(command_id,'sale.refunded',dict(sale_id=sale_id,payment=asdict(payment),reason=reason),perform)

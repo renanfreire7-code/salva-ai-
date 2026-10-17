@@ -23,7 +23,8 @@ class HistoryView(View):
         ttk.Button(row,text='Concluir reembolso',command=lambda:self.act(self.finish_refund)).pack(side='left',padx=6)
         self.actions=row
         ttk.Button(row,text='Backups',command=lambda:self.act(self.backup_center)).pack(side='left',padx=6)
-        self.tree=table(self,['Data','Operação','Registro','Motivo'])
+        self.tree=table(self,['Data','Operação','Registro','Detalhes / motivo'])
+        self.tree.column('Detalhes / motivo',width=550,anchor='w')
 
     def refresh(self):
         filters=HistoryFilter(date_input(self.start.get()),date_input(self.end.get()),self.object_id.get().strip() or None)

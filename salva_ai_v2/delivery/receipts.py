@@ -2,6 +2,7 @@ from ..sales.models import Payment
 from ..common.service import integer
 from ..common.errors import BusinessError
 from ..common.money import round_half_up
+from ..cash.receipts import record_receipt
 
 
 class ReceiptsMixin:
@@ -12,7 +13,7 @@ class ReceiptsMixin:
         if method!="MONEY" and custodian!="BAR":
             raise BusinessError("Confirme o recebimento digital na conta ou maquininha do bar.")
         def perform():
-            self.cash.require_open()
+            session=self.cash.require_open()
             order=self.order(order_id)
             details=self.db.conn.execute("SELECT * FROM delivery_orders WHERE order_id=?", (order_id,)).fetchone()
             if order.state not in ("PREPARING","OUT","DELIVERED") or order.paid_cents:
@@ -33,6 +34,7 @@ class ReceiptsMixin:
                     self.db.conn.execute("INSERT INTO custody_entries(occurred_at,delta_cents,kind,source) VALUES(?,?,?,?)",
                         (self.clock.now().isoformat(),amount_cents,"COLLECTION","collection:"+str(payment)))
             rate=self.db.conn.execute("SELECT rate_bp FROM payment_settings WHERE method=?",(method,)).fetchone()[0]
+            record_receipt(self.db,session['id'],method,amount_cents,'collection:'+str(payment),custodian)
             self.db.conn.execute("UPDATE collections SET rate_bp=?,fee_cents=? WHERE id=?",(rate,round_half_up(amount_cents*(rate or 0),10000),payment))
             return payment
         return self.run(command_id,"delivery.payment",dict(order_id=order_id,method=method,amount_cents=amount_cents,custodian=custodian,tendered_cents=tendered_cents),perform)

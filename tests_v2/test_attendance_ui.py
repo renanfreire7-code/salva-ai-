@@ -1,6 +1,7 @@
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 class AttendanceUITest(unittest.TestCase):
@@ -47,3 +48,21 @@ class AttendanceUITest(unittest.TestCase):
         self.app.sales_view.filter_products()
         self.assertEqual(self.app.sales_view.selected_product(), self.pid)
         self.assertEqual(self.app.sales_view.total_cents, 0)
+
+    def test_purchase_history_exposes_return_and_supplier_credit_settlement(self):
+        from salva_ai_v2.ui.products import ProductsView
+        view=next(v for v in self.app.views if isinstance(v,ProductsView))
+        history=view.purchase_history()
+        self.addCleanup(history.winfo_toplevel().destroy)
+        history.tree.selection_set('1')
+        history.select_purchase()
+        history.items_tree.selection_set(str(self.pid))
+        with patch('salva_ai_v2.ui.purchases.ask_fields',return_value={'qty':'2'}),patch.object(history,'grant',side_effect=lambda action:self.app.security.authorize('681942',action)),patch.object(history,'reason',return_value='Mercadoria conferida'):
+            history.return_item()
+        history.refresh()
+        credit=self.app.services.inventory.supplier_credits()[0]
+        history.credits_tree.selection_set(str(credit['id']))
+        with patch('salva_ai_v2.ui.purchases.ask_fields',return_value={'amount':'4,00','mode':'abatimento','method':'Pix','date':self.app.services.clock.today().isoformat()}),patch.object(history,'grant',side_effect=lambda action:self.app.security.authorize('681942',action)),patch.object(history,'reason',return_value='Abatimento confirmado'):
+            history.settle_credit()
+        self.assertEqual(self.app.services.finance.paid_cents(1),400)
+        self.assertEqual(self.app.services.inventory.position(self.pid).physical,18)

@@ -111,16 +111,29 @@ class ReportingQueries:
         if not filters.include_deleted:
             sql+=" AND kind NOT LIKE '%deleted%'"
         rows=self.db.conn.execute(sql+" ORDER BY occurred_at DESC,id DESC",args).fetchall()
-        return [HistoryRow(r["id"],datetime.fromisoformat(r["occurred_at"]),r["kind"],r["object_id"],r["reason"] or "") for r in rows]
+        result=[]
+        for r in rows:
+            description=r['reason'] or ''
+            if r['kind'] in ('sale.confirmed','delivery.sale'):
+                sale=self.db.conn.execute('SELECT * FROM sales WHERE id=?',(r['object_id'],)).fetchone()
+                if sale:
+                    from ..common.money import money
+                    names=[f"{i['qty']} × {i['name']}" for i in self.db.conn.execute('SELECT i.qty,p.name FROM sale_items i JOIN products p ON p.id=i.product_id WHERE sale_id=?',(sale['id'],))]
+                    description=f"Venda #{sale['id']} • {money(sale['total_cents'])} • {sale['method']} • "+', '.join(names)
+            result.append(HistoryRow(r['id'],datetime.fromisoformat(r['occurred_at']),r['kind'],r['object_id'],description))
+        return result
 
     def cash_report(self,session_id):
         row=self.db.conn.execute("SELECT * FROM cash_sessions WHERE id=?",(session_id,)).fetchone()
         if row is None:
             raise BusinessError("Caixa não encontrado.")
-        payments=dict(self.db.conn.execute("SELECT method,SUM(total_cents) FROM sales WHERE session_id=? GROUP BY method",(session_id,)))
+        facts=self.db.conn.execute('SELECT method,SUM(CASE WHEN delta_cents>0 THEN delta_cents ELSE 0 END) receipts,-SUM(CASE WHEN delta_cents<0 THEN delta_cents ELSE 0 END) refunds,SUM(delta_cents) net FROM receipt_events WHERE session_id=? GROUP BY method',(session_id,)).fetchall()
+        payments={r['method']:r['net'] for r in facts}
+        receipts={r['method']:r['receipts'] for r in facts}
+        refunds={r['method']:r['refunds'] for r in facts}
         entries=[dict(r) for r in self.db.conn.execute("SELECT * FROM cash_entries WHERE session_id=? ORDER BY id",(session_id,))]
         expected=row["expected_cents"] if row["expected_cents"] is not None else row["opening_cents"]+sum(r["delta_cents"] for r in entries)
-        return CashReport(session_id,row["opening_cents"],expected,row["counted_cents"] or 0,row["variance_cents"] or 0,row["reason"],payments,entries)
+        return CashReport(session_id,row["opening_cents"],expected,row["counted_cents"] or 0,row["variance_cents"] or 0,row["reason"],payments,entries,receipts,refunds)
 
     def bundle(self,month):
         start,end=month_range(month);summary=self.monthly(month)

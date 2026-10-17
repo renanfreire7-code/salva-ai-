@@ -64,7 +64,8 @@ class FinanceView(View):
         for r in rows:
             self.tree.item(str(r.id),tags=(r.status,))
         totals=self.s.finance.expense_totals(filters)
-        self.summary.configure(text=f"Pago: {money(totals.paid_cents)}    Pendente: {money(totals.pending_cents)}    Vencido (incluído no pendente): {money(totals.overdue_cents)}    Compromissos: {money(totals.commitments_cents)}")
+        paid_label='Pago no período' if filters.date_basis=='payment' else 'Pago acumulado das contas'
+        self.summary.configure(text=f"{paid_label}: {money(totals.paid_cents)}    Saldo pendente atual: {money(totals.pending_cents)}    Vencido (incluído no pendente): {money(totals.overdue_cents)}    Compromissos: {money(totals.commitments_cents)}")
 
     def form(self,initial=None):
         today=self.s.clock.today()

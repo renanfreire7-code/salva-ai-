@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass,field
 from datetime import date,datetime
 from decimal import Decimal
 
@@ -77,3 +77,5 @@ class CashReport:
     reason: str | None
     payments: dict[str,int]
     entries: list[dict]
+    receipts: dict[str,int] = field(default_factory=dict)
+    refunds: dict[str,int] = field(default_factory=dict)

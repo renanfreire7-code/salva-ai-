@@ -38,7 +38,8 @@ class Service:
     def run(self, command_id, kind, payload, handler):
         def perform():
             result = handler()
-            self.audit.record(kind, str(result if isinstance(result, int) else command_id),
+            object_id = result.get('id',command_id) if isinstance(result,dict) else result if isinstance(result,int) else command_id
+            self.audit.record(kind, str(object_id),
                               {}, serial(payload), payload.get("reason"))
             return result
         return self.bus.execute(command_id, kind, serial(payload), perform)

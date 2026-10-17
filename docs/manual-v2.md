@@ -60,6 +60,18 @@ Entradas podem ser em unidades ou caixas/fardos; informe o custo total e frete.
 Indique compra pendente ou já paga. Dinheiro da gaveta exige caixa aberto, saldo
 e PIN. A entrada registra estoque e obrigação financeira uma única vez.
 
+Em **Compras / devoluções**, consulte entradas e itens. Para uma entrada incorreta
+sem movimentos posteriores, use **Reverter compra** e registre a entrada correta.
+A reversão é conservadora: compras já consumidas exigem correção auditada própria.
+Valores já pagos geram crédito identificável ao fornecedor, sem entrada automática
+de dinheiro. Para devoluções parciais, selecione o item e informe as unidades.
+
+A aba **Créditos do fornecedor** distingue valor, liquidado e pendente. Confirme
+o recebimento efetivo por modalidade ou abata o crédito no saldo pendente da
+própria compra. Só **Dinheiro na gaveta** aumenta o caixa físico. A liquidação
+exige PIN e motivo; pagamentos vinculados a abatimentos e compras revertidas
+ficam protegidos contra anulação genérica no Financeiro.
+
 O custo médio é calculado a partir de quantidade e valor do estoque; vendas
 guardam o custo histórico. Alterar um preço não muda vendas anteriores.
 Editar cadastro, ajustar perdas e desativar produtos exige autorização e motivo.
@@ -96,6 +108,12 @@ Fechamento exige resolver comandas, pedidos de entrega e dinheiro a conferir.
 Informe o valor efetivamente contado. Diferença exige PIN e justificativa.
 
 O fechamento gera relatório HTML imprimível e backup local verificado.
+Caixa e relatório mostram **recebido, reembolsado e líquido por modalidade**.
+Delivery entra nessa conferência somente quando o recebimento é confirmado;
+saída para entrega não significa recebimento. Dinheiro com o entregador integra
+os recebimentos, mas só a transferência efetiva entra nos movimentos da gaveta.
+Estorno e reembolso são fatos separados; o relatório preserva o caixa original
+quando o reembolso ocorre em outro caixa.
 Se houver falha, o sistema bloqueia operações conflitantes até recuperar os
 artefatos. Reinicie ou use **Retomar fechamento**; não abra outro caixa para
 contornar a pendência. Corridas ainda não pagas podem continuar como contas a pagar.
@@ -116,7 +134,10 @@ vincula a retirada ao pagamento, sem exigir um segundo lançamento manual.
 
 A consulta abre no mês atual por data do gasto. É possível escolher intervalo,
 vencimento ou pagamento, categoria, descrição e situação. Vencido é parte do
-pendente; não some os dois novamente.
+saldo pendente; não some os dois novamente. No filtro por pagamento,
+**Pago no período** soma apenas parcelas
+pagas entre as datas escolhidas. Situação e saldo pendente mostram o estado atual
+das contas selecionadas, considerando todos os pagamentos dessas contas.
 
 Em Contas mensais, crie regras e gere o mês selecionado explicitamente.
 A ocorrência nasce pendente. Dia 31 vira o último dia válido nos meses curtos.
@@ -169,6 +190,8 @@ Não gera compra nem pagamento automaticamente.
 ## Histórico, estorno e reembolso
 
 Histórico permite filtrar período e ID e consultar motivos de alterações.
+A confirmação de venda mostra número, valor, modalidade e produtos; use esse
+número para a correção. Há rolagem horizontal para detalhes longos.
 Corrigir venda exige PIN; devolução de produtos e devolução de dinheiro são
 confirmações distintas. Reabrir comanda paga só é permitido no caixa original
 ainda aberto. Após fechar, a correção financeira entra no caixa atual, preservando

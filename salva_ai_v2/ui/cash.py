@@ -9,6 +9,8 @@ class CashView(View):
         ttk.Label(self,text="Caixa",style="Title.TLabel").pack(anchor="w")
         self.summary=ttk.Label(self,text="Caixa fechado",style="Title.TLabel")
         self.summary.pack(anchor="w",pady=10)
+        self.payment_summary=ttk.Label(self,text='',wraplength=1100)
+        self.payment_summary.pack(anchor='w',pady=(0,8))
         row=ttk.Frame(self);row.pack(fill="x")
         for label,callback in (("Abrir caixa",self.open),("Reforço",lambda:self.move("REINFORCEMENT")),("Retirada",lambda:self.move("WITHDRAWAL"))):
             ttk.Button(row,text=label,command=lambda f=callback:self.act(f)).pack(side="left",padx=(0,8))
@@ -30,10 +32,13 @@ class CashView(View):
     def refresh(self):
         session=self.s.cash.active()
         if session:
+            report=self.s.reports.cash_report(session['id'])
+            self.payment_summary.configure(text='Recebido / reembolsado / líquido: '+ '   |   '.join(f'{label}: {money(report.receipts.get(method,0))} / {money(report.refunds.get(method,0))} / {money(report.payments.get(method,0))}' for method,label in (('MONEY','Dinheiro'),('PIX','Pix'),('DEBIT','Débito'),('CREDIT','Crédito'))))
             self.summary.configure(text=f'Caixa #{session["id"]} • Esperado na gaveta: {money(self.s.cash.position(session["id"]).expected_cents)}')
             rows=self.s.cash.db.conn.execute("SELECT * FROM cash_entries WHERE session_id=? ORDER BY id DESC",(session["id"],)).fetchall()
             fill(self.tree,[(r["id"],(r["occurred_at"],r["kind"],money(r["delta_cents"]),r["reason"] or "")) for r in rows])
         else:
+            self.payment_summary.configure(text='')
             self.summary.configure(text="Caixa fechado — abra antes de atender")
             fill(self.tree,[])
         if hasattr(self.s,'closing') and self.s.closing.pending():

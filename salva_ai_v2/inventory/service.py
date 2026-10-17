@@ -3,9 +3,10 @@ from .models import StockPosition, PurchaseLine
 from ..common.service import Service, integer, valid_date
 from ..common.money import allocate, round_half_up
 from ..common.errors import BusinessError
+from .purchases import PurchasesMixin
 
 
-class InventoryService(Service):
+class InventoryService(PurchasesMixin,Service):
     def update_product(self, product_id, name, price_cents, pack_size, min_stock, grant, reason, command_id):
         name=str(name).strip()
         if not name:
@@ -171,7 +172,7 @@ class InventoryService(Service):
                 if row is None or line.qty > row["qty"] - row["returned_qty"]:
                     raise BusinessError("Quantidade acima da compra disponível para devolução.")
                 self.consume(line.product_id,line.qty,"SUPPLIER_RETURN",purchase_id,reason)
-                credit += round_half_up(row["total_cents"] * line.qty, row["qty"])
+                credit += round_half_up(row['total_cents']*(row['returned_qty']+line.qty),row['qty'])-round_half_up(row['total_cents']*row['returned_qty'],row['qty'])
                 self.db.conn.execute("UPDATE purchase_items SET returned_qty=returned_qty+? WHERE id=?", (line.qty,row["id"]))
             return self.db.conn.execute("INSERT INTO supplier_credits(purchase_id,amount_cents,reason) VALUES(?,?,?)",(purchase_id,credit,reason)).lastrowid
         return self.run(command_id,"purchase.returned",dict(purchase_id=purchase_id,lines=[asdict(l) for l in lines],reason=reason),perform)
@@ -190,6 +191,9 @@ class InventoryService(Service):
                     raise BusinessError("Compra já movimentada. Use uma correção auditada.")
                 self._movement(item["product_id"],-item["qty"],-item["total_cents"],"PURCHASE_REVERSED",purchase_id,reason)
             self.db.conn.execute("UPDATE purchases SET reversed=1 WHERE id=?", (purchase_id,))
+            paid=self.db.conn.execute("SELECT COALESCE(SUM(p.amount_cents),0) FROM obligation_payments p JOIN obligations o ON o.id=p.obligation_id WHERE o.source_type='PURCHASE' AND o.source_id=? AND p.corrected=0",(str(purchase_id),)).fetchone()[0]
+            if paid:
+                self.db.conn.execute('INSERT INTO supplier_credits(purchase_id,amount_cents,reason) VALUES(?,?,?)',(purchase_id,paid,reason))
             self.db.conn.execute("UPDATE obligations SET deleted_at=? WHERE source_type='PURCHASE' AND source_id=?", (self.db.clock.now().isoformat(),str(purchase_id)))
             return purchase_id
         return self.run(command_id,"purchase.reversed",dict(purchase_id=purchase_id,reason=reason),perform)

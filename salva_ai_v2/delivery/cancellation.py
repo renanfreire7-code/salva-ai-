@@ -4,6 +4,7 @@ from ..inventory.models import CartLine
 from ..common.money import round_half_up
 from ..common.service import integer
 from ..common.errors import BusinessError
+from ..cash.receipts import record_receipt
 
 
 class CancellationMixin:
@@ -46,7 +47,7 @@ class CancellationMixin:
                 old=self.db.conn.execute("SELECT COALESCE(SUM(qty),0),COALESCE(SUM(cogs_cents),0) FROM delivery_returns WHERE order_id=? AND product_id=?",(order_id,item.product_id)).fetchone()
                 if not line or item.qty>line["qty"]-old[0]:
                     raise BusinessError("Devolução acima da quantidade que saiu.")
-                cost=line["cogs_cents"]-old[1] if item.qty==line["qty"]-old[0] else round_half_up(line["cogs_cents"]*item.qty,line["qty"])
+                cost=round_half_up((line["cogs_cents"]-old[1])*item.qty,line["qty"]-old[0])
                 self.inventory._movement(item.product_id,item.qty,cost,"DELIVERY_RETURN",order_id,reason)
                 self.db.conn.execute("INSERT INTO delivery_returns(order_id,product_id,qty,cogs_cents,returned_at) VALUES(?,?,?,?,?)",(order_id,item.product_id,item.qty,cost,self.clock.now().isoformat()))
             return order_id
@@ -55,7 +56,7 @@ class CancellationMixin:
     def refund(self,order_id,method,amount_cents,from_drawer,grant,reason,command_id):
         integer(amount_cents,"Reembolso",1)
         def perform():
-            self.cash.require_open()
+            session=self.cash.require_open()
             self.protect(grant,"delivery.refund",reason)
             row=self.db.conn.execute("SELECT * FROM refunds WHERE order_id=? AND pending_cents>0",(order_id,)).fetchone()
             collection=self.db.conn.execute("SELECT * FROM collections WHERE order_id=?",(order_id,)).fetchone()
@@ -73,6 +74,7 @@ class CancellationMixin:
                     self.db.conn.execute("UPDATE collections SET courier_refunded_cents=courier_refunded_cents+? WHERE id=?", (amount_cents,collection["id"]))
             elif from_drawer:
                 raise BusinessError("Reembolso digital não movimenta dinheiro na gaveta.")
+            record_receipt(self.db,session['id'],method,-amount_cents,'delivery-refund:'+command_id,'COURIER' if method=='MONEY' and not from_drawer else 'BAR')
             self.db.conn.execute("UPDATE collections SET refunded_cents=refunded_cents+? WHERE id=?", (amount_cents,collection["id"]))
             self.db.conn.execute("UPDATE refunds SET pending_cents=pending_cents-?,refunded_cents=refunded_cents+? WHERE id=?", (amount_cents,amount_cents,row["id"]))
             return row["id"]

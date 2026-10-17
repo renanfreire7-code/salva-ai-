@@ -31,7 +31,7 @@ def file_hash(path):
 
 
 def sync_file(path):
-    with Path(path).open("rb") as handle:
+    with Path(path).open("r+b") as handle:
         os.fsync(handle.fileno())
 
 

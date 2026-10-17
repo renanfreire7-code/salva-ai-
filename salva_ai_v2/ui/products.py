@@ -12,7 +12,7 @@ class ProductsView(View):
         for label,callback in (("Novo produto",self.create),("Editar produto",self.edit),("Promoção",self.promotion),("Atalho F1–F12",self.shortcut),("Desativar",self.deactivate)):
             ttk.Button(actions,text=label,command=lambda f=callback:self.act(f)).pack(side="left",padx=(0,6))
         actions=ttk.Frame(self);actions.pack(fill='x',pady=(0,4))
-        for label,callback in (("Entrada / compra",self.purchase),("Ajustar estoque",self.adjust)):
+        for label,callback in (("Entrada / compra",self.purchase),("Compras / devoluções",self.purchase_history),("Ajustar estoque",self.adjust)):
             ttk.Button(actions,text=label,command=lambda f=callback:self.act(f)).pack(side='left',padx=(0,6))
         self.tree=table(self,["Código","Produto","Preço","Físico","Reservado","Disponível","Mínimo","Custo médio"])
 
@@ -23,6 +23,13 @@ class ProductsView(View):
             cost=money(round_half_up(pos.value_cents,pos.physical)) if pos.physical else "Sem estoque"
             rows.append((p["id"],(f'{p["id"]:03d}',p["name"],money(p["price_cents"]),pos.physical,pos.reserved,pos.available,p["min_stock"],cost)))
         fill(self.tree,rows)
+
+    def purchase_history(self):
+        from tkinter import Toplevel
+        from .purchases import PurchasesView
+        window=Toplevel(self);window.title('Compras, devoluções e créditos');window.geometry('1060x620')
+        view=PurchasesView(window,self.s);view.pack(fill='both',expand=True)
+        return view
 
     def create(self):
         values=ask_fields(self,"Novo produto",[("name","Nome",""),("price","Preço normal (R$)",""),("pack","Unidades por caixa/fardo",1),("minimum","Estoque mínimo",0)])
