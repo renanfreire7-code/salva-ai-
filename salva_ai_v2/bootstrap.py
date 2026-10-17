@@ -49,11 +49,13 @@ class Application:
         self.authenticated=True
         try:
             self._build_operations()
+            self.window.show_identity(establishment=True)
         except BaseException:
             self.close();raise
 
     def require_login(self):
         self.accounts.logout();self.authenticated=False
+        self.window.show_identity()
         # Popups and old callbacks must not retain operational surfaces after restore.
         import tkinter as tk
         for child in self.window.winfo_children():

@@ -17,7 +17,7 @@ caixa, financeiro auditável, delivery/acertos, resultados e backups.
 - **Testes novos:** `python3 -m unittest discover -s tests_v2 -t . -v` com display;
   no Linux sem monitor, usar Xvfb conforme o manual.
 
-Requer Python 3.12 ou superior com Tkinter. A versão `0.3.0-dev` identifica a
+Requer Python 3.12 ou superior com Tkinter. A versão `0.3.1-dev` identifica a
 reconstrução, ainda pendente de validação no Windows e ensaio com o operador.
 Não use o banco do estabelecimento para testes. Não foi feita release nem merge.
 
@@ -132,3 +132,6 @@ A versão vem de `VERSAO.txt`. O zip tem o mesmo layout das versões anteriores 
 - O rateio de despesas por faturamento é uma convenção gerencial.
 - A aba "Lucro por produto" do Excel usa o mês corrente do computador.
 - Em telas com menos de ~900 px de altura, a aba Histórico não mostra todas as linhas da tabela de estoque sem rolar.
+
+A versão0.3.1 separa a marca da entrada (Bar Simples) da operação (SALVA AI HEADSHOP).
+Veja [a validação da identidade](docs/validacao-identidade-0.3.1.md).

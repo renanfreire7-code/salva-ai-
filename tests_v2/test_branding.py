@@ -16,6 +16,29 @@ class BrandingTest(unittest.TestCase):
                 self.assertTrue(app.access_view.logo_label['image'])
             finally:app.close()
 
+    def test_identity_changes_with_authenticated_state(self):
+        with tempfile.TemporaryDirectory() as folder:
+            app=build_application(Path(folder))
+            try:
+                self.assertIn('Bar Simples',app.window.title())
+                app.accounts.create('bar','Senha fictícia 42','007')
+                app.unlock(app.accounts.login('bar','Senha fictícia 42'))
+                self.assertIn('SALVA AI HEADSHOP',app.window.title())
+                self.assertNotIn('Bar Simples',app.window.title())
+                self.assertEqual(app.window.brand_label.cget('text'),'SALVA AI HEADSHOP')
+                from salva_ai_v2.ui.branding import load_store_logo,load_icon
+                expected=load_store_logo(app.window,64)
+                actual=app.window.brand_logo
+                self.assertEqual(actual.tk.call(str(actual),'data','-format','png'),expected.tk.call(str(expected),'data','-format','png'))
+                self.assertLessEqual(max(actual.width(),actual.height()),64)
+                self.assertTrue(app.delivery_view.motorcycle_label['image'])
+                app.require_login()
+                self.assertIn('Bar Simples',app.window.title())
+                self.assertEqual(app.window.brand_label.cget('text'),'Bar Simples')
+                expected=load_icon(app.window,56);actual=app.window.brand_logo
+                self.assertEqual(actual.tk.call(str(actual),'data','-format','png'),expected.tk.call(str(expected),'data','-format','png'))
+            finally:app.close()
+
     def test_access_fields_and_primary_action_fit_1366x768(self):
         with tempfile.TemporaryDirectory() as folder:
             app=build_application(Path(folder))

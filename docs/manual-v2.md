@@ -3,9 +3,17 @@
 ## Estado desta evolução
 
 O Bar Simples sucede a reconstrução Salva AI 0.2.0-dev, mantendo a mesma pasta
-de dados. Esta é a versão de desenvolvimento **0.3.0-dev**, para ensaio com dados fictícios.
+de dados. Esta é a versão de desenvolvimento **0.3.1-dev**, para ensaio com dados fictícios.
 Os resultados de verificação estão no relatório `validacao-bar-simples.md`.
 Windows nativo nas escalas 100% e 125% ainda precisa de ensaio antes de uso real.
+
+## Marca da entrada e do estabelecimento
+
+A entrada (cadastro, login e recuperação) usa **Bar Simples**. Após o login,
+o título da janela, o cabeçalho, a logo e o ícone usam **SALVA AI HEADSHOP**.
+A logo do estabelecimento mantém o desenho anterior, com contornos refinados.
+A moto continua identificando o delivery. Ao restaurar um backup e retornar ao
+login, a identidade Bar Simples volta a aparecer até a nova autenticação.
 
 ## Usuário, senha e PIN
 
@@ -68,11 +76,11 @@ Use um PIN fictício no ensaio. Não altere HOME para testar.
 ## Atualizar das reconstruções 0.1.0-dev ou 0.2.0-dev
 
 Feche a versão anterior, faça uma cópia da pasta `~/SalvaAiHeadshopV2` e
-extraia o ZIP Bar Simples 0.3.0-dev em outra pasta de programa. Inicie pelo novo BAT.
+extraia o ZIP Bar Simples 0.3.1-dev em outra pasta de programa. Inicie pelo novo BAT.
 A pasta de dados continua a mesma: não copie nem substitua o banco pelo ZIP.
 A migração é aditiva e cria um backup antes de alterar a estrutura; preserva
 IDs, PIN, estoque e movimentos. A versão 0.3.6-beta de referência não é importada.
-Depois de atualizar, use o código Bar Simples 0.3.0; não abra o banco atualizado com versões anteriores.
+Depois de atualizar, use o código Bar Simples 0.3.1; não abra o banco atualizado com versões anteriores.
 Em pedidos anteriores, momento de pagamento e troco aparecem como não informados.
 
 ## Organização das telas

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from .theme import configure_theme
-from .branding import APP_NAME,load_icon
+from .branding import APP_NAME,STORE_NAME,load_icon,load_store_logo
 
 
 class MainWindow(tk.Tk):
@@ -15,7 +15,8 @@ class MainWindow(tk.Tk):
         self.style=configure_theme(self)
         header = ttk.Frame(self, padding=(20,8))
         header.pack(fill="x")
-        ttk.Label(header,text=APP_NAME,style='Brand.TLabel').pack(side='left')
+        self.brand_label=ttk.Label(header,text=APP_NAME,style='Brand.TLabel')
+        self.brand_label.pack(side='left')
         ttk.Label(header,text='Gestão do bar · Offline',style='Muted.TLabel').pack(side='left',padx=16)
         self.brand_logo=load_icon(self,56)
         self.iconphoto(True,self.brand_logo)
@@ -26,3 +27,11 @@ class MainWindow(tk.Tk):
         ttk.Label(self, textvariable=self.status, padding=(18, 8), wraplength=1100).pack(side="bottom", fill="x")
         self.body = ttk.Frame(self, padding=(8,4))
         self.body.pack(fill="both", expand=True)
+
+    def show_identity(self,establishment=False):
+        name=STORE_NAME if establishment else APP_NAME
+        self.title(name+" | Gestão do bar")
+        self.brand_label.configure(text=name)
+        self.brand_logo=load_store_logo(self,64) if establishment else load_icon(self,56)
+        self.logo_label.configure(image=self.brand_logo)
+        self.iconphoto(True,self.brand_logo)

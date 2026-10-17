@@ -14,7 +14,7 @@ class DistributionTest(unittest.TestCase):
             archive=build_v2(root/'dist')
             with zipfile.ZipFile(archive) as z:
                 names=z.namelist()
-                self.assertEqual(archive.name,'Bar_Simples_0.3.0-dev.zip')
+                self.assertEqual(archive.name,'Bar_Simples_0.3.1-dev.zip')
                 import json,hashlib
                 manifest=json.loads(z.read('MANIFEST-SHA256.json'))
                 self.assertEqual(set(manifest),set(names)-{'MANIFEST-SHA256.json'})
@@ -24,6 +24,7 @@ class DistributionTest(unittest.TestCase):
                 self.assertIn('salva_ai_v2/__main__.py',names)
                 self.assertIn('MANIFEST-SHA256.json',names)
                 self.assertIn('salva_ai_v2/assets/logo.png',names)
+                self.assertIn('salva_ai_v2/assets/headshop_logo.png',names)
                 self.assertIn('salva_ai_v2/assets/bar_simples_logo.png',names)
                 self.assertIn('salva_ai_v2/assets/bar_simples_icon.png',names)
                 self.assertIn('salva_ai_v2/assets/motorcycle.png',names)
@@ -34,7 +35,7 @@ class DistributionTest(unittest.TestCase):
             result=subprocess.run([sys.executable,'-m','salva_ai_v2','--help'],cwd=root/'extraído com espaços',capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr)
             self.assertIn('--data-dir',result.stdout)
-            code="from pathlib import Path; from scripts.demo_v2 import main; from salva_ai_v2.bootstrap import build_application; app=build_application(Path('dados fictícios')); assert app.views==[]; app.accounts.create('bar','Senha fictícia 42','007'); app.unlock(app.accounts.login('bar','Senha fictícia 42')); assert len(app.views)==11; app.window.update(); app.close()"
+            code="from pathlib import Path; from scripts.demo_v2 import main; from salva_ai_v2.bootstrap import build_application; app=build_application(Path('dados fictícios')); assert app.views==[]; app.accounts.create('bar','Senha fictícia 42','007'); app.unlock(app.accounts.login('bar','Senha fictícia 42')); assert len(app.views)==11; assert 'SALVA AI HEADSHOP' in app.window.title(); app.window.update(); app.close()"
             result=subprocess.run([sys.executable,'-c',code],cwd=root/'extraído com espaços',capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr)
 

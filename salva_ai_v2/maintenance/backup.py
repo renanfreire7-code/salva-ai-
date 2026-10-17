@@ -93,7 +93,7 @@ class BackupService:
         try:
             conn=sqlite3.connect(path.as_uri()+"?mode=ro&immutable=1",uri=True)
             if conn.execute("PRAGMA application_id").fetchone()[0]!=APPLICATION_ID:
-                raise BusinessError("O backup não pertence ao novo Bar Simples.")
+                raise BusinessError("O backup não pertence a este sistema.")
             if conn.execute("PRAGMA integrity_check").fetchone()[0]!="ok" or conn.execute("PRAGMA foreign_key_check").fetchone():
                 raise BusinessError("O backup não passou na verificação de integridade.")
             migrations=dict(conn.execute("SELECT version,checksum FROM schema_migrations"))
