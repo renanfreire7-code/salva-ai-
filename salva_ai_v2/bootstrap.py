@@ -69,6 +69,13 @@ class Application:
         self.access_view.pack(fill='both',expand=True)
         self.window.status.set('Entre para abrir o atendimento.')
 
+    def _after_restore(self):
+        try:
+            self.require_login()
+        except BaseException:
+            self.close()
+            raise
+
     def _build_operations(self):
         self._closed = False
         from .inventory.service import InventoryService
@@ -114,7 +121,7 @@ class Application:
         self.services.backups.db_security = self.security
         from .maintenance.restore import RestoreService
         self.services.restore = RestoreService(self.data_dir,self.services.backups,self.security)
-        self.services.restore.on_completed=self.require_login
+        self.services.restore.on_completed=self._after_restore
         self.services.closing = ClosingService(self.db, cash, self.services.backups, self.services.reports)
         from .ui.navigation import NavigationShell
         from .ui.keyboard import ShortcutRouter

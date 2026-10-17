@@ -127,10 +127,13 @@ class RestoreService:
                 return {"restored":True}
             CommandBus(self.db).execute("restore-result:"+operation,"restore.completed",{"source_hash":preview.sha256},log)
             journal.unlink()
-            self.security._grants.clear()
-            self._previews.clear()
-            if self.on_completed:self.on_completed()
         except BaseException:
             if self.db.conn is None:
                 self._reopen()
             raise
+        finally:
+            # Once replacement begins, the previous session must never survive,
+            # even when migration, audit logging or journal cleanup fails.
+            self.security._grants.clear()
+            self._previews.clear()
+            if self.on_completed:self.on_completed()

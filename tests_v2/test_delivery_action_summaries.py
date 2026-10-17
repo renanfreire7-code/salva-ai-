@@ -34,10 +34,10 @@ class DeliveryActionSummaryTest(unittest.TestCase):
     def test_declined_summary_or_pin_is_noop(self):
         self.assertIsNotNone(importlib.util.find_spec('salva_ai_v2.ui.delivery_actions'))
         before='\n'.join(self.app.db.conn.iterdump())
-        with patch('salva_ai_v2.ui.delivery_actions.messagebox.askyesno',return_value=False),patch.object(self.view,'grant') as grant,patch.object(self.view,'reason',return_value='Teste de reembolso'):
+        with patch('salva_ai_v2.ui.delivery.confirm_action',return_value=False),patch.object(self.view,'grant') as grant,patch.object(self.view,'reason',return_value='Teste de reembolso'):
             self.view.cancel();grant.assert_not_called()
         self.assertEqual(before,'\n'.join(self.app.db.conn.iterdump()))
-        with patch('salva_ai_v2.ui.delivery_actions.messagebox.askyesno',return_value=True),patch.object(self.view,'grant',side_effect=BusinessError('Operação cancelada.')):
+        with patch('salva_ai_v2.ui.delivery.confirm_action',return_value=True),patch.object(self.view,'grant',side_effect=BusinessError('Operação cancelada.')):
             with self.assertRaises(BusinessError):self.view.cancel()
         self.assertEqual(before,'\n'.join(self.app.db.conn.iterdump()))
 
@@ -64,11 +64,11 @@ class DeliveryActionSummaryTest(unittest.TestCase):
         self.view.scope.set('Todos no período');self.view.apply_filters();self.view.tree.selection_set(str(self.order.id));form=self.view.returned()
         self.assertIsNotNone(form)
         form.tree.selection_set(str(self.pid));form.qty.insert(0,'100')
-        with patch('salva_ai_v2.ui.delivery_actions.messagebox.askyesno',return_value=True),patch.object(self.view,'grant',side_effect=self.grant),patch.object(self.view,'reason',return_value='Retorno conferido'):
+        with patch('salva_ai_v2.ui.delivery.confirm_action',return_value=True),patch.object(self.view,'grant',side_effect=self.grant),patch.object(self.view,'reason',return_value='Retorno conferido'):
             self.assertFalse(form.submit())
         self.assertEqual(form.qty.get(),'100');self.assertTrue(form.winfo_exists())
         form.qty.delete(0,'end');form.qty.insert(0,'2')
-        with patch('salva_ai_v2.ui.delivery_actions.messagebox.askyesno',return_value=True),patch.object(self.view,'grant',side_effect=self.grant),patch.object(self.view,'reason',return_value='Retorno conferido'),patch.object(self.s.delivery,'confirm_return',side_effect=OSError('Disco cheio')):
+        with patch('salva_ai_v2.ui.delivery.confirm_action',return_value=True),patch.object(self.view,'grant',side_effect=self.grant),patch.object(self.view,'reason',return_value='Retorno conferido'),patch.object(self.s.delivery,'confirm_return',side_effect=OSError('Disco cheio')):
             self.assertFalse(form.submit())
         self.assertEqual(form.qty.get(),'2');form.winfo_toplevel().destroy()
 
@@ -85,7 +85,7 @@ class DeliveryActionSummaryTest(unittest.TestCase):
         self.view.refresh();self.view.tree.selection_set(str(self.order.id));dialogs=[]
         with patch('salva_ai_v2.ui.delivery.ask_fields',side_effect=lambda *a,**kw:dialogs.append(FormDialog(*a,**kw))):self.view.refund()
         form=dialogs[0];before='\n'.join(self.app.db.conn.iterdump())
-        with patch('salva_ai_v2.ui.delivery_actions.messagebox.askyesno',return_value=False),patch.object(self.view,'grant') as grant,patch.object(self.view,'reason',return_value='Teste de reembolso'):
+        with patch('salva_ai_v2.ui.delivery.confirm_action',return_value=False),patch.object(self.view,'grant') as grant,patch.object(self.view,'reason',return_value='Teste de reembolso'):
             self.assertFalse(form.submit());grant.assert_not_called()
         self.assertEqual(before,'\n'.join(self.app.db.conn.iterdump()))
         self.assertEqual(form.inputs['amount'].get(),'15,00');form.destroy()

@@ -97,7 +97,7 @@ class DeliveryExperienceTest(unittest.TestCase):
         view.refresh();view.tree.selection_set(str(order.id));dialogs=[]
         with patch('salva_ai_v2.ui.delivery.ask_fields',side_effect=lambda *a,**kw:dialogs.append(FormDialog(*a,**kw))):view.refund()
         dialog=dialogs[0];dialog.inputs['amount'].delete(0,'end');dialog.inputs['amount'].insert(0,'999,00')
-        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681',action)),patch.object(view,'reason',return_value='Reembolso confirmado'),patch('salva_ai_v2.ui.delivery_actions.messagebox.askyesno',return_value=True):
+        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681',action)),patch.object(view,'reason',return_value='Reembolso confirmado'),patch('salva_ai_v2.ui.delivery.confirm_action',return_value=True):
             self.assertFalse(dialog.submit());self.assertEqual(dialog.inputs['amount'].get(),'999,00')
             dialog.inputs['amount'].delete(0,'end');dialog.inputs['amount'].insert(0,'15,00');self.assertTrue(dialog.submit())
         self.assertEqual(self.app.db.conn.execute('SELECT pending_cents FROM refunds WHERE order_id=?',(order.id,)).fetchone()[0],0)
@@ -115,6 +115,6 @@ class DeliveryExperienceTest(unittest.TestCase):
         view.refresh();view.tree.selection_set(str(order.id));dialogs=[]
         with patch('salva_ai_v2.ui.delivery.ask_fields',side_effect=lambda *a,**kw:dialogs.append(FormDialog(*a,**kw))):view.refund()
         dialog=dialogs[0];self.assertEqual(dialog.inputs['drawer'].get(),'Sim')
-        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681',action)),patch.object(view,'reason',return_value='Reembolso confirmado'),patch('salva_ai_v2.ui.delivery_actions.messagebox.askyesno',return_value=True):
+        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681',action)),patch.object(view,'reason',return_value='Reembolso confirmado'),patch('salva_ai_v2.ui.delivery.confirm_action',return_value=True):
             self.assertTrue(dialog.submit())
         self.assertEqual(s.cash.position(s.cash.require_open()['id']).expected_cents,10000)
