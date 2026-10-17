@@ -26,6 +26,11 @@ class HistoryView(View):
         ttk.Combobox(row,textvariable=self.state,values=('Todas',*STATES.values()),width=20,state='readonly').pack(side='left')
         ttk.Label(self,text='Balcão/comanda: data do recebimento da venda. Delivery: data de criação do pedido.',wraplength=950).pack(anchor='w',pady=5)
         panels=ttk.Panedwindow(self,orient='horizontal');panels.pack(fill='both',expand=True)
+        self._panel_width=0
+        def resize_details(event):
+            if event.width>600 and event.width!=self._panel_width:
+                self._panel_width=event.width;panels.sashpos(0,int(event.width*.44))
+        panels.bind('<Configure>',resize_details)
         listing=ttk.Frame(panels);self.details=OrderDetails(panels,self.s)
         panels.add(listing,weight=5);panels.add(self.details,weight=5)
         self.tree=table(listing,['Tipo','Número','Cliente','Valor','Situação','Pagamento','Modalidade real'])

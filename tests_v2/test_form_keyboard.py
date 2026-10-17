@@ -74,7 +74,7 @@ class FormKeyboardTest(unittest.TestCase):
         from salva_ai_v2.ui.shared import View,ProductPicker
         class Picker(View,ProductPicker):
             def __init__(self,parent):
-                inventory=SimpleNamespace(products=lambda:[{'id':1,'name':'Cerveja Heineken Latão'}])
+                inventory=SimpleNamespace(products=lambda:[{'id':1,'name':'Cerveja Heineken Latão','price_cents':500}],position=lambda id:SimpleNamespace(available=20))
                 super().__init__(parent,SimpleNamespace(inventory=inventory,application=SimpleNamespace(refresh=lambda:None)))
                 self.added=[];self.build_picker(self,self.add)
             def add(self):self.added.append((self.selected_product(),int(self.qty.get())))

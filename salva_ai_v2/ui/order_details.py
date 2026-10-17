@@ -56,10 +56,13 @@ class OrderDetails(ttk.Frame):
         super().__init__(parent,padding=(12,0,0,0));self.s=services
         self.summary=tk.StringVar(value='Selecione uma venda ou pedido para conferir os itens.')
         ttk.Label(self,textvariable=self.summary,wraplength=480,justify='left').pack(anchor='w',pady=6)
-        self.items_tree=table(self,['Produto','Quantidade','Preço normal','Promoção','Total'],height=4)
+        panels=ttk.Panedwindow(self,orient='vertical');panels.pack(fill='both',expand=True)
+        items=ttk.Frame(panels);facts=ttk.Frame(panels)
+        panels.add(items,weight=3);panels.add(facts,weight=2)
+        self.items_tree=table(items,['Produto','Quantidade','Preço normal','Promoção','Total'],height=4)
         self.items_tree.column('Produto',width=190,anchor='w')
         for column in ('Quantidade','Preço normal','Promoção','Total'):self.items_tree.column(column,width=85)
-        self.facts=read_text(self,height=8)
+        self.facts=read_text(facts,height=6)
 
     def show(self,key):
         if key is None:

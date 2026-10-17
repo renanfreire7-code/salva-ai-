@@ -16,6 +16,11 @@ FieldsDialog=FormDialog
 
 
 def table(parent, columns, height=12):
+    if 'Produto' in columns:
+        from .product_table import ProductTable
+        result=ProductTable(parent,columns,height)
+        result.pack(fill='both',expand=True,pady=(8,4))
+        return result
     container=ttk.Frame(parent)
     container.pack(fill="both",expand=True,pady=(8,4))
     tree=ttk.Treeview(container,columns=columns,show="headings",height=height,selectmode="browse")
@@ -98,6 +103,18 @@ class ProductPicker:
         self.products_map={}
         self.picker_notice=tk.StringVar()
         ttk.Label(parent,textvariable=self.picker_notice,foreground='#a52525').pack(anchor='w')
+        self.selected_name=tk.StringVar()
+        selected_label=ttk.Label(parent,textvariable=self.selected_name,wraplength=400)
+        self.selected_name_label=selected_label
+        selected_label.pack(fill='x',anchor='w')
+        selected_label.bind('<Configure>',lambda event:selected_label.configure(wraplength=max(80,event.width)))
+        self.candidate_frame=ttk.Frame(parent)
+        from .product_table import ProductTable
+        self.candidates=ProductTable(self.candidate_frame,['Produto','Preço','Disponível'],height=3)
+        self.candidates.pack(fill='both',expand=True)
+        self.candidates.bind('<Double-1>',lambda event:self.choose_candidate())
+        self.candidates.bind('<Return>',lambda event:self.choose_candidate())
+        self.persistent_candidates=False
 
     def choose_product(self):
         from ..inventory.queries import product_label
@@ -107,7 +124,18 @@ class ProductPicker:
             self.picker_notice.set(str(error));return 'break'
         product=next(p for p in self.s.inventory.products() if p['id']==pid)
         label=product_label(product);self.products_map[label]=pid;self.search.set(label)
+        self.selected_name.set(product['name'])
+        if not self.persistent_candidates:self.candidate_frame.pack_forget()
         self.picker_notice.set('');self.qty.focus_set()
+        return 'break'
+
+    def choose_candidate(self):
+        from ..inventory.queries import product_label
+        selected=self.candidates.selection()
+        if selected:
+            product=next(p for p in self.s.inventory.products() if p['id']==int(selected[0]))
+            self.search.set(product_label(product));self.products_map[self.search.get()]=product['id']
+            return self.choose_product()
         return 'break'
 
     def move_product(self,delta):
@@ -115,10 +143,13 @@ class ProductPicker:
         if values:
             index=self.picker.current()
             self.picker.current(max(0,min(len(values)-1,index+delta)))
+            pid=self.products_map[self.picker.get()]
+            self.candidates.selection_set(str(pid));self.candidates.see(str(pid))
         return 'break'
 
     def add_and_focus(self):
         self._add_callback()
+        self.selected_name.set('')
         self.search.set('');self.qty.delete(0,'end');self.qty.insert(0,'1')
         self.filter_products();self.picker_notice.set('');self.picker.focus_set()
 
@@ -130,7 +161,11 @@ class ProductPicker:
         products=search_products(self.s.inventory.products(),self.search.get())
         self.products_map={product_label(p):p["id"] for p in products}
         self.picker.configure(values=list(self.products_map))
-        if hasattr(self,'product_tree') and hasattr(self,'render_product_candidates'):
+        fill(self.candidates,[(p['id'],(p['name'],money(p['price_cents']),self.s.inventory.position(p['id']).available)) for p in products])
+        if self.persistent_candidates or self.search.get().strip():
+            self.candidate_frame.pack(after=self.selected_name_label,fill='both' if self.persistent_candidates else 'x',expand=self.persistent_candidates)
+        else:self.candidate_frame.pack_forget()
+        if hasattr(self,'product_tree') and self.product_tree is not self.candidates and hasattr(self,'render_product_candidates'):
             self.render_product_candidates(products)
 
     def selected_product(self):
@@ -149,6 +184,8 @@ class ProductPicker:
         if row:
             self.search.set(product_label(row))
             self.products_map[self.search.get()]=row["id"]
+            self.selected_name.set(row['name'])
+            if not self.persistent_candidates:self.candidate_frame.pack_forget()
             self.qty.focus_set()
             self.picker_notice.set('')
         else:

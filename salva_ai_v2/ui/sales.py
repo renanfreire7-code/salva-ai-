@@ -18,9 +18,9 @@ class SalesView(View,ProductPicker):
         catalog=ttk.Frame(panels,padding=(0,0,12,0));order=ttk.Frame(panels,padding=(12,0,0,0))
         panels.add(catalog,weight=4);panels.add(order,weight=6)
         self.build_picker(catalog,self.add_selected)
-        self.product_tree=table(catalog,['Produto','Preço','Disponível'],height=8)
+        self.product_tree=self.candidates;self.persistent_candidates=True
+        self.candidate_frame.pack(fill='both',expand=True)
         self.product_tree.column('Produto',width=230,anchor='w');self.product_tree.column('Preço',width=80);self.product_tree.column('Disponível',width=85)
-        self.product_tree.bind('<Double-1>',lambda event:self.choose_catalog())
         ttk.Label(order,text='Pedido atual',style='Title.TLabel').pack(anchor='w')
         buttons=ttk.Frame(order);buttons.pack(side="bottom",fill="x",pady=8)
         self.total_label=ttk.Label(buttons,text="Total: R$ 0,00",style="Title.TLabel")
