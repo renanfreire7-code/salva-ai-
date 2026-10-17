@@ -70,6 +70,10 @@ class Application:
             cash=cash, sales=sales, security=self.security, clock=self.db.clock,
             finance=finance, recurrence=recurrence, delivery=delivery, settlements=settlements,
             reports=ReportingQueries(self.db), settings=FinancialSettings(self.db,self.security))
+        from .reporting.commerce import CommerceQueries
+        from .delivery.queries import DeliveryQueries
+        self.services.commerce=CommerceQueries(self.db)
+        self.services.delivery_queries=DeliveryQueries(self.db)
         for widget in self.window.body.winfo_children():
             widget.destroy()
         from .maintenance.backup import BackupService
