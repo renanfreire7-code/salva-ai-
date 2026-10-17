@@ -11,8 +11,9 @@ class TabsView(View,ProductPicker):
         ttk.Label(self,text="Comandas por cliente",style="Title.TLabel").pack(anchor="w")
         row=ttk.Frame(self);row.pack(fill="x",pady=6)
         self.customer=ttk.Entry(row,width=32);self.customer.pack(side="left")
-        ttk.Button(row,text="Abrir comanda",command=lambda:self.act(self.create)).pack(side="left",padx=8)
-        self.customer.bind("<Return>",lambda e:self.act(self.create))
+        self.create_button=ttk.Button(row,text="Abrir comanda",command=lambda:self.act(self.create));self.create_button.pack(side="left",padx=8)
+        self.create_button.bind("<Return>",lambda event:self.create_key())
+        self.customer.bind("<Return>",lambda event:self.focus_create())
         panels=ttk.Panedwindow(self,orient='horizontal');panels.pack(fill='both',expand=True)
         listing=ttk.Frame(panels,padding=(0,0,12,0));detail=ttk.Frame(panels,padding=(12,0,0,0))
         panels.add(listing,weight=3);panels.add(detail,weight=7)
@@ -25,6 +26,12 @@ class TabsView(View,ProductPicker):
             ttk.Button(row,text=label,style='Primary.TButton' if callback==self.checkout else 'Danger.TButton' if callback==self.cancel else 'TButton',command=lambda f=callback:self.act(f)).pack(side="left",padx=(0,8))
         self.items_tree=table(detail,["Produto","Quantidade","Total"],height=5)
         self.items_tree.column('Produto',width=250,anchor='w')
+
+    def focus_create(self):
+        self.create_button.focus_set();return "break"
+
+    def create_key(self):
+        self.act(self.create);return "break"
 
     def create(self):
         name=self.customer.get().strip()

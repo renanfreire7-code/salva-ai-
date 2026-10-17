@@ -1,4 +1,5 @@
 import tkinter as tk
+import sqlite3
 from tkinter import ttk,messagebox,simpledialog
 from .shared import View,ProductPicker,table,fill,ask_fields,command,FieldSpec
 from ..inventory.models import CartLine
@@ -11,6 +12,7 @@ STATES={"PREPARING":"Em preparação","OUT":"Saiu para entrega","DELIVERED":"Ent
 
 from .delivery_editor import DeliveryEditor
 from .period import PeriodFilter
+from .delivery_actions import confirm_action
 from ..inventory.queries import normalize
 
 
@@ -42,9 +44,10 @@ class DeliveryView(View):
             button=ttk.Button(row,text=label,style='Primary.TButton' if callback==self.create else 'Danger.TButton' if callback==self.cancel else 'TButton',command=lambda f=callback:self.act(f))
             button.pack(side="left",padx=(0,6));self.action_buttons[callback.__name__]=button
         row=ttk.Frame(self);row.pack(fill="x",pady=(0,6))
-        for label,callback in (("Conferir devolução",self.returned),("Reembolsar",self.refund),("Nova tentativa",self.redeliver),("Acertar entregas",self.settlement),("Taxas fixas",self.fees)):
+        for index,(label,callback) in enumerate((("Conferir produtos devolvidos",self.returned),("Registrar reembolso",self.refund),("Criar nova tentativa de entrega",self.redeliver),("Acertar entregas",self.settlement),("Taxas fixas",self.fees))):
             button=ttk.Button(row,text=label,command=lambda f=callback:self.act(f))
-            button.pack(side="left",padx=(0,6));self.action_buttons[callback.__name__]=button
+            button.grid(row=index//3,column=index%3,sticky='w',padx=(0,6),pady=2);self.action_buttons[callback.__name__]=button
+        ttk.Label(self,text='Reembolso devolve dinheiro; devolução confere produtos; nova tentativa prepara outro envio.',wraplength=950).pack(anchor='w')
         ttk.Label(self,textvariable=self.action_hint,wraplength=950).pack(anchor='w',pady=4)
         self.summary=ttk.Label(self,text="");self.summary.pack(anchor="w",pady=5)
         self.tree=table(self,["Pedido","Cliente","Situação","Pagamento","Total","Entrega","Entregador"])
@@ -108,11 +111,11 @@ class DeliveryView(View):
         return editor
 
     def details(self):
+        from .order_details import OrderDetails
         id=self.selected(self.tree)
-        row=next(r for r in self.s.delivery.list_orders() if r["id"]==id)
-        lines=self.s.sales.lines(id)
-        messagebox.showinfo(f"Pedido #{id}",f'{row["name"]}\n{row["phone"]}\n{row["address"]}\nReferência: {row["reference"]}\n\n'+
-            "\n".join(f'{line["qty"]} × {line["name"]}' for line in lines),parent=self)
+        window=tk.Toplevel(self);window.title(f'Pedido #{id}');window.geometry('1000x650')
+        details=OrderDetails(window,self.s);details.pack(fill='both',expand=True,padx=12,pady=12)
+        details.show(f'delivery:{id}');return details
 
     def receive(self):
         from .delivery_receipt import DeliveryReceiptDialog
@@ -127,22 +130,37 @@ class DeliveryView(View):
         self.s.delivery.mark_delivered(self.selected(self.tree),command())
 
     def cancel(self):
-        self.s.delivery.cancel(self.selected(self.tree),self.grant("delivery.cancel"),self.reason(),command())
+        id=self.selected(self.tree)
+        if confirm_action(self,self.s.delivery_queries.detail(id),'CANCEL'):
+            self.s.delivery.cancel(id,self.grant("delivery.cancel"),self.reason(),command())
 
     def returned(self):
-        id=self.selected(self.tree)
-        window=tk.Toplevel(self);window.title("Conferir retorno");window.geometry("660x350")
-        root=View(window,self.s);root.pack(fill="both",expand=True)
-        ttk.Label(root,text="Selecione o produto e informe apenas a quantidade conferida.").pack(anchor="w")
-        tree=table(root,["Produto","Quantidade enviada"],height=5)
-        fill(tree,[(r["product_id"],(r["name"],r["qty"])) for r in self.s.sales.lines(id)])
-        def confirm():
-            pid=root.selected(tree)
-            qty=simpledialog.askinteger("Retorno","Unidades recebidas em condição de revenda:",minvalue=1,parent=window)
-            if qty:
-                self.s.delivery.confirm_return(id,[CartLine(pid,qty)],self.grant("delivery.return"),self.reason(),command())
-                window.destroy()
-        ttk.Button(root,text="Confirmar unidades",command=lambda:root.act(confirm)).pack(anchor="e")
+        from ..common.errors import BusinessError
+        id=self.selected(self.tree);cmd=command()
+        window=tk.Toplevel(self);window.title('Conferir produtos devolvidos');window.geometry('760x450')
+        root=View(window,self.s);root.pack(fill='both',expand=True)
+        ttk.Label(root,text='Selecione o produto e informe somente as unidades em condição de revenda.',wraplength=700).pack(anchor='w')
+        footer=ttk.Frame(root);footer.pack(side='bottom',fill='x')
+        root.error=tk.StringVar();ttk.Label(footer,textvariable=root.error,foreground='#a52525',wraplength=650).pack(anchor='w')
+        fields=ttk.Frame(footer);fields.pack(fill='x',pady=6)
+        ttk.Label(fields,text='Unidades conferidas').pack(side='left');root.qty=ttk.Entry(fields,width=10);root.qty.pack(side='left',padx=8)
+        root.tree=table(root,['Produto','Quantidade enviada'],height=6)
+        fill(root.tree,[(r['product_id'],(r['name'],r['qty'])) for r in self.s.sales.lines(id)])
+        def submit():
+            try:
+                pid=root.selected(root.tree);qty=int(root.qty.get())
+                if qty<1:raise BusinessError('Informe uma quantidade positiva.')
+                detail=self.s.delivery_queries.detail(id);detail['confirmation']=f'Unidades conferidas agora: {qty} de '+root.tree.item(str(pid),'values')[0]
+                if not confirm_action(window,detail,'RETURN'):raise BusinessError('Devolução não confirmada. Revise ou feche.')
+                result=self.s.delivery.confirm_return(id,[CartLine(pid,qty)],self.grant('delivery.return'),self.reason(),cmd)
+                self.s.application.refresh();window.destroy();return result
+            except (BusinessError,ValueError,OSError,sqlite3.Error) as error:root.error.set('Informe unidades inteiras.' if isinstance(error,ValueError) and not isinstance(error,BusinessError) else str(error));return False
+        root.submit=submit
+        button=ttk.Button(fields,text='Confirmar devolução',style='Primary.TButton',command=submit);button.pack(side='right')
+        def submit_key(event):
+            submit();return 'break'
+        root.qty.bind('<Return>',lambda event:button.focus_set() or 'break');button.bind('<Return>',submit_key)
+        return root
 
     def refund(self):
         id=self.selected(self.tree)
@@ -154,6 +172,10 @@ class DeliveryView(View):
         actual=detail['collections'][0];method=actual['method'];cash=method=='MONEY'
         pending=sum(row['pending_cents'] for row in detail['refunds']);cmd=command()
         def submit(values):
+            from ..common.errors import BusinessError
+            amount=parse_money(values['amount'])
+            fresh=self.s.delivery_queries.detail(id);fresh['confirmation']='Valor deste reembolso: '+money(amount)+' | Saiu da gaveta: '+values['drawer']
+            if not confirm_action(self,fresh,'REFUND'):raise BusinessError('Reembolso não confirmado. Revise os dados ou cancele.')
             return self.s.delivery.refund(id,method,parse_money(values['amount']),values['drawer']=='Sim',
                 self.grant('delivery.refund'),self.reason(),cmd)
         return ask_fields(self,'Confirmar reembolso realizado',[
@@ -165,8 +187,7 @@ class DeliveryView(View):
         id=self.selected(self.tree)
         detail=self.s.delivery_queries.detail(id);plan=detail['payment_plan'];cmd=command()
         explicit=plan['payment_timing']!='UNSPECIFIED'
-        text='Criar novo pedido vinculado, com preços e taxas atuais?\n'+('A nova tentativa ficará em preparação para conferir pagamento e troco.' if explicit else 'Será registrada uma nova saída.')+'\nA corrida anterior permanece devida.'
-        if not messagebox.askyesno('Nova tentativa',text,parent=self):return
+        if not confirm_action(self,detail,'REDELIVER'):return
         def submit(values=None):
             kwargs={}
             if values is not None:kwargs['new_change_for_cents']=parse_money(values['change']) if values['needed']=='Sim' else 0
