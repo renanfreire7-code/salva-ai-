@@ -17,8 +17,7 @@ correção; três testes de marca/geometria aprovados. Uma confirmação visual 
 A5: teste integrado de banco014 populado detectou que a restauração antiga não
 aplicava migrações antes da entrada; corrigido para upgrade com backup antes do
 callback. Falha na montagem parcial da entrada recebeu regressão própria para
-fechamento sem deixar instância bloqueada. Resultados finais serão preenchidos
-somente após verificação completa.
+fechamento sem deixar instância bloqueada. Alvo14/14, suíte179/179 e legado30/30 aprovados.
 
 ## Decisões de execução
 
@@ -29,14 +28,14 @@ somente após verificação completa.
   orquestração manual.
 - Launcher Impeccable indisponível e sem PRODUCT/DESIGN existentes; contexto vem
   do projeto e desenho Operate nativo aprovado; custo: verificação visual manual.
-  Revisão final única também examinará o resultado visual, preservando o método
+  Revisão final única examinou também o resultado visual, preservando o método
   de execução aprovado.
 
 ## Limites
 
 Interface Tk real sob Xvfb no Linux. Isso não comprova Windows nativo/DPI nem
-aceite pelo operador. Pacotes anteriores permanecem preservados. Não há entrega
-final declarada enquanto tarefas de atendimento, revisão e pacote não terminarem.
+aceite pelo operador. Pacotes anteriores permanecem preservados. Validação nativa no Windows em
+100%/125% e aceite do operador permanecem pendentes.
 
 
 ## Atendimento e integração
@@ -59,3 +58,39 @@ A demonstração `scripts/demo_v2.py` também acompanha o ZIP: a suíte extraíd
 precisa exercitar o mesmo fluxo real de cadastro, sem importar arquivos do
 checkout. Custo dessa decisão: um módulo adicional no pacote. O manifesto
 confere cada arquivo; banco, credenciais, caches e testes não são distribuídos.
+
+## Revisão independente final
+
+Uma revisão consolidada examinou os dez focos dos planos, código, testes e
+quinze capturas. Três achados Important foram aceitos e receberam regressões
+que falharam antes das correções:
+
+- Restauração: após iniciar a substituição do banco, qualquer resultado encerra
+  a sessão anterior e limpa autorizações; falha na tela de entrada fecha a aplicação.
+- Reentrega legada: o resumo informa a saída e a corrida imediatas, preservando
+  a compatibilidade do domínio antigo; pedidos novos continuam em preparação.
+- Confirmações extensas: janela nativa com texto rolável e ações sempre visíveis,
+  sem omitir produtos ou fatos financeiros; fechar/Escape recusa a operação.
+
+Nenhuma segunda revisão foi solicitada. Minor adiado: o rodapé pode continuar
+mostrando “Entre para abrir o atendimento” após login até outra operação atualizar
+a mensagem. Custo: informação visual temporariamente desatualizada, sem bloquear
+a operação nem liberar acesso indevido.
+
+## Verificação da entrega
+
+Código verificado:63b262c. Após as correções da revisão, passaram os30 testes
+direcionados,201/201 testes novos no checkout,199/199 no ZIP extraído em pasta
+com espaços/acentos (sem o empacotador) e30/30 do legado, todos com Tk/Xvfb
+1366×768. Sem falhas nem skips nessas execuções finais. Uma chamada do legado
+sem Xvfb antes da execução final teve cinco skips e uma falha de estado de import;
+reexecutada no ambiente gráfico previsto, passou30/30 sem alteração de código.
+
+Manifesto dos157 arquivos conferido, ZIP íntegro e código/manual idênticos ao
+checkout. Nenhum banco, credencial, cache ou teste acompanha a distribuição.
+Arquivo: `dist/Bar_Simples_0.3.0-dev.zip`.
+
+SHA-256: `e5349ea6a370e287c622a29c0758b314f8f05e5f9f16eed0e07b0b0dd99a4965`.
+
+Entrega somente na branch `feat/salva-ai-v2`, preservando os pacotes anteriores.
+Download: https://github.com/renanfreire7-code/salva-ai-/raw/refs/heads/feat/salva-ai-v2/dist/Bar_Simples_0.3.0-dev.zip
