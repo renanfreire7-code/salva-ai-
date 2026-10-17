@@ -17,7 +17,7 @@ class DeliveryEditor(View,ProductPicker):
         panels=ttk.Panedwindow(self,orient='horizontal');panels.pack(fill='both',expand=True)
         customer=ttk.Frame(panels,padding=(0,0,16,0));items=ttk.Frame(panels,padding=(12,0,0,0))
         panels.add(customer,weight=4);panels.add(items,weight=6);customer.columnconfigure(0,weight=1)
-        for i,(key,label) in enumerate((('customer','Cliente *'),('phone','Telefone *'),('address','Endereço *'),('reference','Referência'))):
+        for i,(key,label) in enumerate((('customer','Cliente *'),('phone','Telefone *'),('address','Endereço *'),('complement','Complemento (opcional)'),('reference','Ponto de referência'))):
             ttk.Label(customer,text=label).grid(row=i*2,column=0,sticky='w',pady=(3,2))
             entry=ttk.Entry(customer,width=34);entry.grid(row=i*2+1,column=0,sticky='ew',pady=(0,3));self.fields[key]=entry
         entries=list(self.fields.values())
@@ -25,18 +25,20 @@ class DeliveryEditor(View,ProductPicker):
             entry.bind('<Return>',lambda event,i=index:self.advance_customer(i))
         self.timing=tk.StringVar(value='Na entrega');self.channel=tk.StringVar(value='Dinheiro')
         self.method=tk.StringVar(value='Crédito à vista');self.change_needed=tk.StringVar(value='Não')
-        self.timing_input=self.choice(customer,8,'Quando o cliente vai pagar?',self.timing,('Antecipado','Na entrega'))
-        self.channel_input=self.choice(customer,10,'Forma combinada',self.channel,tuple(METHODS))
+        self.timing_input=self.choice(customer,10,'Quando o cliente vai pagar?',self.timing,('Antecipado','Na entrega'))
+        self.channel_input=self.choice(customer,12,'Forma combinada',self.channel,tuple(METHODS))
         self.method_label=ttk.Label(customer,text='Modalidade do link (conforme comprovante)')
-        self.method_label.grid(row=12,column=0,sticky='w',pady=(5,2))
+        self.method_label.grid(row=14,column=0,sticky='w',pady=(5,2))
         self.method_input=ttk.Combobox(customer,textvariable=self.method,state='readonly',values=('Débito','Crédito à vista'))
-        self.method_input.grid(row=13,column=0,sticky='ew')
-        self.link_label=ttk.Label(customer,text='Link / referência (opcional)');self.link_label.grid(row=14,column=0,sticky='w')
-        self.link_reference=ttk.Entry(customer);self.link_reference.grid(row=15,column=0,sticky='ew')
-        self.change_input=self.choice(customer,16,'Precisa de troco?',self.change_needed,('Não','Sim'))
-        ttk.Label(customer,text='Troco para quanto? (R$)').grid(row=18,column=0,sticky='w',pady=(4,2))
-        self.change_for=ttk.Entry(customer);self.change_for.grid(row=19,column=0,sticky='ew')
-        ttk.Label(customer,textvariable=self.change_summary,wraplength=340).grid(row=20,column=0,sticky='w',pady=8)
+        self.method_input.grid(row=15,column=0,sticky='ew')
+        self.link_label=ttk.Label(customer,text='Link / referência (opcional)');self.link_label.grid(row=16,column=0,sticky='w')
+        self.link_reference=ttk.Entry(customer);self.link_reference.grid(row=17,column=0,sticky='ew')
+        self.change_input=self.choice(customer,18,'Precisa de troco?',self.change_needed,('Não','Sim'))
+        self.change_label=customer.grid_slaves(row=18)[0]
+        self.change_for_label=ttk.Label(customer,text='Troco para quanto? (R$)')
+        self.change_for_label.grid(row=20,column=0,sticky='w',pady=(4,2))
+        self.change_for=ttk.Entry(customer);self.change_for.grid(row=21,column=0,sticky='ew')
+        ttk.Label(customer,textvariable=self.change_summary,wraplength=340).grid(row=22,column=0,sticky='w',pady=8)
         self.change_for.bind('<KeyRelease>',lambda event:self.refresh())
         self.change_for.bind('<Return>',lambda event:self.to_picker())
         self.build_picker(items,self.add)
@@ -71,7 +73,7 @@ class DeliveryEditor(View,ProductPicker):
         entry=list(self.fields.values())[index]
         if index<3 and not entry.get().strip():
             self.error.set('Preencha cliente, telefone e endereço.');return 'break'
-        next_widget=list(self.fields.values())[index+1] if index<3 else self.timing_input
+        next_widget=list(self.fields.values())[index+1] if index+1<len(self.fields) else self.timing_input
         return self.focus_and_break(next_widget)
 
     def to_picker(self):
@@ -88,6 +90,9 @@ class DeliveryEditor(View,ProductPicker):
         cash=self.channel.get()=='Dinheiro';link=self.channel.get()=='Link de pagamento'
         self.change_input.configure(state='readonly' if cash else 'disabled')
         if not cash:self.change_needed.set('Não')
+        for widget in (self.change_label,self.change_input,self.change_for_label,self.change_for):
+            if cash:widget.grid()
+            else:widget.grid_remove()
         enabled=cash and self.change_needed.get()=='Sim'
         self.change_for.configure(state='normal')
         if not enabled:self.change_for.delete(0,'end');self.change_for.configure(state='disabled')
@@ -135,7 +140,7 @@ class DeliveryEditor(View,ProductPicker):
         forecast=parse_money(self.change_for.get()) if method=='MONEY' and self.change_needed.get()=='Sim' else None
         return DeliveryDraft(values['customer'],values['phone'],values['address'],values['reference'],
             [CartLine(pid,qty) for pid,qty in self.lines.items()],method,'COURIER' if method=='MONEY' else 'BAR',
-            'ADVANCE' if self.timing.get()=='Antecipado' else 'ON_DELIVERY','LINK' if link else method,forecast,self.link_reference.get().strip() if link else '')
+            'ADVANCE' if self.timing.get()=='Antecipado' else 'ON_DELIVERY','LINK' if link else method,forecast,self.link_reference.get().strip() if link else '',values['complement'])
 
     def submit(self):
         def perform():

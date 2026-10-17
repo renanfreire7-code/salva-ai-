@@ -100,7 +100,7 @@ class CancellationMixin:
             row=self.db.conn.execute("SELECT d.*,o.name FROM delivery_orders d JOIN orders o ON o.id=d.order_id WHERE order_id=?",(order_id,)).fetchone()
             forecast=row['change_for_cents'] if new_change_for_cents is None else new_change_for_cents or None
             draft=DeliveryDraft(row["name"],row["phone"],row["address"],row["reference"],[CartLine(i["product_id"],i["qty"]) for i in items],row["method"],row["collection"],
-                row['payment_timing'],row['payment_channel'],forecast,row['link_reference'])
+                row['payment_timing'],row['payment_channel'],forecast,row['link_reference'],row['complement'])
             new=self.confirm(draft,command_id+":new")
             self.db.conn.execute("UPDATE delivery_orders SET previous_order_id=? WHERE order_id=?",(order_id,new.id))
             if row['payment_timing']!='UNSPECIFIED':

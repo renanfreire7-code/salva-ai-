@@ -17,6 +17,7 @@ def delivery_text(detail):
         f"Criado: {order['created_at']}",f"Pagamento: {TIMING[plan['payment_timing']]} · {METHODS.get(plan['payment_channel'],'Não informado')}",
         f"Modalidade combinada: {METHODS[plan['method']]}",f"Produtos: {money(order['subtotal_cents'])}",
         f"Taxa cobrada: {money(order['delivery_fee_cents'])}",f"Total: {money(order['total_cents'])}",f"Valor por corrida: {money(order['courier_fee_cents'])}"]
+    if order.get('complement'):lines.insert(4,'Complemento: '+order['complement'])
     if plan['link_reference']:lines.append('Link / referência: '+plan['link_reference'])
     if plan['expected_change_cents'] is None:lines.append('Troco combinado: não registrado nesta versão anterior.')
     else:

@@ -41,8 +41,8 @@ class DeliveryService(CancellationMixin, ReceiptsMixin, Service):
             self.cash.require_open()
             id=self.sales._new("DELIVERY",draft.customer.strip(),command_id+":order")
             fees=self.settings()
-            self.db.conn.execute("INSERT INTO delivery_orders(order_id,phone,address,reference,method,collection,delivery_fee_cents,courier_fee_cents) VALUES(?,?,?,?,?,?,?,?)",
-                (id,draft.phone,draft.address,draft.reference,draft.payment_method,draft.collection,fees["customer_fee_cents"],fees["courier_fee_cents"]))
+            self.db.conn.execute("INSERT INTO delivery_orders(order_id,phone,address,reference,method,collection,delivery_fee_cents,courier_fee_cents,complement) VALUES(?,?,?,?,?,?,?,?,?)",
+                (id,draft.phone,draft.address,draft.reference,draft.payment_method,draft.collection,fees["customer_fee_cents"],fees["courier_fee_cents"],draft.complement))
             for line in draft.lines:
                 condition=self.pricing.snapshot(line.product_id)
                 self.inventory.reserve(line.product_id,"DELIVERY",id,line.qty)

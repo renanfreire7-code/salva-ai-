@@ -15,6 +15,7 @@ class DeliveryDraft:
     payment_channel: str | None = None
     change_for_cents: int | None = None
     link_reference: str = ''
+    complement: str = ''
 
 
 @dataclass(frozen=True)

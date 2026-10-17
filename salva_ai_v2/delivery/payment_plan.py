@@ -37,6 +37,7 @@ def validate_plan(draft,total_cents):
 
 def draft_payload(draft):
     payload=asdict(draft)
+    if not draft.complement:payload.pop('complement')
     # Preserve fingerprints for callers using the pre-extension seven fields.
     if draft.payment_timing=='UNSPECIFIED' and draft.payment_channel is None and draft.change_for_cents is None and not draft.link_reference:
         for key in EXTENSIONS:
