@@ -53,7 +53,7 @@ class AttendanceUITest(unittest.TestCase):
         from salva_ai_v2.ui.products import ProductsView
         view=next(v for v in self.app.views if isinstance(v,ProductsView))
         history=view.purchase_history()
-        self.addCleanup(history.winfo_toplevel().destroy)
+        self.assertIs(history,self.app.purchases_view)
         history.tree.selection_set('1')
         history.select_purchase()
         history.items_tree.selection_set(str(self.pid))

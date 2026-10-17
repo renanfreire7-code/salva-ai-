@@ -80,21 +80,20 @@ class View(ttk.Frame):
 class ProductPicker:
     def build_picker(self,parent,add_callback):
         self._add_callback=add_callback
-        row=ttk.Frame(parent)
-        row.pack(fill="x",pady=6)
-        ttk.Label(row,text="Produto").pack(side="left")
+        row=ttk.Frame(parent);row.pack(fill='x',pady=6);row.columnconfigure(1,weight=1)
+        ttk.Label(row,text='Buscar produto · nome, código ou iniciais').grid(row=0,column=0,columnspan=3,sticky='w',pady=(0,4))
         self.search=tk.StringVar()
-        self.picker=ttk.Combobox(row,textvariable=self.search,width=43)
-        self.picker.pack(side="left",padx=8)
+        self.picker=ttk.Combobox(row,textvariable=self.search,width=24)
+        self.picker.grid(row=1,column=0,columnspan=3,sticky='ew',pady=(0,6))
         self.picker.bind("<KeyRelease>",lambda event:self.filter_products() if event.keysym not in ('Up','Down','Return','KP_Enter') and not event.keysym.startswith('F') else None)
         self.picker.bind('<Return>',lambda event:self.choose_product())
         self.picker.bind('<Down>',lambda event:self.move_product(1))
         self.picker.bind('<Up>',lambda event:self.move_product(-1))
-        ttk.Label(row,text="Quantidade").pack(side="left")
+        ttk.Label(row,text="Quantidade").grid(row=2,column=0,sticky='w')
         self.qty=ttk.Entry(row,width=6)
         self.qty.insert(0,"1")
-        self.qty.pack(side="left",padx=8)
-        ttk.Button(row,text="Adicionar",command=lambda:self.act(self.add_and_focus)).pack(side="left")
+        self.qty.grid(row=2,column=1,sticky='w',padx=8)
+        ttk.Button(row,text="Adicionar",command=lambda:self.act(self.add_and_focus)).grid(row=2,column=2,sticky='e')
         self.qty.bind("<Return>",lambda event:self.add_key())
         self.products_map={}
         self.picker_notice=tk.StringVar()
@@ -131,6 +130,8 @@ class ProductPicker:
         products=search_products(self.s.inventory.products(),self.search.get())
         self.products_map={product_label(p):p["id"] for p in products}
         self.picker.configure(values=list(self.products_map))
+        if hasattr(self,'product_tree') and hasattr(self,'render_product_candidates'):
+            self.render_product_candidates(products)
 
     def selected_product(self):
         value=self.search.get()

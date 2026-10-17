@@ -1,6 +1,7 @@
 from tkinter import ttk,simpledialog,messagebox
 from .shared import View, ProductPicker, table,fill,command
 from .sales import ask_payment
+from .payment import PaymentDialog
 from ..common.money import money
 
 
@@ -12,13 +13,18 @@ class TabsView(View,ProductPicker):
         self.customer=ttk.Entry(row,width=32);self.customer.pack(side="left")
         ttk.Button(row,text="Abrir comanda",command=lambda:self.act(self.create)).pack(side="left",padx=8)
         self.customer.bind("<Return>",lambda e:self.act(self.create))
-        self.tabs_tree=table(self,["Comanda","Cliente","Total"],height=4)
+        panels=ttk.Panedwindow(self,orient='horizontal');panels.pack(fill='both',expand=True)
+        listing=ttk.Frame(panels,padding=(0,0,12,0));detail=ttk.Frame(panels,padding=(12,0,0,0))
+        panels.add(listing,weight=3);panels.add(detail,weight=7)
+        self.tabs_tree=table(listing,["Comanda","Cliente","Total"],height=10)
+        self.tabs_tree.column('Comanda',width=65);self.tabs_tree.column('Cliente',width=140,anchor='w');self.tabs_tree.column('Total',width=85)
         self.tabs_tree.bind("<<TreeviewSelect>>",lambda e:self.refresh_items())
-        self.build_picker(self,self.add_selected)
-        row=ttk.Frame(self);row.pack(side="bottom",fill="x",pady=6)
+        self.build_picker(detail,self.add_selected)
+        row=ttk.Frame(detail);row.pack(side="bottom",fill="x",pady=6)
         for label,callback in (("Receber comanda",self.checkout),("Alterar quantidade",self.change_qty),("Cancelar comanda",self.cancel)):
-            ttk.Button(row,text=label,command=lambda f=callback:self.act(f)).pack(side="left",padx=(0,8))
-        self.items_tree=table(self,["Produto","Quantidade","Total"],height=5)
+            ttk.Button(row,text=label,style='Primary.TButton' if callback==self.checkout else 'Danger.TButton' if callback==self.cancel else 'TButton',command=lambda f=callback:self.act(f)).pack(side="left",padx=(0,8))
+        self.items_tree=table(detail,["Produto","Quantidade","Total"],height=5)
+        self.items_tree.column('Produto',width=250,anchor='w')
 
     def create(self):
         name=self.customer.get().strip()
@@ -47,10 +53,12 @@ class TabsView(View,ProductPicker):
 
     def checkout(self):
         tab=self.selected(self.tabs_tree)
-        payment=ask_payment(self,self.s.sales.total(tab))
-        if payment:
-            sale=self.s.sales.pay_tab(tab,payment,command())
+        cmd=command()
+        def submit(payment):
+            sale=self.s.sales.pay_tab(tab,payment,cmd)
             self.s.application.notify(f"Comanda recebida. Venda #{sale.id}.")
+            return sale
+        PaymentDialog(self,self.s.sales.total(tab),on_submit=submit).show()
 
     def cancel(self):
         self.s.sales.cancel_tab(self.selected(self.tabs_tree),self.grant("tab.cancel"),self.reason(),command())

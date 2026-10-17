@@ -1,5 +1,6 @@
 from tkinter import ttk
-from .shared import View, table, fill, ask_fields, command
+from .shared import View, table, fill, ask_fields, command,FieldSpec
+from ..common.service import integer
 from ..common.money import parse_money, money, round_half_up
 from ..inventory.models import PurchaseLine
 
@@ -25,23 +26,25 @@ class ProductsView(View):
         fill(self.tree,rows)
 
     def purchase_history(self):
-        from tkinter import Toplevel
-        from .purchases import PurchasesView
-        window=Toplevel(self);window.title('Compras, devoluções e créditos');window.geometry('1060x620')
-        view=PurchasesView(window,self.s);view.pack(fill='both',expand=True)
+        view=self.s.application.purchases_view
+        self.s.application.show_view(view)
         return view
 
     def create(self):
-        values=ask_fields(self,"Novo produto",[("name","Nome",""),("price","Preço normal (R$)",""),("pack","Unidades por caixa/fardo",1),("minimum","Estoque mínimo",0)])
-        if values:
-            self.s.inventory.create_product(values["name"],parse_money(values["price"]),int(values["pack"]),int(values["minimum"]),command())
-            self.s.application.notify("Produto cadastrado.")
+        cmd=command()
+        def submit(values):
+            result=self.s.inventory.create_product(values['name'],parse_money(values['price']),int(values['pack']),int(values['minimum']),cmd)
+            self.s.application.notify('Produto cadastrado.');return result
+        ask_fields(self,'Novo produto',[
+            FieldSpec('name','Nome',required=True),FieldSpec('price','Preço normal (R$)',required=True,validator=parse_money),
+            FieldSpec('pack','Unidades por caixa/fardo',1,validator=lambda value:integer(int(value),'Unidades',1)),
+            FieldSpec('minimum','Estoque mínimo',0,validator=lambda value:integer(int(value),'Mínimo'))],on_submit=submit)
 
     def purchase(self):
         pid=self.selected(self.tree)
         today=self.s.clock.today().isoformat()
-        values=ask_fields(self,"Entrada de mercadoria",[("qty","Quantidade",1),("unit","Unidade ou caixa/fardo?","unidade"),("cost","Custo total dos produtos (R$)",""),("freight","Frete (R$)","0,00"),("date","Data do gasto (AAAA-MM-DD)",today),("due","Vencimento (AAAA-MM-DD)",today),("payment","Pendente / Pix / Dinheiro da gaveta / Débito / Crédito","Pendente")])
-        if values:
+        cmd=command()
+        def submit(values):
             from ..sales.models import Payment
             from ..common.errors import BusinessError
             unit=values['unit'].casefold()
@@ -54,18 +57,32 @@ class ProductsView(View):
                 raise BusinessError('Escolha uma das formas de pagamento indicadas.')
             method=modes[values['payment'].casefold()]
             payment=Payment(method) if method else None
-            purchase=self.s.inventory.receive_and_pay_purchase([PurchaseLine(pid,qty,parse_money(values['cost']))],parse_money(values['freight']),values['date'],values['due'],payment,self.grant('cash.withdraw') if method=='MONEY' else None,command())
+            purchase=self.s.inventory.receive_and_pay_purchase([PurchaseLine(pid,qty,parse_money(values['cost']))],parse_money(values['freight']),values['date'],values['due'],payment,self.grant('cash.withdraw') if method=='MONEY' else None,cmd)
             self.s.application.notify(f'Compra #{purchase} registrada no estoque e no financeiro.')
+            return purchase
+        ask_fields(self,'Entrada de mercadoria',[
+            FieldSpec('qty','Quantidade',1,validator=lambda value:integer(int(value),'Quantidade',1)),
+            FieldSpec('unit','Unidade de entrada','unidade',kind='choice',choices=('unidade','caixa/fardo')),
+            FieldSpec('cost','Custo total dos produtos (R$)',required=True,validator=parse_money),
+            FieldSpec('freight','Frete (R$)','0,00',validator=parse_money),
+            FieldSpec('date','Data do gasto (AAAA-MM-DD)',today),FieldSpec('due','Vencimento (AAAA-MM-DD)',today),
+            FieldSpec('payment','Pagamento','Pendente',kind='choice',choices=('Pendente','Pix','Dinheiro da gaveta','Débito','Crédito'))],on_submit=submit)
 
     def edit(self):
         pid=self.selected(self.tree)
         product=next(p for p in self.s.inventory.products() if p['id']==pid)
-        values=ask_fields(self,'Editar produto',[('name','Nome',product['name']),('price','Preço normal (R$)',money(product['price_cents']).replace('R$ ','')),('pack','Unidades por caixa/fardo',product['pack_size']),('minimum','Estoque mínimo',product['min_stock'])])
-        if values:
+        cmd=command()
+        def submit(values):
             before=self.s.pricing.snapshot(pid)
-            self.s.inventory.update_product(pid,values['name'],parse_money(values['price']),int(values['pack']),int(values['minimum']),self.grant('product.edit'),self.reason(),command())
+            result=self.s.inventory.update_product(pid,values['name'],parse_money(values['price']),int(values['pack']),int(values['minimum']),self.grant('product.edit'),self.reason(),cmd)
             disabled=before.group_qty is not None and self.s.pricing.snapshot(pid).group_qty is None
             self.s.application.notify('Produto atualizado.'+(' A promoção foi desativada porque deixou de oferecer economia.' if disabled else ''))
+            return result
+        ask_fields(self,'Editar produto',[
+            FieldSpec('name','Nome',product['name'],required=True),
+            FieldSpec('price','Preço normal (R$)',money(product['price_cents']).replace('R$ ',''),validator=parse_money),
+            FieldSpec('pack','Unidades por caixa/fardo',product['pack_size'],validator=lambda value:integer(int(value),'Unidades',1)),
+            FieldSpec('minimum','Estoque mínimo',product['min_stock'],validator=lambda value:integer(int(value),'Mínimo'))],on_submit=submit)
 
     def promotion(self):
         pid=self.selected(self.tree)

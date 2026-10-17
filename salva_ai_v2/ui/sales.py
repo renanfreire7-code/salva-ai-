@@ -5,18 +5,7 @@ from ..sales.models import Payment
 from ..common.money import parse_money, money
 
 
-def ask_payment(parent,total):
-    from .shared import ask_fields
-    values=ask_fields(parent,"Receber pagamento",[("method","Dinheiro / Pix / Débito / Crédito","Dinheiro"),("received","Recebido em dinheiro (R$)",money(total).replace("R$ ", ""))])
-    if not values:
-        return None
-    methods={"dinheiro":"MONEY","pix":"PIX","débito":"DEBIT","debito":"DEBIT","crédito":"CREDIT","credito":"CREDIT"}
-    method=methods.get(values["method"].casefold())
-    payment=Payment(method,parse_money(values["received"]) if method=="MONEY" else None)
-    change=(payment.tendered_cents or 0)-total if method=="MONEY" else 0
-    if messagebox.askyesno("Conferir recebimento",f"Total: {money(total)}\nTroco: {money(change)}\n\nConfirmar pagamento?",parent=parent):
-        return payment
-    return None
+from .payment import ask_payment,PaymentDialog
 
 
 class SalesView(View,ProductPicker):
@@ -24,15 +13,35 @@ class SalesView(View,ProductPicker):
         super().__init__(parent,services)
         self.cart_id=None
         self.payment_command=None
-        ttk.Label(self,text="Venda direta",style="Title.TLabel").pack(anchor="w")
-        self.build_picker(self,self.add_selected)
-        buttons=ttk.Frame(self);buttons.pack(side="bottom",fill="x",pady=8)
+        ttk.Label(self,text="Venda de balcão",style="Title.TLabel").pack(anchor="w",pady=(0,8))
+        panels=ttk.Panedwindow(self,orient='horizontal');panels.pack(fill='both',expand=True)
+        catalog=ttk.Frame(panels,padding=(0,0,12,0));order=ttk.Frame(panels,padding=(12,0,0,0))
+        panels.add(catalog,weight=4);panels.add(order,weight=6)
+        self.build_picker(catalog,self.add_selected)
+        self.product_tree=table(catalog,['Produto','Preço','Disponível'],height=8)
+        self.product_tree.column('Produto',width=230,anchor='w');self.product_tree.column('Preço',width=80);self.product_tree.column('Disponível',width=85)
+        self.product_tree.bind('<Double-1>',lambda event:self.choose_catalog())
+        ttk.Label(order,text='Pedido atual',style='Title.TLabel').pack(anchor='w')
+        buttons=ttk.Frame(order);buttons.pack(side="bottom",fill="x",pady=8)
         self.total_label=ttk.Label(buttons,text="Total: R$ 0,00",style="Title.TLabel")
         self.total_label.pack(side="left")
-        ttk.Button(buttons,text="Receber pagamento",command=lambda:self.act(self.checkout)).pack(side="right")
-        ttk.Button(buttons,text="Alterar quantidade",command=lambda:self.act(self.change_qty)).pack(side="right",padx=8)
-        ttk.Button(buttons,text="Novo carrinho",command=self.reset).pack(side="right",padx=8)
-        self.tree=table(self,["Produto","Quantidade","Total","Economia"])
+        ttk.Button(buttons,text="Receber",style='Primary.TButton',command=lambda:self.act(self.checkout)).pack(side="right")
+        actions=ttk.Frame(order);actions.pack(side='bottom',fill='x',pady=4)
+        ttk.Button(actions,text="Alterar quantidade",command=lambda:self.act(self.change_qty)).pack(side="left",padx=(0,8))
+        ttk.Button(actions,text="Novo pedido",command=self.reset).pack(side="left")
+        self.tree=table(order,["Produto","Quantidade","Total","Economia"])
+        self.tree.column('Produto',width=230,anchor='w')
+        for column in ('Quantidade','Total','Economia'):self.tree.column(column,width=85)
+
+    def render_product_candidates(self,products):
+        fill(self.product_tree,[(p['id'],(p['name'],money(p['price_cents']),self.s.inventory.position(p['id']).available)) for p in products])
+
+    def choose_catalog(self):
+        from ..inventory.queries import product_label
+        selected=self.product_tree.selection()
+        if selected:
+            pid=int(selected[0]);product=next(p for p in self.s.inventory.products() if p['id']==pid)
+            self.search.set(product_label(product));self.products_map[self.search.get()]=pid;self.qty.focus_set()
 
     @property
     def total_cents(self):
@@ -69,9 +78,10 @@ class SalesView(View,ProductPicker):
         return sale
 
     def checkout(self):
-        payment=ask_payment(self,self.total_cents)
-        if payment:
-            self.submit(payment)
+        if not self.total_cents:
+            from ..common.errors import BusinessError
+            raise BusinessError('Adicione produtos antes de receber.')
+        PaymentDialog(self,self.total_cents,on_submit=self.submit).show()
 
     def reset(self):
         if self.total_cents and not messagebox.askyesno("Novo carrinho","Descartar o carrinho atual?",parent=self):
