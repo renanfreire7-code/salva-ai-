@@ -139,38 +139,7 @@ class DeliveryView(View):
             self.s.delivery.configure_fees(parse_money(values["customer"]),parse_money(values["courier"]),command())
 
     def settlement(self):
-        window=tk.Toplevel(self);window.title("Acerto com entregador");window.geometry("960x600")
-        root=View(window,self.s);root.pack(fill="both",expand=True)
-        ttk.Label(root,text="Selecione recebimentos e corridas (Ctrl para selecionar vários). Valores são conferidos antes de concluir.").pack(anchor="w")
-        panels=ttk.Frame(root);panels.pack(fill="both",expand=True)
-        left=ttk.Frame(panels);left.pack(side="left",fill="both",expand=True,padx=(0,8))
-        right=ttk.Frame(panels);right.pack(side="left",fill="both",expand=True)
-        collections=table(left,["Recebimento","Pedido","Pendente"],height=6);collections.configure(selectmode="extended")
-        trips=table(right,["Corrida","Pedido","A pagar"],height=6);trips.configure(selectmode="extended")
-        floats=table(root,["Troco transferido","Pendente"],height=3)
-        def refresh():
-            fill(collections,[(r["id"],(r["id"],r["order_id"],money(r["amount_cents"]-r["settled_cents"]-r["courier_refunded_cents"]))) for r in self.s.settlements.collections_pending()])
-            fill(trips,[(r["id"],(r["id"],r["order_id"],money(r["pending_cents"]))) for r in self.s.settlements.trips_pending()])
-            fill(floats,[(r["id"],(r["id"],money(r["amount_cents"]-r["returned_cents"]))) for r in self.s.settlements.floats_pending()])
-        def settle():
-            ids=[int(x) for x in collections.selection()];trip_ids=[int(x) for x in trips.selection()]
-            available=sum(r["amount_cents"]-r["settled_cents"]-r["courier_refunded_cents"] for r in self.s.settlements.collections_pending() if r["id"] in ids)
-            due=sum(r["pending_cents"] for r in self.s.settlements.trips_pending() if r["id"] in trip_ids)
-            values=ask_fields(window,f"Conferir acerto • recebido {money(available)} / corridas {money(due)}",
-                [("handed","Dinheiro entregue à gaveta (R$)",money(max(0,available-due)).replace("R$ ","")),
-                 ("paid","Dinheiro pago da gaveta (R$)",money(max(0,due-available)).replace("R$ ","")),
-                 ("offset","Compensação combinada (R$)",money(min(available,due)).replace("R$ ",""))])
-            if values:
-                self.s.settlements.settle(ids,trip_ids,parse_money(values["handed"]),parse_money(values["paid"]),parse_money(values["offset"]),self.grant("delivery.settle"),command());refresh()
-        def fund():
-            values=ask_fields(window,"Enviar troco",[("amount","Valor (R$)",""),("reason","Motivo","Troco para entregas")])
-            if values:
-                self.s.settlements.fund_courier(parse_money(values["amount"]),self.grant("delivery.float"),values["reason"],command());refresh()
-        def return_float():
-            id=root.selected(floats);values=ask_fields(window,"Devolver troco",[("amount","Valor devolvido à gaveta (R$)","")])
-            if values:
-                self.s.settlements.return_float(id,parse_money(values["amount"]),command());refresh()
-        actions=ttk.Frame(root);actions.pack(fill="x",pady=6)
-        for label,callback in (("Conferir acerto",settle),("Enviar troco",fund),("Receber troco de volta",return_float)):
-            ttk.Button(actions,text=label,command=lambda f=callback:root.act(f)).pack(side="left",padx=6)
-        refresh()
+        from .settlement import SettlementView
+        window=tk.Toplevel(self);window.title('Acerto com entregador');window.geometry('1180x650')
+        view=SettlementView(window,self.s);view.pack(fill='both',expand=True)
+        return view

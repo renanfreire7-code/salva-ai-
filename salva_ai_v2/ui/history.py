@@ -1,87 +1,59 @@
 import tkinter as tk
-from tkinter import ttk,messagebox
-from .shared import View,table,fill,ask_fields,command
+from tkinter import ttk
+from .shared import View,table,fill
 from .finance import date_input
-from ..finance.queries import month_range
-from ..reporting.models import HistoryFilter
-from ..sales.models import Payment
+from .order_details import OrderDetails,KINDS,STATES
+from ..reporting.commerce_models import CommerceFilter
+from ..common.money import money
 
 
 class HistoryView(View):
     def __init__(self,parent,services):
         super().__init__(parent,services)
-        ttk.Label(self,text='Histórico e correções',style='Title.TLabel').pack(anchor='w')
+        ttk.Label(self,text='Histórico de vendas',style='Title.TLabel').pack(anchor='w')
         row=ttk.Frame(self);row.pack(fill='x',pady=8)
-        start,end=month_range(self.s.clock.today().strftime('%Y-%m'))
-        self.start=tk.StringVar(value=start.strftime('%d/%m/%Y'));self.end=tk.StringVar(value=end.strftime('%d/%m/%Y'))
-        self.object_id=tk.StringVar()
-        for label,var in (('De',self.start),('Até',self.end),('ID do registro',self.object_id)):
-            ttk.Label(row,text=label).pack(side='left');ttk.Entry(row,textvariable=var,width=12).pack(side='left',padx=6)
+        today=self.s.clock.today().strftime('%d/%m/%Y')
+        self.start=tk.StringVar(value=today);self.end=tk.StringVar(value=today)
+        self.kind=tk.StringVar(value='Todos');self.state=tk.StringVar(value='Todas');self.text=tk.StringVar()
+        for label,var in (('De',self.start),('Até',self.end)):
+            ttk.Label(row,text=label).pack(side='left');ttk.Entry(row,textvariable=var,width=11).pack(side='left',padx=6)
+        ttk.Combobox(row,textvariable=self.kind,values=('Todos','Balcão','Comanda','Delivery'),width=12,state='readonly').pack(side='left',padx=6)
         ttk.Button(row,text='Consultar',command=lambda:self.act(self.refresh)).pack(side='left',padx=6)
-        row=ttk.Frame(self);row.pack(fill='x',pady=(0,6))
-        ttk.Button(row,text='Corrigir venda / reabrir comanda',command=lambda:self.act(self.reverse)).pack(side='left',padx=6)
-        ttk.Button(row,text='Concluir reembolso',command=lambda:self.act(self.finish_refund)).pack(side='left',padx=6)
-        self.actions=row
-        ttk.Button(row,text='Backups',command=lambda:self.act(self.backup_center)).pack(side='left',padx=6)
-        self.tree=table(self,['Data','Operação','Registro','Detalhes / motivo'])
-        self.tree.column('Detalhes / motivo',width=550,anchor='w')
+        ttk.Button(row,text='Auditoria e manutenção',command=lambda:self.act(self.open_audit)).pack(side='right')
+        row=ttk.Frame(self);row.pack(fill='x')
+        ttk.Label(row,text='Número, cliente ou produto').pack(side='left')
+        ttk.Entry(row,textvariable=self.text,width=28).pack(side='left',padx=8)
+        ttk.Combobox(row,textvariable=self.state,values=('Todas',*STATES.values()),width=20,state='readonly').pack(side='left')
+        ttk.Label(self,text='Balcão/comanda: data do recebimento da venda. Delivery: data de criação do pedido.',wraplength=950).pack(anchor='w',pady=5)
+        panels=ttk.Panedwindow(self,orient='horizontal');panels.pack(fill='both',expand=True)
+        listing=ttk.Frame(panels);self.details=OrderDetails(panels,self.s)
+        panels.add(listing,weight=5);panels.add(self.details,weight=5)
+        self.tree=table(listing,['Tipo','Número','Cliente','Valor','Situação'])
+        for column,width in (('Tipo',80),('Número',100),('Cliente',120),('Valor',90),('Situação',120)):
+            self.tree.column(column,width=width,anchor='e' if column=='Valor' else 'w')
+        self.tree.bind('<<TreeviewSelect>>',lambda event:self.show_selected())
+        self.rows={}
+
+    def filters(self):
+        return CommerceFilter(date_input(self.start.get()),date_input(self.end.get()),
+            next((key for key,value in KINDS.items() if value==self.kind.get()),None),
+            next((key for key,value in STATES.items() if value==self.state.get()),None),self.text.get())
 
     def refresh(self):
-        filters=HistoryFilter(date_input(self.start.get()),date_input(self.end.get()),self.object_id.get().strip() or None)
-        fill(self.tree,[(r.id,(r.occurred_at.strftime('%d/%m/%Y %H:%M'),r.kind,r.object_id,r.description)) for r in self.s.reports.history(filters)])
+        rows=self.s.commerce.list(self.filters());self.rows={r.key:r for r in rows}
+        def number(row):
+            return f'{row.order_id} (venda {row.sale_id})' if row.kind=='TAB' else row.order_id if row.kind=='DELIVERY' else row.sale_id
+        fill(self.tree,[(r.key,(KINDS[r.kind],number(r),r.customer,money(r.total_cents),STATES.get(r.state,r.state))) for r in rows])
+        self.show_selected()
 
-    def reverse(self):
-        from ..common.money import parse_money
-        values=ask_fields(self,'Corrigir venda',[('sale','Número da venda',''),('returned','Mercadoria retornou? sim/não','não'),('refund','Reembolso confirmado? sim/não','não'),('method','Dinheiro / Pix / Débito / Crédito','Dinheiro'),('amount','Valor devolvido em dinheiro (R$)','0,00'),('reopen','Reabrir comanda? sim/não','não')])
-        if values:
-            methods={'dinheiro':'MONEY','pix':'PIX','débito':'DEBIT','debito':'DEBIT','crédito':'CREDIT','credito':'CREDIT'}
-            method=methods.get(values['method'].casefold())
-            refund=Payment(method,parse_money(values['amount']) if method=='MONEY' else None) if values['refund'].casefold()=='sim' else None
-            self.s.sales.reverse_sale(int(values['sale']),values['returned'].casefold()=='sim',refund,values['reopen'].casefold()=='sim',self.grant('sale.reverse'),self.reason(),command())
+    def show_selected(self):
+        selected=self.tree.selection();self.details.show(selected[0] if selected else None)
+
+    def open_audit(self):
+        from .audit import AuditView
+        window=tk.Toplevel(self);window.title('Histórico de alterações e manutenção');window.geometry('1120x620')
+        view=AuditView(window,self.s);view.pack(fill='both',expand=True);view.refresh()
+        return view
 
     def backup_center(self):
-        from tkinter import filedialog
-        from pathlib import Path
-        window=tk.Toplevel(self);window.title('Backups e recuperação');window.geometry('880x480')
-        root=View(window,self.s);root.pack(fill='both',expand=True)
-        ttk.Label(root,text='Restauração substitui os dados atuais. Uma cópia do banco atual será preservada. Backups podem conter um PIN anterior.',wraplength=800).pack(anchor='w',pady=8)
-        tree=table(root,['Arquivo','Integridade'],height=10)
-        paths={}
-        def refresh():
-            paths.clear()
-            paths.update({i:p for i,p in enumerate(self.s.backups.list_backups())})
-            fill(tree,[(i,(p.name,'Não verificada nesta consulta')) for i,p in paths.items()])
-        def manual():
-            info=self.s.backups.create('manual',command())
-            self.s.application.notify('Backup local verificado.'+(' Cópia externa indisponível.' if info.external_copy_ok is False else ''))
-            refresh()
-        def verify():
-            id=root.selected(tree);info=self.s.backups.verify(paths[id])
-            tree.item(str(id),values=(info.path.name,'Integridade OK'))
-        def external():
-            path=filedialog.askdirectory(parent=window,title='Pasta adicional para backups')
-            if path:
-                self.s.backups.set_external_dir(Path(path),self.grant('backup.configure'),command())
-                self.s.application.notify('Destino externo configurado. A próxima cópia informará o resultado.')
-        def restore():
-            path=filedialog.askopenfilename(parent=window,title='Escolher backup para restaurar',filetypes=[('Backup SQLite','*.sqlite3')])
-            if not path:
-                return
-            preview=self.s.restore.prepare(Path(path),self.grant('backup.restore'))
-            confirmed=messagebox.askyesno('Confirmar substituição',f'Backup: {preview.source.name}\nVersão de estrutura: {preview.schema_version}\n\nSubstituir os dados atuais?\nO aplicativo será fechado após a restauração.',parent=window)
-            self.s.restore.apply(preview,confirmed)
-            if confirmed:
-                messagebox.showinfo('Restauração concluída','A cópia anterior foi preservada. Abra o aplicativo novamente. O PIN será o existente no backup.',parent=window)
-                self.s.application.close()
-        row=ttk.Frame(root);row.pack(fill='x',pady=6)
-        for label,callback in (('Criar backup',manual),('Verificar selecionado',verify),('Pasta adicional',external),('Restaurar arquivo',restore),('Recuperar PIN',self.s.application.admin.recover)):
-            ttk.Button(row,text=label,command=lambda f=callback:root.act(f)).pack(side='left',padx=4)
-        refresh()
-
-    def finish_refund(self):
-        from ..common.money import parse_money
-        values=ask_fields(self,'Confirmar reembolso realizado',[('sale','Número da venda',''),('method','Dinheiro / Pix / Débito / Crédito','Dinheiro'),('amount','Valor devolvido em dinheiro (R$)','0,00')])
-        if values:
-            methods={'dinheiro':'MONEY','pix':'PIX','débito':'DEBIT','debito':'DEBIT','crédito':'CREDIT','credito':'CREDIT'}
-            method=methods.get(values['method'].casefold())
-            self.s.sales.confirm_refund(int(values['sale']),Payment(method,parse_money(values['amount']) if method=='MONEY' else None),self.grant('sale.refund'),self.reason(),command())
+        return self.open_audit().backup_center()
