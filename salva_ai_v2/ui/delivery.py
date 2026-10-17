@@ -62,7 +62,10 @@ class DeliveryEditor(View,ProductPicker):
 class DeliveryView(View):
     def __init__(self,parent,services):
         super().__init__(parent,services)
-        ttk.Label(self,text="Delivery",style="Title.TLabel").pack(anchor="w")
+        from .assets import load_asset
+        self.moto=load_asset(self,'motorcycle.png',24)
+        self.motorcycle_label=ttk.Label(self,text='Delivery',image=self.moto,compound='left',style='Title.TLabel')
+        self.motorcycle_label.pack(anchor='w')
         row=ttk.Frame(self);row.pack(fill="x",pady=6)
         for label,callback in (("Novo pedido",self.create),("Detalhes",self.details),("Receber",self.receive),("Saiu para entrega",self.dispatch),("Marcar entregue",self.delivered),("Cancelar",self.cancel)):
             ttk.Button(row,text=label,command=lambda f=callback:self.act(f)).pack(side="left",padx=(0,6))

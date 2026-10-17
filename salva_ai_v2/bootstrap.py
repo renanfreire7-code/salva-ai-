@@ -83,32 +83,35 @@ class Application:
         from .maintenance.restore import RestoreService
         self.services.restore = RestoreService(self.data_dir,self.services.backups,self.security)
         self.services.closing = ClosingService(self.db, cash, self.services.backups, self.services.reports)
-        self.notebook = ttk.Notebook(self.window.body)
-        self.notebook.pack(fill="both", expand=True)
+        from .ui.navigation import NavigationShell
+        from .ui.keyboard import ShortcutRouter
+        from .ui.purchases import PurchasesView
+        from .ui.monthly import MonthlyView
+        self.shell=NavigationShell(self.window.body,on_select=lambda view:view.refresh())
         self.views = []
         self.groups = {}
         for name in ("Atendimento", "Controle", "Gestão"):
-            group=ttk.Notebook(self.notebook)
-            self.notebook.add(group,text=name)
-            self.groups[name]=group
+            self.groups[name]=[]
         definitions=(
-            (SalesView,"Venda direta","sales_view","Atendimento"),
+            (SalesView,"Venda de balcão","sales_view","Atendimento"),
             (TabsView,"Comandas","tabs_view","Atendimento"),
             (DeliveryView,"Delivery","delivery_view","Atendimento"),
             (ProductsView,"Produtos e estoque","products_view","Controle"),
+            (PurchasesView,"Compras e devoluções","purchases_view","Controle"),
             (CashView,"Caixa","cash_view","Controle"),
-            (HistoryView,"Histórico","history_view","Controle"),
-            (FinanceView,"Financeiro mensal","finance_view","Gestão"),
+            (HistoryView,"Histórico de vendas","history_view","Controle"),
+            (FinanceView,"Contas e despesas","finance_view","Gestão"),
+            (MonthlyView,"Resultado do mês","monthly_view","Gestão"),
             (ResultsView,"Lucro por produto","results_view","Gestão"),
-            (ReplenishmentView,"Previsão de compras","replenishment_view","Gestão"))
+            (ReplenishmentView,"Reposição de estoque","replenishment_view","Gestão"))
         for cls,label,attr,group in definitions:
-            container=self.groups[group]
-            view=cls(container,self.services)
-            container.add(view,text=label)
+            view=cls(self.shell.content,self.services)
+            self.groups[group].append((label,view))
             setattr(self,attr,view)
             self.views.append(view)
-        for key in range(1,13):
-            self.window.bind(f"<F{key}>",lambda event,k=key:self.shortcut(k))
+        self.shell.set_groups(list(self.groups.items()))
+        self.shortcuts=ShortcutRouter(self.window,lambda:self.shell.selected_view)
+        self.show_view(self.sales_view)
         self.refresh()
         for pending in self.services.closing.pending():
             try:
@@ -122,19 +125,16 @@ class Application:
             self.window.status.set(message)
 
     def show_view(self, view):
-        self.notebook.select(view.master)
-        view.master.select(view)
-        view.refresh()
+        self.shell.show(view)
 
     def shortcut(self, key):
-        group=self.window.nametowidget(self.notebook.select())
-        selected=self.window.nametowidget(group.select())
-        if hasattr(selected,"select_shortcut"):
-            selected.select_shortcut(key)
+        return self.shortcuts.route(key)
 
     def refresh(self):
         if self._closed:
             return
+        session=self.services.cash.active()
+        self.window.cash_state.set(f"Caixa #{session['id']} aberto" if session else 'Caixa fechado')
         for view in self.views:
             try:
                 view.refresh()

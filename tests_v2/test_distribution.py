@@ -17,6 +17,8 @@ class DistributionTest(unittest.TestCase):
                 self.assertIn('INICIAR_V2.bat',names)
                 self.assertIn('salva_ai_v2/__main__.py',names)
                 self.assertIn('MANIFEST-SHA256.json',names)
+                self.assertIn('salva_ai_v2/assets/logo.png',names)
+                self.assertIn('salva_ai_v2/assets/motorcycle.png',names)
                 self.assertFalse(any(name.endswith(('.sqlite3','.pyc')) for name in names))
                 self.assertFalse(any('tests_v2/' in name or 'backups/' in name for name in names))
                 self.assertIsNone(z.testzip())
