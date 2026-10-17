@@ -6,8 +6,22 @@ def normalize(value):
 
 
 def search_products(products, query):
-    text = normalize(query)
-    return [p for p in products if not text or text in normalize(p["name"]) or text == str(p["id"]) or text == f'{p["id"]:03d}' or text==normalize(product_label(p))]
+    text=' '.join(normalize(query).split())
+    def matches(product):
+        name=' '.join(normalize(product['name']).split())
+        words=name.split();tokens=text.split()
+        cursor=0
+        for token in tokens:
+            while cursor<len(words) and not words[cursor].startswith(token):
+                cursor+=1
+            if cursor==len(words):
+                prefixes=False;break
+            cursor+=1
+        else:
+            prefixes=True
+        initials=''.join(word[0] for word in words)
+        return not text or text in name or text in (str(product['id']),f"{product['id']:03d}",normalize(product_label(product))) or prefixes or (' ' not in text and text in initials)
+    return sorted((p for p in products if matches(p)),key=lambda p:(normalize(p['name']),p['id']))
 
 
 def product_label(product):

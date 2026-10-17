@@ -5,32 +5,14 @@ from tkinter import ttk, simpledialog, messagebox
 from uuid import uuid4
 from ..common.errors import BusinessError
 from ..common.money import parse_money, money
+from .forms import FormDialog,FieldSpec,ask_fields
 
 
 def command():
     return str(uuid4())
 
 
-class FieldsDialog(simpledialog.Dialog):
-    def __init__(self, parent, title, fields):
-        self.fields, self.inputs = fields, {}
-        super().__init__(parent,title)
-
-    def body(self, master):
-        for row,(key,label,value) in enumerate(self.fields):
-            ttk.Label(master,text=label).grid(row=row,column=0,sticky="w",padx=8,pady=5)
-            entry = ttk.Entry(master,width=38)
-            entry.insert(0,str(value))
-            entry.grid(row=row,column=1,sticky="ew",padx=8,pady=5)
-            self.inputs[key]=entry
-        return next(iter(self.inputs.values()),None)
-
-    def apply(self):
-        self.result={key:entry.get().strip() for key,entry in self.inputs.items()}
-
-
-def ask_fields(parent,title,fields):
-    return FieldsDialog(parent,title,fields).result
+FieldsDialog=FormDialog
 
 
 def table(parent, columns, height=12):
@@ -97,20 +79,52 @@ class View(ttk.Frame):
 
 class ProductPicker:
     def build_picker(self,parent,add_callback):
+        self._add_callback=add_callback
         row=ttk.Frame(parent)
         row.pack(fill="x",pady=6)
         ttk.Label(row,text="Produto").pack(side="left")
         self.search=tk.StringVar()
         self.picker=ttk.Combobox(row,textvariable=self.search,width=43)
         self.picker.pack(side="left",padx=8)
-        self.picker.bind("<KeyRelease>",lambda event:self.filter_products())
+        self.picker.bind("<KeyRelease>",lambda event:self.filter_products() if event.keysym not in ('Up','Down','Return','KP_Enter') and not event.keysym.startswith('F') else None)
+        self.picker.bind('<Return>',lambda event:self.choose_product())
+        self.picker.bind('<Down>',lambda event:self.move_product(1))
+        self.picker.bind('<Up>',lambda event:self.move_product(-1))
         ttk.Label(row,text="Quantidade").pack(side="left")
         self.qty=ttk.Entry(row,width=6)
         self.qty.insert(0,"1")
         self.qty.pack(side="left",padx=8)
-        ttk.Button(row,text="Adicionar",command=lambda:self.act(add_callback)).pack(side="left")
-        self.qty.bind("<Return>",lambda event:self.act(add_callback))
+        ttk.Button(row,text="Adicionar",command=lambda:self.act(self.add_and_focus)).pack(side="left")
+        self.qty.bind("<Return>",lambda event:self.add_key())
         self.products_map={}
+        self.picker_notice=tk.StringVar()
+        ttk.Label(parent,textvariable=self.picker_notice,foreground='#a52525').pack(anchor='w')
+
+    def choose_product(self):
+        from ..inventory.queries import product_label
+        try:
+            pid=self.selected_product()
+        except BusinessError as error:
+            self.picker_notice.set(str(error));return 'break'
+        product=next(p for p in self.s.inventory.products() if p['id']==pid)
+        label=product_label(product);self.products_map[label]=pid;self.search.set(label)
+        self.picker_notice.set('');self.qty.focus_set()
+        return 'break'
+
+    def move_product(self,delta):
+        values=list(self.picker['values'])
+        if values:
+            index=self.picker.current()
+            self.picker.current(max(0,min(len(values)-1,index+delta)))
+        return 'break'
+
+    def add_and_focus(self):
+        self._add_callback()
+        self.search.set('');self.qty.delete(0,'end');self.qty.insert(0,'1')
+        self.filter_products();self.picker_notice.set('');self.picker.focus_set()
+
+    def add_key(self):
+        self.act(self.add_and_focus);return 'break'
 
     def filter_products(self):
         from ..inventory.queries import search_products,product_label
@@ -135,3 +149,6 @@ class ProductPicker:
             self.search.set(product_label(row))
             self.products_map[self.search.get()]=row["id"]
             self.qty.focus_set()
+            self.picker_notice.set('')
+        else:
+            self.picker_notice.set(f'F{key} não tem produto associado. Configure em Produtos e estoque.')
