@@ -1,22 +1,43 @@
-# Salva AI novo — guia de instalação e operação
+# Bar Simples — guia de instalação e operação
 
-## Estado desta entrega
+## Estado desta evolução
 
-Reconstrução **0.2.0-dev**, separada do aplicativo antigo. É uma versão de
-desenvolvimento para validação com dados fictícios. Os testes automatizados são
-executados no Linux com interface Tkinter real e display virtual.
-A execução no Windows, escalas de tela e ensaio com o proprietário ainda precisam
-ser feitos antes de usar com dados reais. Não há merge nem release autorizados.
+O Bar Simples sucede a reconstrução Salva AI 0.2.0-dev, mantendo a mesma pasta
+de dados. A evolução está em implementação e validação; o pacote final e os
+resultados serão registrados no relatório `validacao-bar-simples.md`.
+Windows nativo nas escalas 100% e 125% ainda precisa de ensaio antes de uso real.
 
-A identificação 0.2.0-dev pertence à reconstrução; não substitui a identificação
-0.3.6-beta do ZIP de referência.
+## Usuário, senha e PIN
+
+No primeiro acesso, escolha o usuário, uma senha com pelo menos oito caracteres
+e um PIN de exatamente três dígitos (incluindo zeros iniciais). Confirme ambos.
+Espaços fazem parte da senha. Guarde a chave de recuperação fora do computador:
+ela será mostrada uma vez, antes de entrar no atendimento.
+
+Na atualização de uma instalação existente, confirme seu PIN anterior de seis
+dígitos ou escolha Chave de recuperação. Só depois será criada a conta com o
+novo PIN. Os números antigos não são cortados nem substituídos automaticamente.
+Se cancelar, pode repetir a configuração sem perder os dados cadastrados.
+
+A senha permite entrar no programa; o PIN confirma operações sensíveis como
+reembolso, ajustes e exclusões. Após cinco erros consecutivos há espera
+temporária. Reiniciar o programa não remove esse tempo de espera.
+
+Em Recuperar acesso, a chave permite escolher nova senha e PIN. Guarde a nova
+chave exibida: a anterior deixa de valer. Sem chave não existe senha mestre.
+Usuário, senha e PIN funcionam sem internet; o banco não é criptografado por
+essas credenciais. Proteja também o acesso ao computador e aos backups.
+
+Restaurar um backup pede novo login e usa as credenciais que estavam naquele
+backup. Se ele for anterior à conta, a atualização de acesso será solicitada
+novamente com o PIN ou a chave que existiam no backup.
 
 ## Instalação no Windows
 
 1. Instale Python 3.12 ou superior com Tkinter pelo instalador oficial.
 2. Extraia todo o ZIP em uma pasta própria, diferente da versão antiga.
 3. Execute **INICIAR_V2.bat**. Não mova o BAT para fora da pasta extraída.
-4. Crie um PIN de seis dígitos; confirme e guarde a chave de recuperação fora do computador.
+4. Cadastre usuário, senha e PIN de três dígitos; confirme e guarde a chave de recuperação fora do computador.
 5. Cadastre os produtos e entradas com dados fictícios para o ensaio inicial.
 
 Não é necessário pip, servidor, conexão com internet ou conta em serviço externo.
@@ -263,7 +284,7 @@ antes da substituição. Feche outras ferramentas que estejam usando o arquivo.
 Depois, abra o aplicativo novamente; o PIN será o existente no backup.
 Um journal permite recuperar uma substituição interrompida.
 
-O PIN e a chave não são armazenados em texto puro. Após cinco erros há espera
+A senha, o PIN e a chave não são armazenados em texto puro. Após cinco erros há espera
 progressiva. A chave permite trocar o PIN e é renovada após uso.
 Sem PIN e sem chave não há senha mestre oculta.
 O PIN não criptografa o banco; proteja acesso ao computador e aos backups.

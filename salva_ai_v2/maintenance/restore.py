@@ -88,6 +88,7 @@ class RestoreService:
     def _reopen(self):
         reopened=Database(self.db.path,self.db.clock)
         self.db.conn=reopened.conn
+        self.db.upgrade(self.backups)
 
     def apply(self,preview,confirmed):
         entry=self._previews.get(preview.id)
