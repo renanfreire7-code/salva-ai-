@@ -11,6 +11,10 @@ class DeliveryDraft:
     lines: list[CartLine]
     payment_method: str
     collection: str
+    payment_timing: str = 'UNSPECIFIED'
+    payment_channel: str | None = None
+    change_for_cents: int | None = None
+    link_reference: str = ''
 
 
 @dataclass(frozen=True)

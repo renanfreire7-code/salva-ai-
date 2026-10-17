@@ -5,6 +5,7 @@ from ..common.service import Service,integer
 from ..common.errors import BusinessError
 from .receipts import ReceiptsMixin
 from .cancellation import CancellationMixin
+from .payment_plan import validate_plan,draft_payload,expected_change
 
 
 class DeliveryService(CancellationMixin, ReceiptsMixin, Service):
@@ -47,9 +48,12 @@ class DeliveryService(CancellationMixin, ReceiptsMixin, Service):
                 self.inventory.reserve(line.product_id,"DELIVERY",id,line.qty)
                 name=self.one('products',line.product_id)['name']
                 self.db.conn.execute("INSERT INTO order_items(order_id,product_id,qty,unit_cents,group_qty,group_cents,name_snapshot) VALUES(?,?,?,?,?,?,?)",(id,line.product_id,line.qty,condition.unit_cents,condition.group_qty,condition.group_cents,name))
+            validate_plan(draft,self.sales.total(id)+fees['customer_fee_cents'])
+            self.db.conn.execute('UPDATE delivery_orders SET payment_timing=?,payment_channel=?,change_for_cents=?,link_reference=? WHERE order_id=?',
+                (draft.payment_timing,draft.payment_channel,draft.change_for_cents,draft.link_reference,id))
             self.db.conn.execute("UPDATE orders SET state='PREPARING' WHERE id=?", (id,))
             return asdict(self.order(id))
-        return DeliveryOrder(**self.run(command_id,"delivery.confirmed",dict(draft=asdict(draft)),perform))
+        return DeliveryOrder(**self.run(command_id,"delivery.confirmed",dict(draft=draft_payload(draft)),perform))
 
     def order(self,order_id):
         order=self.one("orders",order_id)
@@ -65,6 +69,14 @@ class DeliveryService(CancellationMixin, ReceiptsMixin, Service):
             order=self.order(order_id)
             if order.state!="PREPARING":
                 raise BusinessError("Este pedido não está em preparação.")
+            plan=self.db.conn.execute('SELECT * FROM delivery_orders WHERE order_id=?',(order_id,)).fetchone()
+            if plan['payment_timing']=='ADVANCE' and order.paid_cents<order.total_cents:
+                raise BusinessError('Confirme o pagamento antecipado antes de registrar a saída.')
+            if plan['payment_timing']=='ON_DELIVERY' and plan['method']=='MONEY' and order.paid_cents<order.total_cents:
+                needed=expected_change(order.total_cents,plan['change_for_cents'])
+                available=self.db.conn.execute('SELECT COALESCE(SUM(delta_cents),0) FROM custody_entries').fetchone()[0]
+                if needed>available:
+                    raise BusinessError('Envie e registre o fundo de troco do entregador antes da saída.')
             self.sales.record_delivery_sale(order_id,command_id+":sale")
             trip=self.db.conn.execute("INSERT INTO trips(order_id,dispatched_at,fee_cents) VALUES(?,?,?)",
                 (order_id,self.clock.now().isoformat(),order.courier_fee_cents)).lastrowid

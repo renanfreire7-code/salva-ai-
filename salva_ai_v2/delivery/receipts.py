@@ -6,7 +6,7 @@ from ..cash.receipts import record_receipt
 
 
 class ReceiptsMixin:
-    def record_payment(self,order_id,method,amount_cents,custodian,tendered_cents,command_id):
+    def record_payment(self,order_id,method,amount_cents,custodian,tendered_cents,command_id,*,confirm_change_difference=False):
         integer(amount_cents,"Valor recebido",1)
         if custodian not in ("BAR","COURIER") or method not in ("MONEY","PIX","DEBIT","CREDIT"):
             raise BusinessError("Recebimento inválido.")
@@ -18,9 +18,14 @@ class ReceiptsMixin:
             details=self.db.conn.execute("SELECT * FROM delivery_orders WHERE order_id=?", (order_id,)).fetchone()
             if order.state not in ("PREPARING","OUT","DELIVERED") or order.paid_cents:
                 raise BusinessError("Pedido cancelado ou pagamento já registrado.")
-            if amount_cents!=order.total_cents or method!=details["method"]:
+            link_card=details['payment_channel']=='LINK' and method in ('DEBIT','CREDIT')
+            if amount_cents!=order.total_cents or (method!=details["method"] and not link_card):
                 raise BusinessError("Confirme o total e a modalidade combinada no pedido.")
             change=self.sales._payment(Payment(method,tendered_cents),amount_cents)
+            if method=='MONEY' and details['payment_timing']!='UNSPECIFIED':
+                planned=details['change_for_cents'] or order.total_cents
+                if tendered_cents!=planned and not confirm_change_difference:
+                    raise BusinessError('Valor recebido diferente do combinado. Confira o novo troco antes de confirmar.')
             if custodian=="COURIER":
                 available=self.db.conn.execute("SELECT COALESCE(SUM(delta_cents),0) FROM custody_entries").fetchone()[0]
                 if change>available:
@@ -37,7 +42,10 @@ class ReceiptsMixin:
             record_receipt(self.db,session['id'],method,amount_cents,'collection:'+str(payment),custodian)
             self.db.conn.execute("UPDATE collections SET rate_bp=?,fee_cents=? WHERE id=?",(rate,round_half_up(amount_cents*(rate or 0),10000),payment))
             return payment
-        return self.run(command_id,"delivery.payment",dict(order_id=order_id,method=method,amount_cents=amount_cents,custodian=custodian,tendered_cents=tendered_cents),perform)
+        payload=dict(order_id=order_id,method=method,amount_cents=amount_cents,custodian=custodian,tendered_cents=tendered_cents)
+        if confirm_change_difference:
+            payload['confirm_change_difference']=True
+        return self.run(command_id,"delivery.payment",payload,perform)
 
     def mark_delivered(self,order_id,command_id):
         def perform():
