@@ -32,11 +32,11 @@ class AccessView(ttk.Frame):
         self.inputs={};self.error.set('');self.show_password.set(False)
         title={'LOGIN':'Entrar no seu bar','SETUP':'Configure seu acesso','TRANSITION':'Atualize seu acesso','RECOVERY':'Recuperar acesso'}[self.mode]
         ttk.Label(self.form,text=title,style='Title.TLabel').grid(row=0,column=0,sticky='w',pady=(4,6))
-        note={'LOGIN':'Informe o usuário e a senha do estabelecimento.','SETUP':'Crie uma conta e um PIN de três dígitos.','TRANSITION':'Confirme o acesso atual e crie a conta. Seus dados serão preservados.','RECOVERY':'Use a chave guardada para definir nova senha e PIN.'}[self.mode]
+        note={'LOGIN':'Informe o usuário e a senha do estabelecimento.','SETUP':'Crie uma conta e um PIN de três dígitos.','TRANSITION':'Confirme o acesso atual e crie a conta. Seus dados serão preservados.','RECOVERY':'Use a chave guardada para definir novo usuário, senha e PIN.'}[self.mode]
         ttk.Label(self.form,text=note,wraplength=510).grid(row=1,column=0,sticky='w',pady=(0,8))
         fields=[]
         if self.mode!='RECOVERY':fields.append(('username','Usuário'))
-        else:fields.append(('key','Chave de recuperação'))
+        else:fields.extend([('key','Chave de recuperação'),('username','Novo usuário')])
         fields.append(('password','Senha' if self.mode=='LOGIN' else 'Senha (mínimo oito caracteres)'))
         if self.mode!='LOGIN':fields.extend([('password_confirm','Confirme a senha'),('pin','PIN de três dígitos'),('pin_confirm','Confirme o PIN')])
         if self.mode=='TRANSITION':
@@ -87,14 +87,16 @@ class AccessView(ttk.Frame):
                 if values['password']!=values['password_confirm']:raise BusinessError('As senhas não coincidem.')
                 if values['pin']!=values['pin_confirm']:raise BusinessError('Os PINs não coincidem.')
                 if self.mode=='RECOVERY':
-                    key=self.accounts.recover(values['key'],values['password'],values['pin'])
+                    key=self.accounts.recover(values['key'],values['password'],values['pin'],new_username=values['username'])
                     messagebox.showinfo('Guarde a nova chave','A chave anterior não funciona mais. Guarde fora do computador:\n\n'+key,parent=self)
-                    self.set_mode('LOGIN');return True
+                    self.set_mode('LOGIN')
+                    self.inputs['username'].insert(0,values['username'].strip().casefold())
+                    return True
                 proof=None
                 if self.mode=='TRANSITION':
                     proof=(self.security.authorize_recovery(values['proof'],'access.configure') if self.proof_kind.get()=='Chave de recuperação' else self.security.authorize(values['proof'],'access.configure'))
                 key=self.accounts.create(values['username'],values['password'],values['pin'],proof)
-                messagebox.showinfo('Guarde sua chave de recuperação','Guarde esta chave fora do computador. Ela recupera senha e PIN e não será exibida novamente:\n\n'+key,parent=self)
+                messagebox.showinfo('Guarde sua chave de recuperação','Guarde esta chave fora do computador. Ela recupera usuário, senha e PIN e não será exibida novamente:\n\n'+key,parent=self)
                 session=self.accounts.login(values['username'],values['password'])
             self.on_authenticated(session);return True
         except (BusinessError,sqlite3.Error,OSError) as error:

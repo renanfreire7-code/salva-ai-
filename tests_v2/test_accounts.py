@@ -83,3 +83,39 @@ class AccountTest(DatabaseCase):
         self.accounts.create('bar','12345678','007',proof)
         session=self.accounts.login('bar','12345678');self.accounts.logout()
         with self.assertRaises(AuthorizationError):self.accounts.validate_session(session)
+
+    def test_recovery_replaces_unknown_username_without_losing_products(self):
+        from salva_ai_v2.inventory.service import InventoryService
+        inventory=InventoryService(self.db,self.security)
+        inventory.create_product('Produto preservado',500,1,0,'product')
+        before=[tuple(row) for row in self.db.conn.execute('SELECT * FROM products')]
+        key=self.create();session=self.accounts.login('meu bar','Senha fictícia 42')
+        newkey=self.accounts.recover(key,'  nova senha 42 ','009',new_username=' Novo Bar ')
+        self.accounts.validate_session(self.accounts.login('NOVO BAR','  nova senha 42 '))
+        with self.assertRaises(AuthorizationError):self.accounts.login('meu bar','  nova senha 42 ')
+        with self.assertRaises(AuthorizationError):self.accounts.login('novo bar','Senha fictícia 42')
+        with self.assertRaises(AuthorizationError):self.accounts.validate_session(session)
+        with self.assertRaises(AuthorizationError):self.security.authorize_recovery(key,'stock.adjust')
+        self.security.authorize_recovery(newkey,'stock.adjust');self.security.authorize('009','stock.adjust')
+        self.assertEqual(before,[tuple(row) for row in self.db.conn.execute('SELECT * FROM products')])
+
+    def test_bad_recovery_username_or_key_preserves_original_credentials(self):
+        key=self.create()
+        for user in ('',' '*3,'x'*65):
+            with self.subTest(user=user):
+                with self.assertRaises(BusinessError):self.accounts.recover(key,'Outra senha 42','009',new_username=user)
+        with self.assertRaises(AuthorizationError):self.accounts.recover('incorreta','Outra senha 42','009',new_username='novo')
+        self.accounts.login('meu bar','Senha fictícia 42');self.security.authorize('007','stock.adjust')
+        self.security.authorize_recovery(key,'stock.adjust')
+        self.accounts.recover(key,'Outra senha 42','009',new_username='novo')
+        self.accounts.login('novo','Outra senha 42')
+
+    def test_recovery_account_update_failure_rolls_back_all_credentials(self):
+        key=self.create();session=self.accounts.login('meu bar','Senha fictícia 42')
+        self.db.conn.execute("CREATE TRIGGER fail_recovery BEFORE UPDATE ON establishment_account BEGIN SELECT RAISE(ABORT,'disk failure'); END")
+        with self.assertRaises(sqlite3.Error):self.accounts.recover(key,'Outra senha 42','009',new_username='novo')
+        self.db.conn.execute('DROP TRIGGER fail_recovery')
+        self.accounts.validate_session(session);self.accounts.login('meu bar','Senha fictícia 42')
+        self.security.authorize('007','stock.adjust');self.security.authorize_recovery(key,'stock.adjust')
+        self.accounts.recover(key,'Outra senha 42','009',new_username='novo')
+        self.accounts.login('novo','Outra senha 42')

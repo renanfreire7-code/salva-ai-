@@ -25,9 +25,13 @@ class AccountService:
         if not isinstance(password,str) or len(password)<8:
             raise BusinessError('Use uma senha com pelo menos oito caracteres.')
 
-    def create(self,username,password,pin,proof=None):
+    def _username(self,username):
         username=username.strip().casefold() if isinstance(username,str) else ''
         if not 1<=len(username)<=64:raise BusinessError('Informe um usuário com até 64 caracteres.')
+        return username
+
+    def create(self,username,password,pin,proof=None):
+        username=self._username(username)
         self._password(password);self.security._pin(pin)
         salt=secrets.token_bytes(16)
         with self.db.transaction():
@@ -73,13 +77,14 @@ class AccountService:
     def logout(self):
         self._sessions.clear();self.security._grants.clear()
 
-    def recover(self,recovery_key,new_password,new_pin):
+    def recover(self,recovery_key,new_password,new_pin,*,new_username=None):
+        username=self._username(new_username) if new_username is not None else None
         self._password(new_password);self.security._pin(new_pin)
         salt=secrets.token_bytes(16)
         with self.db.transaction():
             if not self.configured:raise AuthorizationError('Conclua a configuração do acesso.')
             key=self.security.recover(recovery_key,new_pin)
-            self.db.conn.execute('UPDATE establishment_account SET salt=?,password_hash=?,iterations=?,revision=revision+1,failures=0,blocked_until=0 WHERE id=1',
-                (salt,self.security._hash(new_password,salt),ITERATIONS))
-            Audit(self.db).record('access.recovered','establishment',{}, {'recovery_key_rotated':True},None)
+            self.db.conn.execute('UPDATE establishment_account SET username=COALESCE(?,username),salt=?,password_hash=?,iterations=?,revision=revision+1,failures=0,blocked_until=0 WHERE id=1',
+                (username,salt,self.security._hash(new_password,salt),ITERATIONS))
+            Audit(self.db).record('access.recovered','establishment',{}, {'recovery_key_rotated':True,'username_redefined':username is not None},None)
         self.logout();return key

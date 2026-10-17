@@ -37,7 +37,7 @@ class AccessUITest(unittest.TestCase):
         # The recovery surface is reachable without operational views.
         self.app.require_login();self.app.access_view.set_mode('RECOVERY')
         self.assertIn('key',self.app.access_view.inputs)
-        self.fill(self.app.access_view,key='incorreta',password='Outra senha',password_confirm='Outra senha',pin='009',pin_confirm='009')
+        self.fill(self.app.access_view,key='incorreta',username='bar',password='Outra senha',password_confirm='Outra senha',pin='009',pin_confirm='009')
         self.assertFalse(self.app.access_view.submit());self.assertFalse(self.app.authenticated)
 
     def test_transition_accepts_old_pin_and_recovery_alternative(self):
@@ -84,3 +84,17 @@ class AccessUITest(unittest.TestCase):
         try:self.app.close()
         except Exception as error:self.fail(f'Fechamento de entrada parcial falhou: {error}')
         self.assertIsNone(self.app.db.conn)
+
+    def test_recovery_defines_username_and_password_without_old_login(self):
+        key=self.app.accounts.create('usuario digitado errado','Senha esquecida 42','007')
+        self.app.require_login();view=self.app.access_view;view.set_mode('RECOVERY')
+        self.assertIn('username',view.inputs,'A recuperação precisa permitir escolher novo usuário')
+        self.fill(view,key='incorreta',username=' Novo Bar ',password='  senha nova 42 ',password_confirm='  senha nova 42 ',pin='009',pin_confirm='009')
+        self.assertFalse(view.submit());self.assertEqual(view.inputs['username'].get(),' Novo Bar ')
+        self.assertEqual(view.inputs['password'].get(),'  senha nova 42 ')
+        self.fill(view,key=key)
+        with patch('salva_ai_v2.ui.access.messagebox.showinfo'):self.assertTrue(view.submit())
+        self.assertFalse(self.app.authenticated);self.assertEqual(view.mode,'LOGIN')
+        self.assertEqual(view.inputs['username'].get(),'novo bar');self.assertEqual(view.inputs['password'].get(),'')
+        self.fill(view,password='  senha nova 42 ');self.assertTrue(view.submit())
+        self.assertTrue(self.app.authenticated);self.assertIn('SALVA AI HEADSHOP',self.app.window.title())

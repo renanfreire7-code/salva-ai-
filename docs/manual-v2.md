@@ -3,7 +3,7 @@
 ## Estado desta evolução
 
 O Bar Simples sucede a reconstrução Salva AI 0.2.0-dev, mantendo a mesma pasta
-de dados. Esta é a versão de desenvolvimento **0.3.1-dev**, para ensaio com dados fictícios.
+de dados. Esta é a versão de desenvolvimento **0.3.2-dev**, para ensaio com dados fictícios.
 Os resultados de verificação estão no relatório `validacao-bar-simples.md`.
 Windows nativo nas escalas 100% e 125% ainda precisa de ensaio antes de uso real.
 
@@ -31,8 +31,11 @@ A senha permite entrar no programa; o PIN confirma operações sensíveis como
 reembolso, ajustes e exclusões. Após cinco erros consecutivos há espera
 temporária. Reiniciar o programa não remove esse tempo de espera.
 
-Em Recuperar acesso, a chave permite escolher nova senha e PIN. Guarde a nova
-chave exibida: a anterior deixa de valer. Sem chave não existe senha mestre.
+Em Recuperar acesso, informe a chave e escolha novo usuário, nova senha e PIN de
+três dígitos. Não é necessário lembrar o usuário ou a senha antigos. Ao concluir,
+o login terá o novo usuário preenchido; digite a nova senha para entrar. Guarde a
+nova chave exibida: a anterior deixa de valer. Produtos, vendas e histórico ficam
+preservados. Sem chave não existe senha mestre.
 Usuário, senha e PIN funcionam sem internet; o banco não é criptografado por
 essas credenciais. Proteja também o acesso ao computador e aos backups.
 
@@ -76,11 +79,11 @@ Use um PIN fictício no ensaio. Não altere HOME para testar.
 ## Atualizar das reconstruções 0.1.0-dev ou 0.2.0-dev
 
 Feche a versão anterior, faça uma cópia da pasta `~/SalvaAiHeadshopV2` e
-extraia o ZIP Bar Simples 0.3.1-dev em outra pasta de programa. Inicie pelo novo BAT.
+extraia o ZIP Bar Simples 0.3.2-dev em outra pasta de programa. Inicie pelo novo BAT.
 A pasta de dados continua a mesma: não copie nem substitua o banco pelo ZIP.
 A migração é aditiva e cria um backup antes de alterar a estrutura; preserva
 IDs, PIN, estoque e movimentos. A versão 0.3.6-beta de referência não é importada.
-Depois de atualizar, use o código Bar Simples 0.3.1; não abra o banco atualizado com versões anteriores.
+Depois de atualizar, use o código Bar Simples 0.3.2; não abra o banco atualizado com versões anteriores.
 Em pedidos anteriores, momento de pagamento e troco aparecem como não informados.
 
 ## Organização das telas
