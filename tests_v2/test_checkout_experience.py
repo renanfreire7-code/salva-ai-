@@ -10,7 +10,7 @@ class CheckoutExperienceTest(unittest.TestCase):
         from salva_ai_v2.inventory.models import PurchaseLine
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
         self.app=build_application(Path(self.temp.name));self.addCleanup(self.app.close)
-        self.app.security.setup('681942');s=self.app.services
+        self.app.security.setup('681');s=self.app.services
         self.pid=s.inventory.create_product('Cerveja Heineken Latão',500,12,6,'p')
         s.inventory.receive_purchase([PurchaseLine(self.pid,20,4000)],0,s.clock.today(),s.clock.today(),'buy')
         s.pricing.set_promotion(self.pid,3,1200,True,'promo');s.cash.open(10000,'open')
@@ -83,6 +83,6 @@ class CheckoutExperienceTest(unittest.TestCase):
         with patch('salva_ai_v2.ui.products.ask_fields',side_effect=lambda *a,**kw:dialogs.append(FormDialog(*a,**kw))):view.edit()
         dialog=dialogs[0]
         dialog.inputs['price'].delete(0,'end');dialog.inputs['price'].insert(0,'8,00')
-        with patch.object(view,'grant',side_effect=lambda action:self.app.security.authorize('681942',action)),patch.object(view,'reason',return_value='Preço revisado'):
+        with patch.object(view,'grant',side_effect=lambda action:self.app.security.authorize('681',action)),patch.object(view,'reason',return_value='Preço revisado'):
             self.assertTrue(dialog.submit())
         self.assertEqual(self.app.services.inventory.products()[0]['price_cents'],800)

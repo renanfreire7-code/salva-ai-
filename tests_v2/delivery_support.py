@@ -14,7 +14,7 @@ class DeliveryCase(DatabaseCase):
         from salva_ai_v2.finance.service import FinanceService
         from salva_ai_v2.delivery.service import DeliveryService
         self.security = SecurityService(self.db)
-        self.security.setup('681942')
+        self.security.setup('681')
         self.inventory = InventoryService(self.db, self.security)
         self.pricing = PricingService(self.db)
         self.cash = CashService(self.db, self.security)
@@ -32,4 +32,4 @@ class DeliveryCase(DatabaseCase):
         return DeliveryDraft('Cliente teste', '11999990000', 'Rua fictícia, 10', 'Portão azul', [CartLine(self.pid, qty)], method, collection)
 
     def grant(self, action):
-        return self.security.authorize('681942', action)
+        return self.security.authorize('681', action)

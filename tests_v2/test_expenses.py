@@ -10,12 +10,12 @@ class ExpensesTest(DatabaseCase):
         from salva_ai_v2.cash.service import CashService
         from salva_ai_v2.finance.service import FinanceService
         self.security = SecurityService(self.db)
-        self.security.setup('681942')
+        self.security.setup('681')
         self.cash = CashService(self.db, self.security)
         self.finance = FinanceService(self.db, self.cash, self.security, self.clock)
 
     def grant(self, action):
-        return self.security.authorize('681942', action)
+        return self.security.authorize('681', action)
 
     def draft(self, amount=100000, description='Aluguel'):
         from salva_ai_v2.finance.models import ExpenseDraft

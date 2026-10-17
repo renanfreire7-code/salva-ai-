@@ -7,7 +7,7 @@ class AdminDialog:
         self.parent, self.security = parent, security
 
     def setup(self):
-        pin = simpledialog.askstring("Configurar acesso", "Crie um PIN de seis dígitos:", show="*", parent=self.parent)
+        pin = simpledialog.askstring("Configurar acesso", "Crie um PIN de três dígitos:", show="*", parent=self.parent)
         if pin is None:
             return False
         confirm = simpledialog.askstring("Confirmar PIN", "Digite o PIN novamente:", show="*", parent=self.parent)
@@ -25,7 +25,7 @@ class AdminDialog:
         return True
 
     def request(self, action):
-        pin = simpledialog.askstring("Autorização administrativa", "Informe seu PIN de seis dígitos:", show="*", parent=self.parent)
+        pin = simpledialog.askstring("Autorização administrativa", f"Informe seu PIN de {self.security.pin_length} dígitos:", show="*", parent=self.parent)
         if pin is None:
             return None
         try:
@@ -38,7 +38,7 @@ class AdminDialog:
         key = simpledialog.askstring("Recuperar acesso", "Chave de recuperação:", show="*", parent=self.parent)
         if key is None:
             return
-        pin = simpledialog.askstring("Novo PIN", "Novo PIN de seis dígitos:", show="*", parent=self.parent)
+        pin = simpledialog.askstring("Novo PIN", "Novo PIN de três dígitos:", show="*", parent=self.parent)
         if pin is None:
             return
         confirm = simpledialog.askstring("Confirmar novo PIN", "Digite novamente:", show="*", parent=self.parent)

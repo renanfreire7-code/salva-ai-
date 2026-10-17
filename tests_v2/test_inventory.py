@@ -9,7 +9,7 @@ class InventoryTest(DatabaseCase):
         from salva_ai_v2.inventory.service import InventoryService
         from salva_ai_v2.security.service import SecurityService
         self.security = SecurityService(self.db)
-        self.security.setup('681942')
+        self.security.setup('681')
         self.inventory = InventoryService(self.db, self.security)
         self.pid = self.inventory.create_product('Lata', 500, 12, 6, 'p1')
 
@@ -19,7 +19,7 @@ class InventoryTest(DatabaseCase):
                                                self.clock.today(), self.clock.today(), command)
 
     def grant(self, action):
-        return self.security.authorize('681942', action)
+        return self.security.authorize('681', action)
 
     def test_weighted_stock_and_purchase_idempotency(self):
         self.receive(10, 2000)

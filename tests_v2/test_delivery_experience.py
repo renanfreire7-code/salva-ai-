@@ -10,7 +10,7 @@ class DeliveryExperienceTest(unittest.TestCase):
         from salva_ai_v2.inventory.models import PurchaseLine
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
         self.app=build_application(Path(self.temp.name));self.addCleanup(self.app.close)
-        self.app.security.setup('681942');s=self.app.services
+        self.app.security.setup('681');s=self.app.services
         self.pid=s.inventory.create_product('Cerveja Heineken Latão',500,12,6,'p')
         s.inventory.receive_purchase([PurchaseLine(self.pid,20,4000)],0,s.clock.today(),s.clock.today(),'buy')
         s.cash.open(10000,'open');s.delivery.configure_fees(500,700,'fees')
@@ -75,7 +75,7 @@ class DeliveryExperienceTest(unittest.TestCase):
         from salva_ai_v2.delivery.models import DeliveryDraft
         from salva_ai_v2.inventory.models import CartLine
         s=self.app.services
-        s.settlements.fund_courier(6000,s.security.authorize('681942','delivery.float'),'Troco para entregas','float')
+        s.settlements.fund_courier(6000,s.security.authorize('681','delivery.float'),'Troco para entregas','float')
         draft=DeliveryDraft('Cliente','123','Rua','',[CartLine(self.pid,8)],'MONEY','COURIER','ON_DELIVERY','MONEY',5000)
         order=s.delivery.confirm(draft,'order')
         dialog=DeliveryReceiptDialog(self.app.window,s,order.id)
@@ -93,11 +93,11 @@ class DeliveryExperienceTest(unittest.TestCase):
         s=self.app.services;view=self.app.delivery_view
         draft=DeliveryDraft('Cliente','123','Rua','',[CartLine(self.pid,2)],'CREDIT','BAR','ADVANCE','LINK')
         order=s.delivery.confirm(draft,'order');s.delivery.record_payment(order.id,'DEBIT',1500,'BAR',None,'payment')
-        s.delivery.cancel(order.id,s.security.authorize('681942','delivery.cancel'),'Cancelado pelo cliente','cancel')
+        s.delivery.cancel(order.id,s.security.authorize('681','delivery.cancel'),'Cancelado pelo cliente','cancel')
         view.refresh();view.tree.selection_set(str(order.id));dialogs=[]
         with patch('salva_ai_v2.ui.delivery.ask_fields',side_effect=lambda *a,**kw:dialogs.append(FormDialog(*a,**kw))):view.refund()
         dialog=dialogs[0];dialog.inputs['amount'].delete(0,'end');dialog.inputs['amount'].insert(0,'999,00')
-        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681942',action)),patch.object(view,'reason',return_value='Reembolso confirmado'):
+        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681',action)),patch.object(view,'reason',return_value='Reembolso confirmado'):
             self.assertFalse(dialog.submit());self.assertEqual(dialog.inputs['amount'].get(),'999,00')
             dialog.inputs['amount'].delete(0,'end');dialog.inputs['amount'].insert(0,'15,00');self.assertTrue(dialog.submit())
         self.assertEqual(self.app.db.conn.execute('SELECT pending_cents FROM refunds WHERE order_id=?',(order.id,)).fetchone()[0],0)
@@ -111,10 +111,10 @@ class DeliveryExperienceTest(unittest.TestCase):
         s=self.app.services;view=self.app.delivery_view
         order=s.delivery.confirm(DeliveryDraft('Cliente','123','Rua','',[CartLine(self.pid,2)],'MONEY','BAR','ON_DELIVERY','MONEY'),'order')
         s.delivery.record_payment(order.id,'MONEY',1500,'BAR',1500,'payment')
-        s.delivery.cancel(order.id,s.security.authorize('681942','delivery.cancel'),'Cancelado pelo cliente','cancel')
+        s.delivery.cancel(order.id,s.security.authorize('681','delivery.cancel'),'Cancelado pelo cliente','cancel')
         view.refresh();view.tree.selection_set(str(order.id));dialogs=[]
         with patch('salva_ai_v2.ui.delivery.ask_fields',side_effect=lambda *a,**kw:dialogs.append(FormDialog(*a,**kw))):view.refund()
         dialog=dialogs[0];self.assertEqual(dialog.inputs['drawer'].get(),'Sim')
-        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681942',action)),patch.object(view,'reason',return_value='Reembolso confirmado'):
+        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681',action)),patch.object(view,'reason',return_value='Reembolso confirmado'):
             self.assertTrue(dialog.submit())
         self.assertEqual(s.cash.position(s.cash.require_open()['id']).expected_cents,10000)

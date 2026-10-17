@@ -7,11 +7,11 @@ class SettingsTest(DatabaseCase):
         from salva_ai_v2.security.service import SecurityService
         from salva_ai_v2.finance.settings import FinancialSettings
         self.security=SecurityService(self.db)
-        self.security.setup('681942')
+        self.security.setup('681')
         self.settings=FinancialSettings(self.db,self.security)
 
     def grant(self):
-        return self.security.authorize('681942','settings.finance')
+        return self.security.authorize('681','settings.finance')
 
     def test_combined_configuration_does_not_save_half(self):
         from salva_ai_v2.common.errors import BusinessError

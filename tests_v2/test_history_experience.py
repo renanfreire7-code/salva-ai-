@@ -9,7 +9,7 @@ class HistoryExperienceTest(unittest.TestCase):
         from salva_ai_v2.inventory.models import PurchaseLine
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
         self.app=build_application(Path(self.temp.name));self.addCleanup(self.app.close)
-        self.app.security.setup('681942');s=self.app.services
+        self.app.security.setup('681');s=self.app.services
         self.pid=s.inventory.create_product('Cerveja',500,1,0,'p')
         s.inventory.receive_purchase([PurchaseLine(self.pid,20,4000)],0,s.clock.today(),s.clock.today(),'buy')
         s.cash.open(10000,'open')
@@ -57,7 +57,7 @@ class HistoryExperienceTest(unittest.TestCase):
                 if sale==cash:
                     self.assertIn('Cliente entregou: R$ 20,00',text);self.assertIn('Troco: R$ 10,00',text)
                 else:self.assertNotIn('Troco:',text)
-        s.sales.reverse_sale(cash.id,True,None,False,s.security.authorize('681942','sale.reverse'),'Reembolso ainda pendente','reverse')
+        s.sales.reverse_sale(cash.id,True,None,False,s.security.authorize('681','sale.reverse'),'Reembolso ainda pendente','reverse')
         view.refresh();self.assertIn('Reembolso pendente',str(view.tree.item(f'sale:{cash.id}','values')))
 
     def test_delivery_history_keeps_payment_state_separate_from_delivery(self):
@@ -70,5 +70,5 @@ class HistoryExperienceTest(unittest.TestCase):
         self.assertIn('Entregue',values);self.assertIn('Pendente',values)
         s.delivery.record_payment(order.id,'PIX',1000,'BAR',None,'payment');view.refresh()
         values=str(view.tree.item(key,'values'));self.assertIn('Pago',values);self.assertIn('Pix',values)
-        s.delivery.cancel(order.id,s.security.authorize('681942','delivery.cancel'),'Cliente devolveu o pedido','cancel');view.refresh()
+        s.delivery.cancel(order.id,s.security.authorize('681','delivery.cancel'),'Cliente devolveu o pedido','cancel');view.refresh()
         self.assertIn('Reembolso pendente',str(view.tree.item(key,'values')))

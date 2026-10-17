@@ -11,7 +11,7 @@ class CommerceCase(DatabaseCase):
         from salva_ai_v2.sales.service import SalesService
         from salva_ai_v2.inventory.models import PurchaseLine
         self.security = SecurityService(self.db)
-        self.security.setup('681942')
+        self.security.setup('681')
         self.inventory = InventoryService(self.db, self.security)
         self.pricing = PricingService(self.db)
         self.cash = CashService(self.db, self.security, self.clock)
@@ -23,4 +23,4 @@ class CommerceCase(DatabaseCase):
 
 
     def grant(self, action):
-        return self.security.authorize('681942', action)
+        return self.security.authorize('681', action)

@@ -11,7 +11,7 @@ class RecurrenceTest(DatabaseCase):
         from salva_ai_v2.security.service import SecurityService
         from salva_ai_v2.cash.service import CashService
         self.security = SecurityService(self.db)
-        self.security.setup('681942')
+        self.security.setup('681')
         cash = CashService(self.db, self.security)
         self.finance = FinanceService(self.db, cash, self.security)
         self.recurrence = RecurrenceService(self.db, self.finance, self.clock)
@@ -32,7 +32,7 @@ class RecurrenceTest(DatabaseCase):
         rule = self.recurrence.create_rule(template, 31, '2026-01', 'rule1')
         first = self.recurrence.generate(rule, '2026-01', 'gen1')
         changed = ExpenseDraft('Aluguel', 'Aluguel', 110000, date(2026,1,1), date(2026,1,31))
-        grant = self.security.authorize('681942', 'recurrence.edit')
+        grant = self.security.authorize('681', 'recurrence.edit')
         self.recurrence.update_rule(rule, changed, 31, True, grant, 'Reajuste aluguel', 'edit1')
         second = self.recurrence.generate(rule, '2026-02', 'gen2')
         self.assertEqual(self.db.conn.execute('SELECT amount_cents FROM obligations WHERE id=?', (first,)).fetchone()[0], 100000)

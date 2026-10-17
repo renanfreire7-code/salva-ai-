@@ -51,7 +51,8 @@ class ExperienceUpgradeTest(DatabaseCase):
         db=Database(path,self.clock)
         try:
             from salva_ai_v2.security.service import SecurityService
-            security=SecurityService(db);security.setup('681942')
+            from tests_v2.security_support import seed_legacy_pin
+            security=SecurityService(db);seed_legacy_pin(db)
             backups=BackupService(db,self.root/'upgrade-backups')
             db.upgrade(backups)
             row=db.conn.execute('SELECT * FROM delivery_orders WHERE order_id=17').fetchone()

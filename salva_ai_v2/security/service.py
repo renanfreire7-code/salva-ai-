@@ -19,9 +19,14 @@ class SecurityService:
     def configured(self):
         return self.db.conn.execute("SELECT 1 FROM admin_credentials").fetchone() is not None
 
-    def _pin(self, pin):
-        if not isinstance(pin, str) or not re.fullmatch(r"[0-9]{6}", pin):
-            raise BusinessError("O PIN deve ter seis dígitos.")
+    @property
+    def pin_length(self):
+        row=self.db.conn.execute("SELECT pin_length FROM admin_credentials WHERE id=1").fetchone()
+        return row[0] if row else 3
+
+    def _pin(self, pin, length=3):
+        if not isinstance(pin, str) or not re.fullmatch(r"[0-9]{"+str(length)+r"}", pin):
+            raise BusinessError(f"O PIN deve ter {length} dígitos.")
 
     @staticmethod
     def _hash(value, salt, iterations=ITERATIONS):
@@ -34,13 +39,13 @@ class SecurityService:
         with self.db.transaction():
             if self.configured:
                 raise BusinessError("O PIN já foi configurado.")
-            self.db.conn.execute("INSERT INTO admin_credentials(id,salt,pin_hash,recovery_salt,recovery_hash,iterations) VALUES(1,?,?,?,?,?)",
+            self.db.conn.execute("INSERT INTO admin_credentials(id,salt,pin_hash,recovery_salt,recovery_hash,iterations,pin_length) VALUES(1,?,?,?,?,?,3)",
                 (salt, self._hash(pin, salt), recovery_salt, self._hash(key, recovery_salt), ITERATIONS))
             Audit(self.db).record("security.setup", "admin", {}, {"configured": True}, None)
         return key
 
     def authorize(self, pin, action):
-        self._pin(pin)
+        self._pin(pin,self.pin_length)
         if not isinstance(action, str) or not action.strip():
             raise AuthorizationError("Ação administrativa inválida.")
         error = None
@@ -91,7 +96,7 @@ class SecurityService:
             if not row or not hmac.compare_digest(self._hash(recovery_key, row["recovery_salt"], row["iterations"]), row["recovery_hash"]):
                 raise AuthorizationError("Chave de recuperação inválida.")
             salt, recovery_salt = secrets.token_bytes(16), secrets.token_bytes(16)
-            self.db.conn.execute("UPDATE admin_credentials SET salt=?,pin_hash=?,recovery_salt=?,recovery_hash=?,iterations=?,failures=0,blocked_until=0,last_time=? WHERE id=1",
+            self.db.conn.execute("UPDATE admin_credentials SET pin_length=3,salt=?,pin_hash=?,recovery_salt=?,recovery_hash=?,iterations=?,failures=0,blocked_until=0,last_time=? WHERE id=1",
                 (salt, self._hash(new_pin, salt), recovery_salt, self._hash(new_key, recovery_salt), ITERATIONS, self.clock.now().timestamp()))
             Audit(self.db).record("security.recovered", "admin", {}, {"recovery_key_rotated": True}, None)
         self._grants.clear()

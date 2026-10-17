@@ -11,14 +11,14 @@ class ObligationPaymentsTest(DatabaseCase):
         from salva_ai_v2.cash.service import CashService
         from salva_ai_v2.finance.models import ExpenseDraft
         self.security = SecurityService(self.db)
-        self.security.setup('681942')
+        self.security.setup('681')
         self.cash = CashService(self.db, self.security)
         self.finance = FinanceService(self.db, self.cash, self.security, self.clock)
         self.session = self.cash.open(10000, 'open1')
         self.expense = self.finance.add_expense(ExpenseDraft('Energia', 'Energia', 2000, date(2026,10,1), date(2026,10,16)), False, 'exp1')
 
     def grant(self, action):
-        return self.security.authorize('681942', action)
+        return self.security.authorize('681', action)
 
     def test_paid_by_drawer_once_delete_does_not_return_cash(self):
         p = self.finance.pay_obligation(self.expense, 2000, self.clock.today(), 'MONEY', True, self.grant('cash.withdraw'), 'paid1')

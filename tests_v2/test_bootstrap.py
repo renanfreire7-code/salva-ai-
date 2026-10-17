@@ -19,7 +19,7 @@ class BootstrapTest(unittest.TestCase):
         app = self.build(self.root / 'novo')
         self.assertEqual(app.data_dir, self.root / 'novo')
         self.assertFalse(app.security.configured)
-        app.security.setup('681942')
+        app.security.setup('681')
         app.close()
         app = self.build(self.root / 'novo')
         self.addCleanup(app.close)

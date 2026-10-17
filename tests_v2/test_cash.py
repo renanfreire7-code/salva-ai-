@@ -8,11 +8,11 @@ class CashTest(DatabaseCase):
         from salva_ai_v2.cash.service import CashService
         from salva_ai_v2.security.service import SecurityService
         self.security = SecurityService(self.db)
-        self.security.setup('681942')
+        self.security.setup('681')
         self.cash = CashService(self.db, self.security, self.clock)
 
     def grant(self, kind):
-        return self.security.authorize('681942', kind)
+        return self.security.authorize('681', kind)
 
     def test_movement_and_duplicate(self):
         session = self.cash.open(10000, 'open1')

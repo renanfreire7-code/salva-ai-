@@ -21,7 +21,7 @@ class NavigationTest(unittest.TestCase):
 
     def test_navigation_preserves_current_cart(self):
         from salva_ai_v2.inventory.models import PurchaseLine
-        self.app.security.setup('681942');s=self.app.services
+        self.app.security.setup('681');s=self.app.services
         pid=s.inventory.create_product('Produto',500,1,0,'product')
         s.inventory.receive_purchase([PurchaseLine(pid,10,2000)],0,s.clock.today(),s.clock.today(),'buy')
         s.cash.open(10000,'open')

@@ -10,7 +10,7 @@ class ManagementExperienceTest(unittest.TestCase):
         from salva_ai_v2.bootstrap import build_application
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
         self.app=build_application(Path(self.temp.name));self.addCleanup(self.app.close)
-        self.app.security.setup('681942')
+        self.app.security.setup('681')
 
     def test_finance_filters_apply_only_when_requested_and_clear_resets(self):
         from salva_ai_v2.finance.models import ExpenseDraft
@@ -55,8 +55,8 @@ class ManagementExperienceTest(unittest.TestCase):
         from salva_ai_v2.inventory.models import PurchaseLine,CartLine
         s=self.app.services;pid=s.inventory.create_product('Produto',500,1,0,'p')
         purchase=s.inventory.receive_purchase([PurchaseLine(pid,5,1000)],0,s.clock.today(),s.clock.today(),'buy')
-        credit=s.inventory.return_to_supplier(purchase,[CartLine(pid,1)],s.security.authorize('681942','purchase.return'),'Retorno conferido','return')
-        s.inventory.settle_supplier_credit(credit,200,'OFFSET',None,False,s.clock.today(),s.security.authorize('681942','purchase.credit.settle'),'Crédito abatido','offset')
+        credit=s.inventory.return_to_supplier(purchase,[CartLine(pid,1)],s.security.authorize('681','purchase.return'),'Retorno conferido','return')
+        s.inventory.settle_supplier_credit(credit,200,'OFFSET',None,False,s.clock.today(),s.security.authorize('681','purchase.credit.settle'),'Crédito abatido','offset')
         view=self.app.finance_view;view.refresh();view.tree.selection_set('1')
         payment_view=view.payments()
         self.assertIn('Crédito do fornecedor',str(payment_view.payments_tree.item('1','values')))
@@ -74,7 +74,7 @@ class ManagementExperienceTest(unittest.TestCase):
         self.assertIsInstance(dialog.inputs['method'],ttk.Combobox)
         self.assertIsInstance(dialog.inputs['drawer'],ttk.Combobox)
         dialog.inputs['drawer'].set('Sim')
-        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681942',action)):
+        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681',action)):
             self.assertFalse(dialog.submit())
         self.assertTrue(dialog.winfo_exists());self.assertEqual(s.finance.paid_cents(id),0)
         dialog.inputs['drawer'].set('Não');self.assertTrue(dialog.submit())
@@ -128,6 +128,6 @@ class ManagementExperienceTest(unittest.TestCase):
         self.assertFalse(dialog.submit());self.assertIsNone(s.settings.das())
         dialog.inputs['PIX'].delete(0,'end');dialog.inputs['PIX'].insert(0,'0')
         dialog.inputs['DEBIT'].insert(0,'1,50');dialog.inputs['CREDIT'].insert(0,'3,50');dialog.inputs['das'].insert(0,'80,00')
-        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681942',action)),patch.object(view,'reason',return_value='Taxas confirmadas'):
+        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681',action)),patch.object(view,'reason',return_value='Taxas confirmadas'):
             self.assertTrue(dialog.submit())
         self.assertEqual(s.settings.rates()['DEBIT'],150);self.assertEqual(s.settings.das(),8000)

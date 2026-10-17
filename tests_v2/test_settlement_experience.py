@@ -10,7 +10,7 @@ class SettlementExperienceTest(unittest.TestCase):
         from salva_ai_v2.delivery.models import DeliveryDraft
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
         self.app=build_application(Path(self.temp.name));self.addCleanup(self.app.close)
-        self.app.security.setup('681942');s=self.app.services
+        self.app.security.setup('681');s=self.app.services
         self.pid=s.inventory.create_product('Cerveja',500,1,0,'p')
         s.inventory.receive_purchase([PurchaseLine(self.pid,20,4000)],0,s.clock.today(),s.clock.today(),'buy')
         s.cash.open(10000,'open');s.delivery.configure_fees(500,700,'fees')
@@ -34,7 +34,7 @@ class SettlementExperienceTest(unittest.TestCase):
         from salva_ai_v2.ui.settlement import SettlementView
         import tkinter as tk
         s=self.app.services
-        grant=s.security.authorize('681942','delivery.settle')
+        grant=s.security.authorize('681','delivery.settle')
         settled=s.settlements.settle([self.collection],[self.trip],3800,0,700,grant,'settle')
         window=tk.Toplevel(self.app.window);view=SettlementView(window,s);view.pack(fill='both',expand=True)
         view.records_tree.selection_set(str(settled.id));view.show_record()

@@ -12,7 +12,7 @@ class AttendanceUITest(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.app = build_application(Path(self.tmp.name))
         self.addCleanup(self.app.close)
-        self.app.security.setup('681942')
+        self.app.security.setup('681')
         s = self.app.services
         self.pid = s.inventory.create_product('Cerveja Pilsen', 500, 12, 6, 'p1')
         s.inventory.receive_purchase([PurchaseLine(self.pid, 20, 4000)], 0, s.clock.today(), s.clock.today(), 'buy1')
@@ -57,12 +57,12 @@ class AttendanceUITest(unittest.TestCase):
         history.tree.selection_set('1')
         history.select_purchase()
         history.items_tree.selection_set(str(self.pid))
-        with patch('salva_ai_v2.ui.purchases.ask_fields',side_effect=lambda *args,**kwargs:kwargs['on_submit']({'qty':'2'})),patch.object(history,'grant',side_effect=lambda action:self.app.security.authorize('681942',action)),patch.object(history,'reason',return_value='Mercadoria conferida'):
+        with patch('salva_ai_v2.ui.purchases.ask_fields',side_effect=lambda *args,**kwargs:kwargs['on_submit']({'qty':'2'})),patch.object(history,'grant',side_effect=lambda action:self.app.security.authorize('681',action)),patch.object(history,'reason',return_value='Mercadoria conferida'):
             history.return_item()
         history.refresh()
         credit=self.app.services.inventory.supplier_credits()[0]
         history.credits_tree.selection_set(str(credit['id']))
-        with patch('salva_ai_v2.ui.purchases.ask_fields',side_effect=lambda *args,**kwargs:kwargs['on_submit']({'amount':'4,00','mode':'abatimento','method':'Pix','date':self.app.services.clock.today().isoformat()})),patch.object(history,'grant',side_effect=lambda action:self.app.security.authorize('681942',action)),patch.object(history,'reason',return_value='Abatimento confirmado'):
+        with patch('salva_ai_v2.ui.purchases.ask_fields',side_effect=lambda *args,**kwargs:kwargs['on_submit']({'amount':'4,00','mode':'abatimento','method':'Pix','date':self.app.services.clock.today().isoformat()})),patch.object(history,'grant',side_effect=lambda action:self.app.security.authorize('681',action)),patch.object(history,'reason',return_value='Abatimento confirmado'):
             history.settle_credit()
         self.assertEqual(self.app.services.finance.paid_cents(1),400)
         self.assertEqual(self.app.services.inventory.position(self.pid).physical,18)
