@@ -11,7 +11,7 @@ from salva_ai_v2.sales.models import Payment
 
 class ExperienceEndToEndTest(unittest.TestCase):
     def test_upgrade_trade_delivery_settlement_restart_close_and_restore(self):
-        from salva_ai_v2.bootstrap import build_application
+        from tests_v2.application_support import build_test_application as build_application
         with tempfile.TemporaryDirectory(prefix='ensaio com acentuação ') as directory:
             root=Path(directory);path=root/'dados'/'salva_ai.sqlite3';path.parent.mkdir()
             db=sqlite3.connect(path)
@@ -22,7 +22,7 @@ class ExperienceEndToEndTest(unittest.TestCase):
             db.execute(f'PRAGMA application_id={APPLICATION_ID}');db.commit();db.close()
             app=build_application(root)
             try:
-                s=app.services;s.security.setup('681')
+                s=app.services;
                 grant=lambda action:s.security.authorize('681',action)
                 self.assertEqual(len(s.backups.list_backups()),1)
                 pid=s.inventory.create_product('Cerveja Heineken Latão',500,12,6,'product')

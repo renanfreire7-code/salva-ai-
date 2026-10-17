@@ -29,8 +29,8 @@ class BootstrapTest(unittest.TestCase):
 
     def test_cancel_initial_setup_closes_connection(self):
         app = self.build(self.root / 'novo')
-        with patch.object(app.admin, 'setup', return_value=False):
-            app.run()
+        app.window.after(1,app.close)
+        app.run()
         self.assertIsNone(app.db.conn)
 
     def test_window_fits_and_close_is_idempotent(self):

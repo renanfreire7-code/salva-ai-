@@ -68,6 +68,7 @@ def recover_restore(data_dir):
 
 class RestoreService:
     def __init__(self,data_dir,backups,security):
+        self.on_completed=None
         self.data_dir=Path(data_dir).resolve()
         self.backups,self.security=backups,security
         self.db=backups.db
@@ -127,6 +128,7 @@ class RestoreService:
             journal.unlink()
             self.security._grants.clear()
             self._previews.clear()
+            if self.on_completed:self.on_completed()
         except BaseException:
             if self.db.conn is None:
                 self._reopen()

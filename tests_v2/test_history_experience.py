@@ -5,11 +5,11 @@ import unittest
 
 class HistoryExperienceTest(unittest.TestCase):
     def setUp(self):
-        from salva_ai_v2.bootstrap import build_application
+        from tests_v2.application_support import build_test_application as build_application
         from salva_ai_v2.inventory.models import PurchaseLine
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
         self.app=build_application(Path(self.temp.name));self.addCleanup(self.app.close)
-        self.app.security.setup('681');s=self.app.services
+        s=self.app.services
         self.pid=s.inventory.create_product('Cerveja',500,1,0,'p')
         s.inventory.receive_purchase([PurchaseLine(self.pid,20,4000)],0,s.clock.today(),s.clock.today(),'buy')
         s.cash.open(10000,'open')

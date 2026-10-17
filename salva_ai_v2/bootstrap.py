@@ -38,6 +38,38 @@ class Application:
         except BaseException:
             self.db.close()
             raise
+        from .security.accounts import AccountService
+        self.accounts=AccountService(self.db,self.security)
+        self.authenticated=False
+        self.require_login()
+
+    def unlock(self,session):
+        self.accounts.validate_session(session)
+        if self.authenticated:return
+        self.authenticated=True
+        try:
+            self._build_operations()
+        except BaseException:
+            self.close();raise
+
+    def require_login(self):
+        self.accounts.logout();self.authenticated=False
+        # Popups and old callbacks must not retain operational surfaces after restore.
+        import tkinter as tk
+        for child in self.window.winfo_children():
+            if isinstance(child,tk.Toplevel):child.destroy()
+        for key in range(1,13):self.window.unbind_all(f'<F{key}>')
+        for child in self.window.body.winfo_children():child.destroy()
+        self.views=[]
+        for name in ('services','shell','shortcuts'):
+            if hasattr(self,name):delattr(self,name)
+        self.window.cash_state.set('Acesso protegido')
+        from .ui.access import AccessView
+        self.access_view=AccessView(self.window.body,self.accounts,self.security,self.unlock,self.close)
+        self.access_view.pack(fill='both',expand=True)
+        self.window.status.set('Entre para abrir o atendimento.')
+
+    def _build_operations(self):
         self._closed = False
         from .inventory.service import InventoryService
         from .pricing.service import PricingService
@@ -82,6 +114,7 @@ class Application:
         self.services.backups.db_security = self.security
         from .maintenance.restore import RestoreService
         self.services.restore = RestoreService(self.data_dir,self.services.backups,self.security)
+        self.services.restore.on_completed=self.require_login
         self.services.closing = ClosingService(self.db, cash, self.services.backups, self.services.reports)
         from .ui.navigation import NavigationShell
         from .ui.keyboard import ShortcutRouter
@@ -125,13 +158,14 @@ class Application:
             self.window.status.set(message)
 
     def show_view(self, view):
+        if not self.authenticated:raise BusinessError("Entre para acessar o atendimento.")
         self.shell.show(view)
 
     def shortcut(self, key):
-        return self.shortcuts.route(key)
+        return self.shortcuts.route(key) if self.authenticated else "break"
 
     def refresh(self):
-        if self._closed:
+        if self._closed or not self.authenticated:
             return
         session=self.services.cash.active()
         self.window.cash_state.set('Fechamento pendente' if self.services.closing.pending() else f"Caixa #{session['id']} aberto" if session else 'Caixa fechado')
@@ -143,10 +177,6 @@ class Application:
                 continue
 
     def run(self):
-        if not self.security.configured and not self.admin.setup():
-            self.close()
-            return
-        self.window.status.set("Pronto para trabalhar.")
         self.window.mainloop()
 
     def close(self):

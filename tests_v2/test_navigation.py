@@ -5,7 +5,7 @@ import unittest
 
 class NavigationTest(unittest.TestCase):
     def setUp(self):
-        from salva_ai_v2.bootstrap import build_application
+        from tests_v2.application_support import build_test_application as build_application
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
         self.app=build_application(Path(self.temp.name));self.addCleanup(self.app.close)
 
@@ -21,7 +21,7 @@ class NavigationTest(unittest.TestCase):
 
     def test_navigation_preserves_current_cart(self):
         from salva_ai_v2.inventory.models import PurchaseLine
-        self.app.security.setup('681');s=self.app.services
+        s=self.app.services
         pid=s.inventory.create_product('Produto',500,1,0,'product')
         s.inventory.receive_purchase([PurchaseLine(pid,10,2000)],0,s.clock.today(),s.clock.today(),'buy')
         s.cash.open(10000,'open')

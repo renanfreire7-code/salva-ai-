@@ -6,13 +6,13 @@ from unittest.mock import patch
 
 class AttendanceUITest(unittest.TestCase):
     def setUp(self):
-        from salva_ai_v2.bootstrap import build_application
+        from tests_v2.application_support import build_test_application as build_application
         from salva_ai_v2.inventory.models import PurchaseLine
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.app = build_application(Path(self.tmp.name))
         self.addCleanup(self.app.close)
-        self.app.security.setup('681')
+
         s = self.app.services
         self.pid = s.inventory.create_product('Cerveja Pilsen', 500, 12, 6, 'p1')
         s.inventory.receive_purchase([PurchaseLine(self.pid, 20, 4000)], 0, s.clock.today(), s.clock.today(), 'buy1')

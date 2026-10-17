@@ -7,10 +7,10 @@ from unittest.mock import patch
 
 class ManagementExperienceTest(unittest.TestCase):
     def setUp(self):
-        from salva_ai_v2.bootstrap import build_application
+        from tests_v2.application_support import build_test_application as build_application
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
         self.app=build_application(Path(self.temp.name));self.addCleanup(self.app.close)
-        self.app.security.setup('681')
+
 
     def test_finance_filters_apply_only_when_requested_and_clear_resets(self):
         from salva_ai_v2.finance.models import ExpenseDraft

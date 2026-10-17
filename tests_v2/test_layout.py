@@ -7,7 +7,7 @@ import unittest
 
 class LayoutTest(unittest.TestCase):
     def test_primary_actions_fit_1366_by_768(self):
-        from salva_ai_v2.bootstrap import build_application
+        from tests_v2.application_support import build_test_application as build_application
         with tempfile.TemporaryDirectory() as directory:
             app=build_application(Path(directory))
             try:
@@ -27,7 +27,7 @@ class LayoutTest(unittest.TestCase):
                 app.close()
 
     def test_nested_visible_buttons_and_inputs_fit_available_window(self):
-        from salva_ai_v2.bootstrap import build_application
+        from tests_v2.application_support import build_test_application as build_application
         from salva_ai_v2.ui.forms import FormDialog
         from unittest.mock import patch
         def check(widget,root):
