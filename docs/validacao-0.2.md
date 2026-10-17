@@ -32,8 +32,8 @@ O ensaio integrado cobre banco anterior → migração → promoção/comanda �
 reinício/replay → fechamento/backup verificado → restauração. Confere estoque,
 IDs vinculados, custódia zerada e saldo físico esperado.
 
-Os resultados finais e a revisão independente são registrados abaixo após sua
-conclusão. Windows nativo nas escalas 100% e 125% e ensaio com o operador
+Os resultados finais e a revisão independente estão registrados abaixo.
+Windows nativo nas escalas 100% e 125% e ensaio com o operador
 continuam pendentes. Esta entrega é para validação com dados fictícios.
 
 ## Decisões de execução e custos
@@ -88,3 +88,25 @@ custódia zero e saldo físico correto.
 
 Esses desvios menores ficam registrados para a próxima evolução; não houve
 expansão do lote final para ajustes cosméticos.
+
+
+## Resultado final verificado
+
+Após o lote de correções `d1993ef`:
+
+- Checkout: **157/157 testes aprovados**, sem pulos.
+- Legado: **30/30 aprovados**, sem pulos.
+- Código do ZIP extraído: **155/155 aprovados**, sem pulos; os dois testes do
+  empacotador são executados no checkout.
+- ZIP: 147 arquivos no manifesto, integridade e hashes conferidos; fontes,
+  migrações, PNGs e manual iguais aos do checkout. Sem banco, backup ou cache.
+- Demonstração isolada inicializada; interface inspecionada no Linux conforme
+  procedimento acima. Windows nativo e aceite do operador permanecem pendentes.
+
+Artefato: `dist/Salva_AI_novo_0.2.0-dev.zip` (1.990.407 bytes).
+SHA-256: `bfb6ce15182e6f6d1d16c3f43d35386d67b341d2799cd45febb2242801b6da2b`.
+O arquivo distribuído é a mesma cópia usada na suíte extraída.
+
+Comandos finais: `python3 -m unittest discover -s tests_v2 -t .` e
+`python3 -m unittest discover -s tests -t .`, ambos sob Xvfb, além da suíte
+copiada para a pasta extraída com espaços/acentos, excluindo `test_distribution`.
