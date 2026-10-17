@@ -10,7 +10,7 @@ class NavigationTest(unittest.TestCase):
         self.app=build_application(Path(self.temp.name));self.addCleanup(self.app.close)
 
     def test_all_destinations_and_identity_are_available(self):
-        self.assertIn('SALVA AI HEADSHOP',self.app.window.title())
+        self.assertIn('Bar Simples',self.app.window.title())
         self.assertEqual(len(self.app.views),11)
         for view in self.app.views:
             self.app.show_view(view);self.app.window.update()

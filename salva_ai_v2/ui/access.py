@@ -10,12 +10,16 @@ class AccessView(ttk.Frame):
         super().__init__(parent,padding=(30,18))
         self.accounts,self.security=accounts,security
         self.on_authenticated,self.on_cancel=on_authenticated,on_cancel
-        self.mode=accounts.mode;self.inputs={};self._focus_job=None;self.busy=False
+        self._focus_job=None;self.busy=False;self.inputs={}
+        self.mode=accounts.mode
         self.error=tk.StringVar();self.show_password=tk.BooleanVar();self.proof_kind=tk.StringVar(value='PIN atual')
         self.columnconfigure(0,weight=4);self.columnconfigure(1,weight=6);self.rowconfigure(0,weight=1)
         self.brand=ttk.Frame(self,padding=(20,30));self.brand.grid(row=0,column=0,sticky='nsew',padx=(0,36))
-        ttk.Label(self.brand,text='Bar Simples',style='Brand.TLabel').pack(anchor='w',pady=(20,12))
-        ttk.Label(self.brand,text='Seu bar, organizado.',style='Title.TLabel').pack(anchor='w',pady=(0,12))
+        from .branding import load_logo
+        self.logo=load_logo(self,280)
+        self.logo_label=ttk.Label(self.brand,image=self.logo)
+        self.logo_label.pack(anchor='w',pady=(12,20))
+        ttk.Label(self.brand,text='Seu bar, organizado.',style='Title.TLabel',foreground='#a34728').pack(anchor='w',pady=(0,12))
         ttk.Label(self.brand,text='Vendas, comandas e entregas\nno mesmo lugar.',justify='left',wraplength=300).pack(anchor='w')
         ttk.Label(self.brand,text='Funciona sem internet.',style='Muted.TLabel').pack(anchor='w',pady=24)
         self.form=ttk.Frame(self,padding=(12,0));self.form.grid(row=0,column=1,sticky='nsew');self.form.columnconfigure(0,weight=1)
@@ -37,10 +41,10 @@ class AccessView(ttk.Frame):
         if self.mode!='LOGIN':fields.extend([('password_confirm','Confirme a senha'),('pin','PIN de três dígitos'),('pin_confirm','Confirme o PIN')])
         if self.mode=='TRANSITION':
             proof=ttk.Combobox(self.form,textvariable=self.proof_kind,values=('PIN atual','Chave de recuperação'),state='readonly',width=32)
-            proof.grid(row=2,column=0,sticky='e')
-            fields.append(('proof',f'PIN atual ({self.security.pin_length} dígitos) ou chave escolhida acima'))
+            fields.append(('proof','Confirme o acesso atual'))
         for index,(name,label) in enumerate(fields):
             row=index*2+3
+            if name=='proof':proof.grid(row=row,column=0,sticky='e')
             ttk.Label(self.form,text=label).grid(row=row,column=0,sticky='w',pady=(4,2))
             entry=ttk.Entry(self.form,width=44,show='*' if name!='username' else '')
             entry.grid(row=row+1,column=0,sticky='ew');self.inputs[name]=entry

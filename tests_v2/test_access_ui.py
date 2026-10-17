@@ -75,3 +75,12 @@ class AccessUITest(unittest.TestCase):
             with self.assertRaises(RuntimeError):self.app.unlock(session)
         self.assertIsNone(self.app.db.conn)
         reopened=build_application(self.root);reopened.close()
+
+    def test_access_constructor_fault_still_closes(self):
+        from unittest.mock import PropertyMock
+        from salva_ai_v2.security.accounts import AccountService
+        with patch.object(AccountService,'mode',new_callable=PropertyMock,side_effect=RuntimeError('falha de entrada')):
+            with self.assertRaises(RuntimeError):self.app.require_login()
+        try:self.app.close()
+        except Exception as error:self.fail(f'Fechamento de entrada parcial falhou: {error}')
+        self.assertIsNone(self.app.db.conn)
