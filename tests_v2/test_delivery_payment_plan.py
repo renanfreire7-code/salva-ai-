@@ -95,3 +95,12 @@ class DeliveryPaymentPlanTest(DeliveryCase):
         self.assertEqual(row['payment_timing'],'ADVANCE')
         self.assertEqual(self.delivery.order(new_id).state,'PREPARING')
         self.assertEqual(self.scalar('SELECT count(*) FROM trips'),0)
+
+    def test_redelivery_can_review_forecast_after_current_price_changes(self):
+        order=self.delivery.confirm(self.money_plan(),'plan')
+        self.delivery.cancel(order.id,self.grant('delivery.cancel'),'Cliente reagendou pedido','cancel')
+        self.delivery.configure_fees(1000,700,'new-fee')
+        new_id=self.delivery.redeliver(order.id,self.grant('delivery.redeliver'),'Novo troco combinado','new',new_change_for_cents=10000)
+        self.assertEqual(self.delivery.order(new_id).total_cents,5000)
+        self.assertEqual(self.scalar('SELECT change_for_cents FROM delivery_orders WHERE order_id=?',(new_id,)),10000)
+        self.assertEqual(self.scalar('SELECT change_for_cents FROM delivery_orders WHERE order_id=?',(order.id,)),5000)

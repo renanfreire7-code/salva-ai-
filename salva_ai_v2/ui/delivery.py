@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk,messagebox,simpledialog
-from .shared import View,ProductPicker,table,fill,ask_fields,command
+from .shared import View,ProductPicker,table,fill,ask_fields,command,FieldSpec
 from ..inventory.models import CartLine
 from ..delivery.models import DeliveryDraft
 from ..common.money import money,parse_money
@@ -9,54 +9,7 @@ METHODS={"Dinheiro":"MONEY","Pix":"PIX","Débito":"DEBIT","Crédito":"CREDIT"}
 STATES={"PREPARING":"Em preparação","OUT":"Saiu para entrega","DELIVERED":"Entregue","CANCELED":"Cancelado"}
 
 
-class DeliveryEditor(View,ProductPicker):
-    def __init__(self,parent,services):
-        super().__init__(parent,services)
-        self.lines={}
-        self.fields={}
-        grid=ttk.Frame(self);grid.pack(fill="x")
-        for i,(key,label) in enumerate((("customer","Cliente"),("phone","Telefone"),("address","Endereço"),("reference","Referência"))):
-            ttk.Label(grid,text=label).grid(row=i//2,column=(i%2)*2,sticky="w",padx=6,pady=6)
-            entry=ttk.Entry(grid,width=35);entry.grid(row=i//2,column=(i%2)*2+1,sticky="ew",padx=6,pady=6)
-            self.fields[key]=entry
-        row=ttk.Frame(self);row.pack(fill="x",pady=6)
-        ttk.Label(row,text="Pagamento combinado").pack(side="left")
-        self.method=tk.StringVar(value="Dinheiro")
-        ttk.Combobox(row,textvariable=self.method,values=list(METHODS),state="readonly",width=14).pack(side="left",padx=8)
-        self.build_picker(self,self.add)
-        self.tree=table(self,["Produto","Quantidade"],height=8)
-        row=ttk.Frame(self);row.pack(fill="x",pady=8)
-        self.summary=ttk.Label(row,text="");self.summary.pack(side="left")
-        ttk.Button(row,text="Remover item",command=lambda:self.act(self.remove)).pack(side="right",padx=8)
-        ttk.Button(row,text="Confirmar pedido",command=lambda:self.act(self.submit)).pack(side="right")
-        self.refresh()
-
-    def add(self):
-        pid=self.selected_product();qty=int(self.qty.get())
-        if qty<1:
-            from ..common.errors import BusinessError
-            raise BusinessError("Quantidade deve ser positiva.")
-        self.lines[pid]=self.lines.get(pid,0)+qty
-        self.refresh()
-
-    def remove(self):
-        self.lines.pop(self.selected(self.tree),None);self.refresh()
-
-    def refresh(self):
-        self.filter_products()
-        products={r["id"]:r for r in self.s.inventory.products()}
-        fill(self.tree,[(id,(products[id]["name"],qty)) for id,qty in self.lines.items()])
-        fees=self.s.delivery.settings()
-        total=sum(self.s.pricing.quote(self.s.pricing.snapshot(id),qty).total_cents for id,qty in self.lines.items())+fees["customer_fee_cents"]
-        self.summary.configure(text=f"Total previsto: {money(total)} • Entrega: {money(fees['customer_fee_cents'])}")
-
-    def submit(self):
-        values={key:entry.get().strip() for key,entry in self.fields.items()}
-        draft=DeliveryDraft(values["customer"],values["phone"],values["address"],values["reference"],
-            [CartLine(pid,qty) for pid,qty in self.lines.items()],METHODS[self.method.get()],"COURIER")
-        order=self.s.delivery.confirm(draft,command())
-        self.s.application.notify(f"Pedido #{order.id} confirmado. Total: {money(order.total_cents)}")
-        self.master.destroy()
+from .delivery_editor import DeliveryEditor
 
 
 class DeliveryView(View):
@@ -66,14 +19,19 @@ class DeliveryView(View):
         self.moto=load_asset(self,'motorcycle.png',24)
         self.motorcycle_label=ttk.Label(self,text='Delivery',image=self.moto,compound='left',style='Title.TLabel')
         self.motorcycle_label.pack(anchor='w')
+        self.action_buttons={};self.action_hint=tk.StringVar(value='Selecione um pedido para conferir as próximas ações.')
         row=ttk.Frame(self);row.pack(fill="x",pady=6)
         for label,callback in (("Novo pedido",self.create),("Detalhes",self.details),("Receber",self.receive),("Saiu para entrega",self.dispatch),("Marcar entregue",self.delivered),("Cancelar",self.cancel)):
-            ttk.Button(row,text=label,command=lambda f=callback:self.act(f)).pack(side="left",padx=(0,6))
+            button=ttk.Button(row,text=label,style='Primary.TButton' if callback==self.create else 'Danger.TButton' if callback==self.cancel else 'TButton',command=lambda f=callback:self.act(f))
+            button.pack(side="left",padx=(0,6));self.action_buttons[callback.__name__]=button
         row=ttk.Frame(self);row.pack(fill="x",pady=(0,6))
         for label,callback in (("Conferir devolução",self.returned),("Reembolsar",self.refund),("Nova tentativa",self.redeliver),("Acertar entregas",self.settlement),("Taxas fixas",self.fees)):
-            ttk.Button(row,text=label,command=lambda f=callback:self.act(f)).pack(side="left",padx=(0,6))
+            button=ttk.Button(row,text=label,command=lambda f=callback:self.act(f))
+            button.pack(side="left",padx=(0,6));self.action_buttons[callback.__name__]=button
+        ttk.Label(self,textvariable=self.action_hint,wraplength=950).pack(anchor='w',pady=4)
         self.summary=ttk.Label(self,text="");self.summary.pack(anchor="w",pady=5)
         self.tree=table(self,["Pedido","Cliente","Situação","Pagamento","Total","Entrega","Entregador"])
+        self.tree.bind('<<TreeviewSelect>>',lambda event:self.update_actions())
 
     def refresh(self):
         rows=[]
@@ -84,10 +42,32 @@ class DeliveryView(View):
         fill(self.tree,rows)
         pending=sum(r["pending_cents"] for r in self.s.settlements.trips_pending())
         self.summary.configure(text=f"Dinheiro com entregador: {money(self.s.settlements.pending_custody_cents())} • Corridas a pagar: {money(pending)}")
+        self.update_actions()
+
+    def update_actions(self):
+        selection=self.tree.selection()
+        enabled={name:False for name in ('details','receive','dispatch','delivered','cancel','returned','refund','redeliver')}
+        hint='Selecione um pedido para conferir as próximas ações.'
+        if selection:
+            id=int(selection[0]);order=self.s.delivery.order(id);detail=self.s.delivery_queries.detail(id)
+            plan=detail['payment_plan'];paid=order.paid_cents>=order.total_cents
+            enabled.update(details=True,receive=order.state!='CANCELED' and not paid,
+                dispatch=order.state=='PREPARING',delivered=order.state=='OUT',cancel=order.state!='CANCELED',
+                returned=order.state=='CANCELED' and bool(detail['trips']),
+                refund=any(r['pending_cents']>0 for r in detail['refunds']),redeliver=order.state=='CANCELED' and order.paid_cents==0)
+            hint='Entrega e recebimento são confirmados separadamente.'
+            if order.state=='PREPARING' and plan['payment_timing']=='ADVANCE' and not paid:
+                enabled['dispatch']=False;hint='Confirme o pagamento antecipado antes de registrar a saída.'
+            elif order.state=='PREPARING' and not paid and plan['payment_timing']=='ON_DELIVERY' and (plan['expected_change_cents'] or 0)>self.s.settlements.pending_custody_cents():
+                enabled['dispatch']=False;hint='Envie e registre o fundo de troco em Acertar entregas antes da saída.'
+        for name,value in enabled.items():
+            self.action_buttons[name].configure(state='normal' if value else 'disabled')
+        self.action_hint.set(hint)
 
     def create(self):
-        window=tk.Toplevel(self);window.title("Novo pedido de delivery");window.geometry("1000x620")
+        window=tk.Toplevel(self);window.title("Novo pedido de delivery");window.geometry("1100x650")
         editor=DeliveryEditor(window,self.s);editor.pack(fill="both",expand=True)
+        return editor
 
     def details(self):
         id=self.selected(self.tree)
@@ -97,13 +77,8 @@ class DeliveryView(View):
             "\n".join(f'{line["qty"]} × {line["name"]}' for line in lines),parent=self)
 
     def receive(self):
-        id=self.selected(self.tree);order=self.s.delivery.order(id)
-        details=next(r for r in self.s.delivery.list_orders() if r["id"]==id)
-        method=details["method"]
-        values=ask_fields(self,"Confirmar recebimento",[("custodian","Quem recebeu? bar / entregador","entregador" if method=="MONEY" else "bar"),("received","Recebido em dinheiro (R$)",money(order.total_cents).replace("R$ ",""))])
-        if values:
-            self.s.delivery.record_payment(id,method,order.total_cents,"COURIER" if values["custodian"].casefold()=="entregador" else "BAR",
-                parse_money(values["received"]) if method=="MONEY" else None,command())
+        from .delivery_receipt import DeliveryReceiptDialog
+        return DeliveryReceiptDialog(self,self.s,self.selected(self.tree)).show()
 
     def dispatch(self):
         id=self.selected(self.tree);order=self.s.delivery.order(id)
@@ -141,8 +116,21 @@ class DeliveryView(View):
 
     def redeliver(self):
         id=self.selected(self.tree)
-        if messagebox.askyesno("Nova tentativa","Criar novo pedido vinculado, com taxas atuais, e registrar nova saída?\nA corrida anterior permanece devida.",parent=self):
-            self.s.delivery.redeliver(id,self.grant("delivery.redeliver"),self.reason(),command())
+        detail=self.s.delivery_queries.detail(id);plan=detail['payment_plan'];cmd=command()
+        explicit=plan['payment_timing']!='UNSPECIFIED'
+        text='Criar novo pedido vinculado, com preços e taxas atuais?\n'+('A nova tentativa ficará em preparação para conferir pagamento e troco.' if explicit else 'Será registrada uma nova saída.')+'\nA corrida anterior permanece devida.'
+        if not messagebox.askyesno('Nova tentativa',text,parent=self):return
+        def submit(values=None):
+            kwargs={}
+            if values is not None:kwargs['new_change_for_cents']=parse_money(values['change']) if values['needed']=='Sim' else 0
+            result=self.s.delivery.redeliver(id,self.grant('delivery.redeliver'),self.reason(),cmd,**kwargs)
+            self.s.application.notify(f'Nova tentativa #{result} registrada.'+(' Confira o pagamento e registre a saída quando estiver pronta.' if explicit else ''))
+            return result
+        if explicit and plan['method']=='MONEY':
+            return ask_fields(self,'Troco da nova tentativa',[
+                FieldSpec('needed','Precisa de troco?','Sim' if plan['change_for_cents'] else 'Não',kind='choice',choices=('Não','Sim')),
+                FieldSpec('change','Troco para quanto? (R$)',money(plan['change_for_cents'] or 0).replace('R$ ',''))],on_submit=submit)
+        return submit()
 
     def fees(self):
         settings=self.s.delivery.settings()
