@@ -17,13 +17,13 @@ class ResultsView(View):
         for label,callback in (('Exportar Excel',self.export),('Taxas e DAS',self.configure)):
             ttk.Button(row,text=label,command=lambda f=callback:self.act(f)).pack(side='left',padx=4)
         self.summary=ttk.Label(self,text='',wraplength=1060,justify='left');self.summary.pack(anchor='w',pady=8)
-        ttk.Label(self,text='Margem de contribuição = venda − custo − taxas. Resultado por produto inclui rateio das despesas e DAS. Não é saldo bancário.',wraplength=1050).pack(anchor='w')
+        ttk.Label(self,text='Margem de contribuição = venda - custo - taxas. Resultado por produto inclui rateio das despesas e DAS. Não é saldo bancário.',wraplength=1050).pack(anchor='w')
         self.tree=table(self,['Produto','Quantidade','Faturamento','CMV','Taxas','Contribuição','Rateio','Resultado','Margem'])
 
     def refresh(self,month=None):
         month=month or self.selector.applied
         summary=self.s.reports.monthly(month)
-        self.summary.configure(text=f'Produtos: {money(summary.revenue_cents)} − custos {money(summary.cogs_cents)} − taxas e despesas → resultado {money(summary.product_result_cents)}\n'
+        self.summary.configure(text=f'Produtos: {money(summary.revenue_cents)} - custos {money(summary.cogs_cents)} - taxas e despesas = resultado {money(summary.product_result_cents)}\n'
             f'Entregas: receita {money(summary.delivery_revenue_cents)} • custo de corridas {money(summary.delivery_cost_cents)}\n'
             f'Resultado gerencial total: {money(summary.total_result_cents)}\n'+' '.join(summary.warnings))
         fill(self.tree,[(r.product_id,(r.name,r.qty,money(r.revenue_cents),money(r.cogs_cents),money(r.fees_cents),money(r.contribution_cents),money(r.allocated_cents),money(r.profit_cents),f'{r.margin}%' if r.margin is not None else '—')) for r in self.s.reports.profitability(month)])

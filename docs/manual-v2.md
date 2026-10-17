@@ -2,13 +2,13 @@
 
 ## Estado desta entrega
 
-Reconstrução **0.1.0-dev**, separada do aplicativo antigo. É uma versão de
+Reconstrução **0.2.0-dev**, separada do aplicativo antigo. É uma versão de
 desenvolvimento para validação com dados fictícios. Os testes automatizados são
 executados no Linux com interface Tkinter real e display virtual.
 A execução no Windows, escalas de tela e ensaio com o proprietário ainda precisam
 ser feitos antes de usar com dados reais. Não há merge nem release autorizados.
 
-A identificação 0.1.0-dev pertence à reconstrução; não substitui a identificação
+A identificação 0.2.0-dev pertence à reconstrução; não substitui a identificação
 0.3.6-beta do ZIP de referência.
 
 ## Instalação no Windows
@@ -44,11 +44,34 @@ python3 -m scripts.build_v2
 A demonstração usa uma pasta temporária e dados fictícios, removidos ao fechar.
 Use um PIN fictício no ensaio. Não altere HOME para testar.
 
+## Atualizar da reconstrução 0.1.0-dev
+
+Feche a versão anterior, faça uma cópia da pasta `~/SalvaAiHeadshopV2` e
+extraia o ZIP 0.2.0-dev em outra pasta de programa. Inicie pelo novo BAT.
+A pasta de dados continua a mesma: não copie nem substitua o banco pelo ZIP.
+A migração é aditiva e cria um backup antes de alterar a estrutura; preserva
+IDs, PIN, estoque e movimentos. A versão 0.3.6-beta de referência não é importada.
+Depois de atualizar, use o código 0.2.0; não abra o banco atualizado com 0.1.0.
+Em pedidos anteriores, momento de pagamento e troco aparecem como não informados.
+
 ## Organização das telas
 
-- **Atendimento:** Venda direta, Comandas e Delivery.
-- **Controle:** Produtos e estoque, Caixa e Histórico.
-- **Gestão:** Financeiro mensal, Lucro por produto e Previsão de compras.
+- **Atendimento:** Venda de balcão, Comandas e Delivery.
+- **Controle:** Produtos e estoque, Compras e devoluções, Caixa e Histórico de vendas.
+- **Gestão:** Contas e despesas, Resultado do mês, Lucro por produto e Reposição de estoque.
+
+A navegação fica na lateral; mudar de tela conserva o pedido em andamento.
+A logo fica no canto superior direito e a moto identifica o Delivery.
+Busque por nome, código, começo das palavras (`cer hei`) ou iniciais (`CHL`).
+Se houver mais de um resultado, selecione o desejado. F1–F12 também funciona
+no editor do Delivery: seleciona e leva à quantidade, sem adicionar sozinho.
+Enter avança pelos campos válidos; no último campo leva ao botão Salvar.
+Um novo Enter confirma. Erros mantêm os valores digitados para correção.
+
+Os filtros oferecem Hoje, Últimos 7 dias, Este mês e Personalizado. Digitar
+ou escolher valores não altera a consulta até clicar em **Filtrar**.
+O período aplicado aparece abaixo; **Limpar filtros** restaura o padrão.
+No resultado mensal, use **Consultar** para aplicar o mês.
 
 Os formulários indicam o formato da data. Valores aceitam formato brasileiro,
 por exemplo `1.234,56`. Quantidades são unidades inteiras.
@@ -159,10 +182,28 @@ Entregue não significa pago. Confirme pagamento antecipado ao bar ou recebiment
 pelo entregador. Pix/cartão pertence à conta/maquininha do bar; só dinheiro físico
 fica sob custódia do entregador.
 
+No novo pedido, escolha **Antecipado** (Pix ou Link de pagamento) ou
+**Na entrega** (Dinheiro, Pix, Débito ou Crédito à vista). Link é uma referência
+externa opcional; informe a modalidade real conforme o comprovante. O programa
+não gera links nem confirma pagamento automaticamente. Antecipado pendente
+pode ser salvo, mas precisa do recebimento confirmado antes de sair.
+
+Para dinheiro, selecione **Precisa de troco?** e **Troco para quanto?**.
+O pedido mostra o troco previsto, sem registrar dinheiro. Envie e registre o
+fundo antes da saída se houver troco. No recebimento, confira o valor real;
+se diferir do combinado, a confirmação mostra a diferença explicitamente.
+**Pendentes** inclui pedidos antigos em preparação/na rua, entregues sem pagamento
+e cancelados com reembolso pendente, sem limitar ao dia atual.
+
 Em **Acertar entregas**, selecione recebimentos e corridas, confira dinheiro
 entregue à gaveta, pagamento da gaveta e eventual compensação combinada.
 Exemplo: recebeu R$ 45, deve receber R$ 7 por corrida e entrega R$ 38 ao bar.
 O caixa recebe apenas R$ 38 físicos; os outros R$ 7 quitam a corrida por compensação.
+
+Selecione um pedido e marque recebimento e/ou corrida; duplo clique inclui
+ou retira ambos, sem precisar de Ctrl. O painel mostra cliente, endereço,
+produtos, valores, troco, pagamentos, retornos e reembolsos. **Acertos anteriores**
+permite conferir vínculos e valores de cada acerto parcial ou concluído.
 
 Enviar e devolver troco são transferências registradas, não despesas.
 Sem troco registrado suficiente, não confirme recebimento que exija devolução.
@@ -189,7 +230,12 @@ Não gera compra nem pagamento automaticamente.
 
 ## Histórico, estorno e reembolso
 
-Histórico permite filtrar período e ID e consultar motivos de alterações.
+Histórico de vendas separa Balcão, Comanda e Delivery, com número, cliente,
+valor e situação. Selecione uma linha para ver produtos, quantidades, promoção
+e total. Os nomes guardados na venda não mudam ao renomear o cadastro.
+Para fatos anteriores à atualização, o nome disponível no momento da migração
+é preservado; nomes antigos já perdidos não podem ser reconstruídos.
+**Auditoria e manutenção** abre eventos, correções e motivos de alterações.
 A confirmação de venda mostra número, valor, modalidade e produtos; use esse
 número para a correção. Há rolagem horizontal para detalhes longos.
 Corrigir venda exige PIN; devolução de produtos e devolução de dinheiro são
@@ -203,7 +249,7 @@ Delivery. O programa não transfere Pix nem devolve cartão automaticamente.
 
 ## Backup, restauração e PIN
 
-Histórico → Backups oferece cópia manual, verificação e pasta adicional.
+Histórico de vendas → Auditoria e manutenção → Backups oferece cópia manual, verificação e pasta adicional.
 A cópia local verificada é obrigatória no fechamento. Falha na pasta adicional
 é informada separadamente. Uma pasta no mesmo disco não protege contra perda
 do equipamento; prefira uma cópia fora dele.

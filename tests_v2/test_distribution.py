@@ -14,6 +14,11 @@ class DistributionTest(unittest.TestCase):
             archive=build_v2(root/'dist')
             with zipfile.ZipFile(archive) as z:
                 names=z.namelist()
+                self.assertEqual(archive.name,'Salva_AI_novo_0.2.0-dev.zip')
+                import json,hashlib
+                manifest=json.loads(z.read('MANIFEST-SHA256.json'))
+                self.assertEqual(set(manifest),set(names)-{'MANIFEST-SHA256.json'})
+                for name,digest in manifest.items():self.assertEqual(hashlib.sha256(z.read(name)).hexdigest(),digest,name)
                 self.assertIn('INICIAR_V2.bat',names)
                 self.assertIn('salva_ai_v2/__main__.py',names)
                 self.assertIn('MANIFEST-SHA256.json',names)

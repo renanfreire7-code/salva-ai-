@@ -39,3 +39,14 @@ class NavigationTest(unittest.TestCase):
         self.assertGreater(logo.width(),40)
         self.assertLessEqual(logo.width(),56)
         self.assertLessEqual(moto.width(),24)
+
+    def test_asset_load_preserves_png_dimensions_when_decoded(self):
+        from pathlib import Path
+        from math import ceil
+        import struct
+        from salva_ai_v2.ui.assets import load_asset
+        for name,size in [('logo.png',56),('motorcycle.png',24)]:
+            data=(Path('salva_ai_v2/assets')/name).read_bytes()
+            width,height=struct.unpack('>II',data[16:24]);factor=ceil(max(width,height)/size)
+            loaded=load_asset(self.app.window,name,size)
+            self.assertEqual((loaded.width(),loaded.height()),(ceil(width/factor),ceil(height/factor)))

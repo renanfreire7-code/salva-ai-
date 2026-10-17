@@ -25,3 +25,28 @@ class LayoutTest(unittest.TestCase):
                                     self.assertLessEqual(button.winfo_rooty()+button.winfo_height(),app.window.winfo_rooty()+app.window.winfo_height(),button.cget('text'))
             finally:
                 app.close()
+
+    def test_nested_visible_buttons_and_inputs_fit_available_window(self):
+        from salva_ai_v2.bootstrap import build_application
+        from salva_ai_v2.ui.forms import FormDialog
+        from unittest.mock import patch
+        def check(widget,root):
+            for child in widget.winfo_children():
+                if child.winfo_ismapped() and isinstance(child,(ttk.Button,ttk.Entry,ttk.Combobox)):
+                    label=str(child.cget('text')) if isinstance(child,ttk.Button) else str(child)
+                    self.assertLessEqual(child.winfo_rootx()+child.winfo_width(),root.winfo_rootx()+root.winfo_width(),label)
+                    self.assertLessEqual(child.winfo_rooty()+child.winfo_height(),root.winfo_rooty()+root.winfo_height(),label)
+                    self.assertGreaterEqual(child.winfo_rooty(),root.winfo_rooty(),label)
+                check(child,root)
+        with tempfile.TemporaryDirectory() as directory:
+            app=build_application(Path(directory))
+            try:
+                app.window.geometry('1260x680');app.window.update()
+                for view in app.views:
+                    app.show_view(view);app.window.update();check(view,app.window)
+                editor=app.delivery_view.create();app.window.update();check(editor,editor.winfo_toplevel());editor.winfo_toplevel().destroy()
+                dialogs=[]
+                with patch('salva_ai_v2.ui.products.ask_fields',side_effect=lambda *a,**kw:dialogs.append(FormDialog(*a,**kw))):app.products_view.create()
+                dialog=dialogs[0];app.window.update();check(dialog,dialog)
+                self.assertLessEqual(dialog.winfo_height(),680);dialog.destroy()
+            finally:app.close()

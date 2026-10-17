@@ -14,6 +14,11 @@ def main():
                 pid = app.services.inventory.create_product(name, price, 12, 6, str(uuid4()))
                 app.services.inventory.receive_purchase([PurchaseLine(pid, 24, price * 12)], 0,
                     app.services.clock.today(), app.services.clock.today(), str(uuid4()))
+            products=app.services.inventory.products()
+            app.services.pricing.set_promotion(next(p["id"] for p in products if p["name"]=="Cerveja lata"),3,1200,True,str(uuid4()))
+            for key,product in enumerate(products,1):
+                app.services.inventory.assign_shortcut(key,product["id"],str(uuid4()))
+            app.window.status.set("Demonstração isolada: dados fictícios; cadastre um PIN e abra o caixa para ensaiar.")
             app.refresh()
             app.run()
         finally:

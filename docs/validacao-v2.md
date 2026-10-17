@@ -1,5 +1,7 @@
 # Validação da reconstrução Salva AI
 
+Registro histórico da 0.1.0-dev. Para a entrega atual, veja [validação 0.2](validacao-0.2.md).
+
 Entrega de desenvolvimento **0.1.0-dev**, branch `feat/salva-ai-v2`.
 Base da implementação: `9625e7f`. Cabeça avaliada pela revisão independente:
 `56aae9f564456aa1528f41332ced971bdefcff72`. As correções posteriores foram

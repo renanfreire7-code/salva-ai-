@@ -37,7 +37,7 @@ class CashView(View):
             report=self.s.reports.cash_report(session['id'])
             self.payment_summary.configure(text='Recebido / reembolsado / líquido por modalidade\n'+ '\n'.join(f'{label}: {money(report.receipts.get(method,0))} / {money(report.refunds.get(method,0))} / {money(report.payments.get(method,0))}' for method,label in (('MONEY','Dinheiro'),('PIX','Pix'),('DEBIT','Débito'),('CREDIT','Crédito'))))
             self.custody_summary.configure(text='Dinheiro ainda com entregador: '+money(self.s.settlements.pending_custody_cents())+' · Fundo de troco a devolver: '+money(sum(r['amount_cents']-r['returned_cents'] for r in self.s.settlements.floats_pending())))
-            self.summary.configure(text=f'Caixa #{session["id"]} • Esperado na gaveta: {money(self.s.cash.position(session["id"]).expected_cents)}')
+            self.summary.configure(text=f'Caixa #{session["id"]} | Esperado na gaveta: {money(self.s.cash.position(session["id"]).expected_cents)}')
             rows=self.s.cash.db.conn.execute("SELECT * FROM cash_entries WHERE session_id=? ORDER BY id DESC",(session["id"],)).fetchall()
             fill(self.tree,[(r["id"],(r["occurred_at"],r["kind"],money(r["delta_cents"]),r["reason"] or "")) for r in rows])
         else:

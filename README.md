@@ -9,12 +9,14 @@ caixa, financeiro auditável, delivery/acertos, resultados e backups.
 - **Iniciar:** `python3 -m salva_ai_v2`; no Windows, `INICIAR_V2.bat`.
 - **Ensaio isolado:** `python3 -m scripts.demo_v2`.
 - **Gerar ZIP:** `python3 -m scripts.build_v2`.
+- **Evolução de interface e delivery:** [plano aprovado](docs/superpowers/plans/2026-10-16-interface-atendimento-delivery.md).
+- **Validação atual:** [relatório 0.2](docs/validacao-0.2.md).
 - **Documentação:** [manual da nova aplicação](docs/manual-v2.md).
 - **Desenho e tarefas:** [plano geral](docs/superpowers/plans/2026-10-16-salva-ai-plano-geral.md).
 - **Testes novos:** `python3 -m unittest discover -s tests_v2 -t . -v` com display;
   no Linux sem monitor, usar Xvfb conforme o manual.
 
-Requer Python 3.12 ou superior com Tkinter. A versão `0.1.0-dev` identifica a
+Requer Python 3.12 ou superior com Tkinter. A versão `0.2.0-dev` identifica a
 reconstrução, ainda pendente de validação no Windows e ensaio com o operador.
 Não use o banco do estabelecimento para testes. Não foi feita release nem merge.
 
