@@ -22,7 +22,7 @@ class InstanceLock:
                 fcntl.flock(self.handle.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
         except OSError:
             self.handle.close()
-            raise BusinessError("O Salva AI já está aberto nesta pasta de dados.") from None
+            raise BusinessError("O Bar Simples já está aberto nesta pasta de dados.") from None
 
     def close(self):
         if self.handle.closed:

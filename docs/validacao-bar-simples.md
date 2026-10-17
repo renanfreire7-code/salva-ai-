@@ -37,3 +37,25 @@ somente após verificação completa.
 Interface Tk real sob Xvfb no Linux. Isso não comprova Windows nativo/DPI nem
 aceite pelo operador. Pacotes anteriores permanecem preservados. Não há entrega
 final declarada enquanto tarefas de atendimento, revisão e pacote não terminarem.
+
+
+## Atendimento e integração
+
+B1: complemento persistente, reentrega, payload/replay0.2 e retenção no editor;
+alvo23/23, suíte183/183. B2: linhas de produtos com nomes completos, seleção por
+ID/teclado e busca nos três atendimentos; alvo40/40, suíte189/189. Inspeção agrupada
+com nomes longos e confirmação única; detalhes comerciais separados em painéis
+para preservar também as informações de pagamento. B3: confirmação antes do PIN,
+recusa sem mutação, devolução com quantidade preservada inclusive em erro de
+disco, detalhes com complemento e Enter da comanda; alvo44/44, suíte196/196.
+
+O ensaio completo0.2→Bar Simples passou junto aos dois testes do empacotador.
+Ele confirma login/PIN, busca nos três fluxos, promoção, comanda, antecipado Pix,
+dinheiro com fundo/troco, acerto físico/compensação, fechamento e backup,
+reinício/replay de comando antigo e restauração autenticada. A mudança da versão
+para0.3.0-dev foi observada falhando no teste de distribuição antes da alteração.
+
+A demonstração `scripts/demo_v2.py` também acompanha o ZIP: a suíte extraída
+precisa exercitar o mesmo fluxo real de cadastro, sem importar arquivos do
+checkout. Custo dessa decisão: um módulo adicional no pacote. O manifesto
+confere cada arquivo; banco, credenciais, caches e testes não são distribuídos.

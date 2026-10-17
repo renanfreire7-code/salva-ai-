@@ -1,4 +1,5 @@
 @echo off
+title Bar Simples
 chcp 65001 >nul
 setlocal
 cd /d "%~dp0"
@@ -10,7 +11,7 @@ if %errorlevel% equ 0 (
 )
 if errorlevel 1 (
     echo.
-    echo Nao foi possivel iniciar. Verifique se o Python 3 com Tkinter esta instalado.
+    echo Nao foi possivel iniciar o Bar Simples. Leia a mensagem acima.
     pause
 )
 endlocal

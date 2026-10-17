@@ -4,7 +4,7 @@ from .bootstrap import build_application
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Salva AI — PDV offline")
+    parser = argparse.ArgumentParser(description="Bar Simples — PDV offline")
     parser.add_argument("--data-dir", type=Path, help="Diretório exclusivo dos dados desta instalação")
     args = parser.parse_args()
     app = build_application(args.data_dir)

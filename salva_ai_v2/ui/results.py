@@ -30,7 +30,7 @@ class ResultsView(View):
 
     def export(self):
         from ..reporting.xlsx import export_xlsx
-        path=filedialog.asksaveasfilename(parent=self,defaultextension='.xlsx',initialfile='Salva_AI_'+self.selector.applied+'.xlsx',filetypes=[('Excel','*.xlsx')])
+        path=filedialog.asksaveasfilename(parent=self,defaultextension='.xlsx',initialfile='Bar_Simples_'+self.selector.applied+'.xlsx',filetypes=[('Excel','*.xlsx')])
         if path:
             export_xlsx(path,self.s.reports.bundle(self.selector.applied))
             self.s.application.notify('Relatório Excel salvo.')

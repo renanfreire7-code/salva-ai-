@@ -3,8 +3,8 @@
 ## Estado desta evolução
 
 O Bar Simples sucede a reconstrução Salva AI 0.2.0-dev, mantendo a mesma pasta
-de dados. A evolução está em implementação e validação; o pacote final e os
-resultados serão registrados no relatório `validacao-bar-simples.md`.
+de dados. Esta é a versão de desenvolvimento **0.3.0-dev**, para ensaio com dados fictícios.
+Os resultados de verificação estão no relatório `validacao-bar-simples.md`.
 Windows nativo nas escalas 100% e 125% ainda precisa de ensaio antes de uso real.
 
 ## Usuário, senha e PIN
@@ -65,14 +65,14 @@ python3 -m scripts.build_v2
 A demonstração usa uma pasta temporária e dados fictícios, removidos ao fechar.
 Use um PIN fictício no ensaio. Não altere HOME para testar.
 
-## Atualizar da reconstrução 0.1.0-dev
+## Atualizar das reconstruções 0.1.0-dev ou 0.2.0-dev
 
 Feche a versão anterior, faça uma cópia da pasta `~/SalvaAiHeadshopV2` e
-extraia o ZIP 0.2.0-dev em outra pasta de programa. Inicie pelo novo BAT.
+extraia o ZIP Bar Simples 0.3.0-dev em outra pasta de programa. Inicie pelo novo BAT.
 A pasta de dados continua a mesma: não copie nem substitua o banco pelo ZIP.
 A migração é aditiva e cria um backup antes de alterar a estrutura; preserva
 IDs, PIN, estoque e movimentos. A versão 0.3.6-beta de referência não é importada.
-Depois de atualizar, use o código 0.2.0; não abra o banco atualizado com 0.1.0.
+Depois de atualizar, use o código Bar Simples 0.3.0; não abra o banco atualizado com versões anteriores.
 Em pedidos anteriores, momento de pagamento e troco aparecem como não informados.
 
 ## Organização das telas
@@ -88,6 +88,9 @@ Se houver mais de um resultado, selecione o desejado. F1–F12 também funciona
 no editor do Delivery: seleciona e leva à quantidade, sem adicionar sozinho.
 Enter avança pelos campos válidos; no último campo leva ao botão Salvar.
 Um novo Enter confirma. Erros mantêm os valores digitados para correção.
+O nome da comanda também segue essa regra: Enter foca Abrir comanda, e a próxima
+confirmação cria. As listas de produtos mostram nomes completos em linhas que
+se ajustam ao texto, com rolagem vertical; selecionar não altera o nome salvo.
 
 Os filtros oferecem Hoje, Últimos 7 dias, Este mês e Personalizado. Digitar
 ou escolher valores não altera a consulta até clicar em **Filtrar**.
@@ -194,7 +197,12 @@ novamente como despesa operacional: seu custo entra no CMV ao vender.
 ## Delivery e acerto com entregador
 
 Pedidos são cadastrados manualmente; não há integração com WhatsApp, mapas ou
-plataformas. Configure dois valores fixos independentes: taxa do cliente e
+plataformas. Preencha endereço e número, complemento opcional (apartamento, bloco, fundos)
+e ponto de referência em campos separados. O complemento acompanha os detalhes
+do pedido, histórico, acerto e nova tentativa. Pedidos anteriores ficam com
+complemento vazio, preservando a referência cadastrada.
+
+Configure dois valores fixos independentes: taxa do cliente e
 remuneração do entregador. O pedido guarda os valores combinados.
 
 Ao confirmar, reserva estoque. **Saiu para entrega** baixa os produtos e gera
@@ -230,6 +238,11 @@ permite conferir vínculos e valores de cada acerto parcial ou concluído.
 
 Enviar e devolver troco são transferências registradas, não despesas.
 Sem troco registrado suficiente, não confirme recebimento que exija devolução.
+
+As ações **Registrar reembolso**, **Conferir produtos devolvidos** e
+**Criar nova tentativa de entrega** exibem um resumo antes de pedir o PIN.
+Recusar a confirmação não registra a operação. Na devolução, quantidades
+inválidas permanecem preenchidas para correção.
 
 Cancelar depois da saída não elimina a corrida. Confira separadamente retorno de
 mercadoria em condição de revenda e reembolso efetivamente realizado.
