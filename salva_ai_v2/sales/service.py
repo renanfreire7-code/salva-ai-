@@ -38,7 +38,7 @@ class SalesService(Service):
         return self._new("TAB",name,command_id)
 
     def lines(self, order_id):
-        return [dict(r) for r in self.db.conn.execute("SELECT i.*,p.name FROM order_items i JOIN products p ON p.id=i.product_id WHERE order_id=? ORDER BY product_id", (order_id,))]
+        return [dict(r) for r in self.db.conn.execute("SELECT i.*,i.name_snapshot name FROM order_items i WHERE order_id=? ORDER BY product_id", (order_id,))]
 
     def total(self, order_id):
         return sum(self.pricing.quote(PriceCondition(row["unit_cents"],row["group_qty"],row["group_cents"]),row["qty"]).total_cents for row in self.lines(order_id))
@@ -72,8 +72,8 @@ class SalesService(Service):
             elif qty > self.inventory.position(product_id).available:
                 raise BusinessError("Estoque disponível insuficiente.")
             condition = PriceCondition(row["unit_cents"],row["group_qty"],row["group_cents"]) if row else self.pricing.snapshot(product_id)
-            self.db.conn.execute("INSERT INTO order_items VALUES(?,?,?,?,?,?) ON CONFLICT(order_id,product_id) DO UPDATE SET qty=excluded.qty",
-                (order_id,product_id,qty,condition.unit_cents,condition.group_qty,condition.group_cents))
+            self.db.conn.execute("INSERT INTO order_items(order_id,product_id,qty,unit_cents,group_qty,group_cents,name_snapshot) VALUES(?,?,?,?,?,?,?) ON CONFLICT(order_id,product_id) DO UPDATE SET qty=excluded.qty",
+                (order_id,product_id,qty,condition.unit_cents,condition.group_qty,condition.group_cents,row['name_snapshot'] if row else product['name']))
             return order_id
         return self.run(command_id,"order.quantity",dict(order_id=order_id,product_id=product_id,qty=qty,kind=kind,reason=reason),perform)
 
@@ -113,8 +113,8 @@ class SalesService(Service):
             self.inventory.release(row["product_id"],order["kind"],order_id)
             cost = self.inventory.consume(row["product_id"],row["qty"])
             price = self.pricing.quote(PriceCondition(row["unit_cents"],row["group_qty"],row["group_cents"]),row["qty"]).total_cents
-            self.db.conn.execute("INSERT INTO sale_items(sale_id,product_id,qty,total_cents,cogs_cents,unit_cents,group_qty,group_cents) VALUES(?,?,?,?,?,?,?,?)",
-                (sale_id,row["product_id"],row["qty"],price,cost,row["unit_cents"],row["group_qty"],row["group_cents"]))
+            self.db.conn.execute("INSERT INTO sale_items(sale_id,product_id,qty,total_cents,cogs_cents,unit_cents,group_qty,group_cents,name_snapshot) VALUES(?,?,?,?,?,?,?,?,?)",
+                (sale_id,row["product_id"],row["qty"],price,cost,row["unit_cents"],row["group_qty"],row["group_cents"],row['name']))
         if collect and payment.method=="MONEY":
             self.cash.entry(total,"SALE","sale:"+str(sale_id))
         if collect:

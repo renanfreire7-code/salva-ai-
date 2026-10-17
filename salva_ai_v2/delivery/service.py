@@ -45,7 +45,8 @@ class DeliveryService(CancellationMixin, ReceiptsMixin, Service):
             for line in draft.lines:
                 condition=self.pricing.snapshot(line.product_id)
                 self.inventory.reserve(line.product_id,"DELIVERY",id,line.qty)
-                self.db.conn.execute("INSERT INTO order_items VALUES(?,?,?,?,?,?)",(id,line.product_id,line.qty,condition.unit_cents,condition.group_qty,condition.group_cents))
+                name=self.one('products',line.product_id)['name']
+                self.db.conn.execute("INSERT INTO order_items(order_id,product_id,qty,unit_cents,group_qty,group_cents,name_snapshot) VALUES(?,?,?,?,?,?,?)",(id,line.product_id,line.qty,condition.unit_cents,condition.group_qty,condition.group_cents,name))
             self.db.conn.execute("UPDATE orders SET state='PREPARING' WHERE id=?", (id,))
             return asdict(self.order(id))
         return DeliveryOrder(**self.run(command_id,"delivery.confirmed",dict(draft=asdict(draft)),perform))

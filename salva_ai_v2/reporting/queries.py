@@ -118,7 +118,7 @@ class ReportingQueries:
                 sale=self.db.conn.execute('SELECT * FROM sales WHERE id=?',(r['object_id'],)).fetchone()
                 if sale:
                     from ..common.money import money
-                    names=[f"{i['qty']} × {i['name']}" for i in self.db.conn.execute('SELECT i.qty,p.name FROM sale_items i JOIN products p ON p.id=i.product_id WHERE sale_id=?',(sale['id'],))]
+                    names=[f"{i['qty']} × {i['name']}" for i in self.db.conn.execute('SELECT i.qty,i.name_snapshot name FROM sale_items i WHERE sale_id=?',(sale['id'],))]
                     description=f"Venda #{sale['id']} • {money(sale['total_cents'])} • {sale['method']} • "+', '.join(names)
             result.append(HistoryRow(r['id'],datetime.fromisoformat(r['occurred_at']),r['kind'],r['object_id'],description))
         return result
