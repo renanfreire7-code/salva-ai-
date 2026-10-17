@@ -22,6 +22,8 @@ class CommerceRow:
     total_cents: int
     state: str
     paid_cents: int
+    payment_method: str | None = None
+    payment_state: str = 'PENDING'
 
 
 @dataclass(frozen=True)

@@ -85,3 +85,36 @@ class DeliveryExperienceTest(unittest.TestCase):
         self.assertEqual(dialog.inputs['received'].get(),'100,00')
         with patch('salva_ai_v2.ui.delivery_receipt.messagebox.askyesno',return_value=True):self.assertTrue(dialog.submit())
         self.assertEqual(s.delivery.order(order.id).paid_cents,4500)
+
+    def test_link_refund_uses_actual_debit_and_retains_form_after_error(self):
+        from salva_ai_v2.delivery.models import DeliveryDraft
+        from salva_ai_v2.inventory.models import CartLine
+        from salva_ai_v2.ui.forms import FormDialog
+        s=self.app.services;view=self.app.delivery_view
+        draft=DeliveryDraft('Cliente','123','Rua','',[CartLine(self.pid,2)],'CREDIT','BAR','ADVANCE','LINK')
+        order=s.delivery.confirm(draft,'order');s.delivery.record_payment(order.id,'DEBIT',1500,'BAR',None,'payment')
+        s.delivery.cancel(order.id,s.security.authorize('681942','delivery.cancel'),'Cancelado pelo cliente','cancel')
+        view.refresh();view.tree.selection_set(str(order.id));dialogs=[]
+        with patch('salva_ai_v2.ui.delivery.ask_fields',side_effect=lambda *a,**kw:dialogs.append(FormDialog(*a,**kw))):view.refund()
+        dialog=dialogs[0];dialog.inputs['amount'].delete(0,'end');dialog.inputs['amount'].insert(0,'999,00')
+        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681942',action)),patch.object(view,'reason',return_value='Reembolso confirmado'):
+            self.assertFalse(dialog.submit());self.assertEqual(dialog.inputs['amount'].get(),'999,00')
+            dialog.inputs['amount'].delete(0,'end');dialog.inputs['amount'].insert(0,'15,00');self.assertTrue(dialog.submit())
+        self.assertEqual(self.app.db.conn.execute('SELECT pending_cents FROM refunds WHERE order_id=?',(order.id,)).fetchone()[0],0)
+        self.assertEqual(self.app.db.conn.execute("SELECT method FROM receipt_events WHERE delta_cents<0").fetchone()[0],'DEBIT')
+        self.assertEqual(s.cash.position(s.cash.require_open()['id']).expected_cents,10000)
+
+    def test_bar_cash_refund_defaults_to_drawer(self):
+        from salva_ai_v2.delivery.models import DeliveryDraft
+        from salva_ai_v2.inventory.models import CartLine
+        from salva_ai_v2.ui.forms import FormDialog
+        s=self.app.services;view=self.app.delivery_view
+        order=s.delivery.confirm(DeliveryDraft('Cliente','123','Rua','',[CartLine(self.pid,2)],'MONEY','BAR','ON_DELIVERY','MONEY'),'order')
+        s.delivery.record_payment(order.id,'MONEY',1500,'BAR',1500,'payment')
+        s.delivery.cancel(order.id,s.security.authorize('681942','delivery.cancel'),'Cancelado pelo cliente','cancel')
+        view.refresh();view.tree.selection_set(str(order.id));dialogs=[]
+        with patch('salva_ai_v2.ui.delivery.ask_fields',side_effect=lambda *a,**kw:dialogs.append(FormDialog(*a,**kw))):view.refund()
+        dialog=dialogs[0];self.assertEqual(dialog.inputs['drawer'].get(),'Sim')
+        with patch.object(view,'grant',side_effect=lambda action:s.security.authorize('681942',action)),patch.object(view,'reason',return_value='Reembolso confirmado'):
+            self.assertTrue(dialog.submit())
+        self.assertEqual(s.cash.position(s.cash.require_open()['id']).expected_cents,10000)

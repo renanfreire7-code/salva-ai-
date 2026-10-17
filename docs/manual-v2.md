@@ -192,6 +192,8 @@ Para dinheiro, selecione **Precisa de troco?** e **Troco para quanto?**.
 O pedido mostra o troco previsto, sem registrar dinheiro. Envie e registre o
 fundo antes da saída se houver troco. No recebimento, confira o valor real;
 se diferir do combinado, a confirmação mostra a diferença explicitamente.
+Reembolso usa a modalidade do recebimento efetivamente confirmado, inclusive
+quando o Link foi combinado em crédito e recebido em débito.
 **Pendentes** inclui pedidos antigos em preparação/na rua, entregues sem pagamento
 e cancelados com reembolso pendente, sem limitar ao dia atual.
 
@@ -231,7 +233,9 @@ Não gera compra nem pagamento automaticamente.
 ## Histórico, estorno e reembolso
 
 Histórico de vendas separa Balcão, Comanda e Delivery, com número, cliente,
-valor e situação. Selecione uma linha para ver produtos, quantidades, promoção
+valor, situação do atendimento, situação do pagamento e modalidade real.
+Nos detalhes de balcão/comanda, dinheiro mostra também o valor entregue e troco.
+Selecione uma linha para ver produtos, quantidades, promoção
 e total. Os nomes guardados na venda não mudam ao renomear o cadastro.
 Para fatos anteriores à atualização, o nome disponível no momento da migração
 é preservado; nomes antigos já perdidos não podem ser reconstruídos.

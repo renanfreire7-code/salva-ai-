@@ -6,6 +6,7 @@ from ..common.money import money
 KINDS={'CART':'Balcão','TAB':'Comanda','DELIVERY':'Delivery'}
 STATES={'PAID':'Recebida','REVERSED':'Estornada','PREPARING':'Em preparação','OUT':'Saiu para entrega','DELIVERED':'Entregue','CANCELED':'Cancelado','OPEN':'Aberta'}
 METHODS={'MONEY':'Dinheiro','PIX':'Pix','DEBIT':'Débito','CREDIT':'Crédito à vista','LINK':'Link de pagamento'}
+PAYMENT_STATES={'PAID':'Pago','PENDING':'Pendente','REFUND_PENDING':'Reembolso pendente','REFUNDED':'Reembolsado','NO_RECEIPT':'Sem recebimento'}
 TIMING={'ADVANCE':'Antecipado','ON_DELIVERY':'Na entrega','UNSPECIFIED':'Não informado'}
 
 
@@ -64,10 +65,13 @@ class OrderDetails(ttk.Frame):
             fill(self.items_tree,[]);self.summary.set('Selecione uma venda ou pedido para conferir os itens.');set_text(self.facts,'');return
         detail=self.s.commerce.detail(key);row=detail['row']
         number=f"Pedido #{row.order_id}" if row.kind=='DELIVERY' else f"Venda #{row.sale_id}"+(f" · Comanda #{row.order_id}" if row.kind=='TAB' else '')
-        self.summary.set(f"{KINDS[row.kind]} · {number}\n{row.customer} · {row.occurred_at.strftime('%d/%m/%Y %H:%M')}\nTotal: {money(row.total_cents)} · {STATES.get(row.state,row.state)}")
+        self.summary.set(f"{KINDS[row.kind]} · {number}\n{row.customer} · {row.occurred_at.strftime('%d/%m/%Y %H:%M')}\nTotal: {money(row.total_cents)} · {STATES.get(row.state,row.state)}\nPagamento: {PAYMENT_STATES[row.payment_state]} · Modalidade real: {METHODS.get(row.payment_method,'Ainda não recebida')}")
         fill(self.items_tree,[(r.product_id,(r.name,r.qty,money(r.unit_cents),f'{r.group_qty} por {money(r.group_cents)}' if r.group_qty else '—',money(r.total_cents))) for r in detail['items']])
         if detail['delivery']:text=delivery_text(detail['delivery'])
         else:
-            text=f"Recebido líquido: {money(row.paid_cents)}\n"
+            payment=detail['payment']
+            text=f"Modalidade real: {METHODS[payment['method']]}\nPagamento: {PAYMENT_STATES[row.payment_state]}\nValor da venda: {money(payment['total_cents'])}\nRecebido líquido: {money(row.paid_cents)}\n"
+            if payment['method']=='MONEY':
+                text+=f"Cliente entregou: {money(payment['tendered_cents'])}\nTroco: {money(payment['change_cents'])}\n"
             for refund in detail['refunds']:text+=f"Reembolso: {money(refund['refunded_cents'])} devolvido · {money(refund['pending_cents'])} pendente\n"
         set_text(self.facts,text)

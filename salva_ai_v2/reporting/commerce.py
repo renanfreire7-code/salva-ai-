@@ -12,16 +12,20 @@ class CommerceQueries:
         self.delivery=DeliveryQueries(db)
 
     def _sale_row(self,sale):
-        refunded=self.db.conn.execute('SELECT COALESCE(SUM(refunded_cents),0) FROM refunds WHERE sale_id=?',(sale['id'],)).fetchone()[0]
+        refunded,pending=self.db.conn.execute('SELECT COALESCE(SUM(refunded_cents),0),COALESCE(SUM(pending_cents),0) FROM refunds WHERE sale_id=?',(sale['id'],)).fetchone()
+        payment_state='REFUND_PENDING' if pending else 'REFUNDED' if refunded else 'PAID'
         return CommerceRow(f"sale:{sale['id']}",sale['kind'],sale['order_id'],sale['id'],sale['customer'],
-            datetime.fromisoformat(sale['sold_at']),sale['total_cents'],'REVERSED' if sale['reversed'] else 'PAID',sale['total_cents']-refunded)
+            datetime.fromisoformat(sale['sold_at']),sale['total_cents'],'REVERSED' if sale['reversed'] else 'PAID',sale['total_cents']-refunded,sale['method'],payment_state)
 
     def _delivery_row(self,detail):
         order=detail['order']
         paid=sum(r['amount_cents']-r['refunded_cents'] for r in detail['collections'])
+        pending=sum(r['pending_cents'] for r in detail['refunds'])
+        payment_state='REFUND_PENDING' if pending else 'REFUNDED' if detail['collections'] and not paid else 'PAID' if paid>=order['total_cents'] else 'NO_RECEIPT' if order['state']=='CANCELED' else 'PENDING'
+        method=detail['collections'][0]['method'] if detail['collections'] else None
         sale=self.db.conn.execute('SELECT id FROM sales WHERE order_id=? ORDER BY id DESC LIMIT 1',(order['id'],)).fetchone()
         return CommerceRow(f"delivery:{order['id']}",'DELIVERY',order['id'],sale[0] if sale else None,order['name'],
-            datetime.fromisoformat(order['created_at']),order['total_cents'],order['state'],paid)
+            datetime.fromisoformat(order['created_at']),order['total_cents'],order['state'],paid,method,payment_state)
 
     def list(self,filters):
         start,end=valid_date(filters.start),valid_date(filters.end)
@@ -60,4 +64,5 @@ class CommerceQueries:
             raise BusinessError('Venda não encontrada.')
         items=[CommerceItem(r['product_id'],r['name_snapshot'],r['qty'],r['unit_cents'],r['group_qty'],r['group_cents'],r['total_cents']) for r in self.db.conn.execute('SELECT * FROM sale_items WHERE sale_id=? ORDER BY product_id',(int(id),))]
         refunds=[dict(r) for r in self.db.conn.execute('SELECT * FROM refunds WHERE sale_id=?',(int(id),))]
-        return dict(row=self._sale_row(sale),items=items,delivery=None,refunds=refunds)
+        return dict(row=self._sale_row(sale),items=items,delivery=None,refunds=refunds,
+            payment={key:sale[key] for key in ('method','total_cents','tendered_cents','change_cents')})

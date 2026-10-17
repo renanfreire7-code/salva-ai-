@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from .shared import View,table,fill
 from .finance import date_input
-from .order_details import OrderDetails,KINDS,STATES
+from .order_details import OrderDetails,KINDS,STATES,METHODS,PAYMENT_STATES
 from ..reporting.commerce_models import CommerceFilter
 from ..common.money import money
 from .period import PeriodFilter
@@ -28,8 +28,8 @@ class HistoryView(View):
         panels=ttk.Panedwindow(self,orient='horizontal');panels.pack(fill='both',expand=True)
         listing=ttk.Frame(panels);self.details=OrderDetails(panels,self.s)
         panels.add(listing,weight=5);panels.add(self.details,weight=5)
-        self.tree=table(listing,['Tipo','Número','Cliente','Valor','Situação'])
-        for column,width in (('Tipo',80),('Número',100),('Cliente',120),('Valor',90),('Situação',120)):
+        self.tree=table(listing,['Tipo','Número','Cliente','Valor','Situação','Pagamento','Modalidade real'])
+        for column,width in (('Tipo',80),('Número',100),('Cliente',120),('Valor',90),('Situação',120),('Pagamento',155),('Modalidade real',120)):
             self.tree.column(column,width=width,anchor='e' if column=='Valor' else 'w')
         self.tree.bind('<<TreeviewSelect>>',lambda event:self.show_selected())
         self.rows={};self._applied_filters=CommerceFilter(self.period.applied.start,self.period.applied.end)
@@ -53,7 +53,7 @@ class HistoryView(View):
         self.rows={r.key:r for r in rows}
         def number(row):
             return f'{row.order_id} (venda {row.sale_id})' if row.kind=='TAB' else row.order_id if row.kind=='DELIVERY' else row.sale_id
-        fill(self.tree,[(r.key,(KINDS[r.kind],number(r),r.customer,money(r.total_cents),STATES.get(r.state,r.state))) for r in rows])
+        fill(self.tree,[(r.key,(KINDS[r.kind],number(r),r.customer,money(r.total_cents),STATES.get(r.state,r.state),PAYMENT_STATES[r.payment_state],METHODS.get(r.payment_method,'Ainda não recebida'))) for r in rows])
         self.show_selected()
 
     def show_selected(self):

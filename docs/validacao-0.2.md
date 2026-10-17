@@ -60,3 +60,31 @@ continuam pendentes. Esta entrega é para validação com dados fictícios.
 
 O ZIP anterior é preservado. Entrega somente na branch autorizada, sem merge,
 alteração de main ou release. Manual: [manual-v2.md](manual-v2.md).
+
+
+## Revisão independente e correções finais
+
+Uma revisão independente read-only do intervalo base →
+`8033ec6ee05f8333dd0766afea8ae4cfc63565f5` identificou dois achados Important,
+nenhum Critical. Correções em um único lote, sem segunda rodada de revisão:
+
+- Reembolso de Link passa a usar a modalidade real de `collections`, conserva
+  formulário em erros e oferece seletor de saída da gaveta somente para dinheiro.
+- Histórico mostra modalidade real e situação financeira separada da situação de
+  entrega. Balcão/comanda preserva e exibe valor entregue/troco nos detalhes,
+  incluindo situação de reembolso pendente ou concluído.
+
+As novas regressões falharam antes e passaram após a correção (13 testes alvo).
+O revisor também exercitou o formulário de acerto: valor inválido permaneceu
+para correção e acerto de R$38 + R$7 de compensação gerou um único registro,
+custódia zero e saldo físico correto.
+
+### Ajustes menores adiados
+
+- Enter no nome da comanda ainda abre diretamente a comanda; a regra de apenas
+  focar a ação no último campo não foi aplicada a esse campo específico.
+- Cancelar delivery ainda abre PIN/motivo sem resumo explícito adicional do pedido
+  e valores. Autorização e motivo continuam obrigatórios.
+
+Esses desvios menores ficam registrados para a próxima evolução; não houve
+expansão do lote final para ajustes cosméticos.

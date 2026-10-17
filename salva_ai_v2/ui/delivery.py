@@ -146,11 +146,20 @@ class DeliveryView(View):
 
     def refund(self):
         id=self.selected(self.tree)
-        details=next(r for r in self.s.delivery.list_orders() if r["id"]==id)
-        values=ask_fields(self,"Confirmar reembolso realizado",[("amount","Valor devolvido (R$)",""),("drawer","Se dinheiro, saiu da gaveta? sim/não","não")])
-        if values:
-            self.s.delivery.refund(id,details["method"],parse_money(values["amount"]),values["drawer"].casefold()=="sim",
-                self.grant("delivery.refund"),self.reason(),command())
+        from .order_details import METHODS as PAYMENT_METHODS
+        from ..common.errors import BusinessError
+        detail=self.s.delivery_queries.detail(id)
+        if not detail['collections']:
+            raise BusinessError('Não há recebimento confirmado para reembolsar.')
+        actual=detail['collections'][0];method=actual['method'];cash=method=='MONEY'
+        pending=sum(row['pending_cents'] for row in detail['refunds']);cmd=command()
+        def submit(values):
+            return self.s.delivery.refund(id,method,parse_money(values['amount']),values['drawer']=='Sim',
+                self.grant('delivery.refund'),self.reason(),cmd)
+        return ask_fields(self,'Confirmar reembolso realizado',[
+            FieldSpec('method','Modalidade do recebimento efetivo',PAYMENT_METHODS[method],kind='choice',choices=(PAYMENT_METHODS[method],)),
+            FieldSpec('amount','Valor devolvido (R$)',money(pending).replace('R$ ',''),required=True,validator=parse_money),
+            FieldSpec('drawer','Se dinheiro, saiu da gaveta?','Sim' if cash and actual['custodian']=='BAR' else 'Não',kind='choice',choices=('Não','Sim') if cash else ('Não',))],on_submit=submit)
 
     def redeliver(self):
         id=self.selected(self.tree)
