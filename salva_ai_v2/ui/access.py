@@ -6,9 +6,10 @@ from ..common.errors import BusinessError
 
 
 class AccessView(ttk.Frame):
-    def __init__(self,parent,accounts,security,on_authenticated,on_cancel):
+    def __init__(self,parent,accounts,security,on_authenticated,on_cancel,*,emails=None):
         super().__init__(parent,padding=(30,18))
         self.accounts,self.security=accounts,security
+        self.emails=emails
         self.on_authenticated,self.on_cancel=on_authenticated,on_cancel
         self._focus_job=None;self.busy=False;self.inputs={}
         self.mode=accounts.mode
@@ -27,81 +28,59 @@ class AccessView(ttk.Frame):
 
     def set_mode(self,mode):
         if self._focus_job:self.after_cancel(self._focus_job);self._focus_job=None
-        self.mode=mode if mode=='RECOVERY' else self.accounts.mode
+        self.mode=mode if mode in ('RECOVERY','ENROLL') else self.accounts.mode
         for child in self.form.winfo_children():child.destroy()
         self.inputs={};self.error.set('');self.show_password.set(False)
-        title={'LOGIN':'Entrar no seu bar','SETUP':'Configure seu acesso','TRANSITION':'Atualize seu acesso','RECOVERY':'Recuperar acesso'}[self.mode]
-        ttk.Label(self.form,text=title,style='Title.TLabel').grid(row=0,column=0,sticky='w',pady=(4,6))
-        note={'LOGIN':'Informe o usuário e a senha do estabelecimento.','SETUP':'Crie uma conta e um PIN de três dígitos.','TRANSITION':'Confirme o acesso atual e crie a conta. Seus dados serão preservados.','RECOVERY':'Use a chave guardada para definir novo usuário, senha e PIN.'}[self.mode]
-        ttk.Label(self.form,text=note,wraplength=510).grid(row=1,column=0,sticky='w',pady=(0,8))
-        fields=[]
-        if self.mode!='RECOVERY':fields.append(('username','Usuário'))
-        else:fields.extend([('key','Chave de recuperação'),('username','Novo usuário')])
-        fields.append(('password','Senha' if self.mode=='LOGIN' else 'Senha (mínimo oito caracteres)'))
-        if self.mode!='LOGIN':fields.extend([('password_confirm','Confirme a senha'),('pin','PIN de três dígitos'),('pin_confirm','Confirme o PIN')])
-        if self.mode=='TRANSITION':
-            proof=ttk.Combobox(self.form,textvariable=self.proof_kind,values=('PIN atual','Chave de recuperação'),state='readonly',width=32)
-            fields.append(('proof','Confirme o acesso atual'))
-        for index,(name,label) in enumerate(fields):
-            row=index*2+3
-            if name=='proof':proof.grid(row=row,column=0,sticky='e')
-            ttk.Label(self.form,text=label).grid(row=row,column=0,sticky='w',pady=(4,2))
-            entry=ttk.Entry(self.form,width=44,show='*' if name!='username' else '')
-            entry.grid(row=row+1,column=0,sticky='ew');self.inputs[name]=entry
+        if self.mode!='LOGIN':
+            from .email_access import EmailAccessWizard
+            self.wizard=EmailAccessWizard(self.form,self.accounts,self.emails,self.security,
+                mode='RECOVER' if self.mode=='RECOVERY' else self.mode,on_completed=self.email_completed,
+                on_cancel=lambda:self.set_mode('LOGIN') if self.accounts.configured else self.on_cancel())
+            self.wizard.grid(row=0,column=0,sticky='nsew')
+            self.primary_button=self.wizard.primary_button
+            return
+        ttk.Label(self.form,text='Entrar no seu bar',style='Title.TLabel').grid(row=0,column=0,sticky='w',pady=(4,8))
+        ttk.Label(self.form,text='Informe o usuário e a senha do estabelecimento.\nO login e o atendimento funcionam sem internet.').grid(row=1,column=0,sticky='w',pady=(0,12))
+        for index,(name,label) in enumerate((('username','Usuário'),('password','Senha'))):
+            ttk.Label(self.form,text=label).grid(row=3+index*2,column=0,sticky='w',pady=(6,2))
+            entry=ttk.Entry(self.form,width=44,show='*' if name=='password' else '')
+            entry.grid(row=4+index*2,column=0,sticky='ew');self.inputs[name]=entry
             entry.bind('<Return>',lambda event,i=index:self.advance(i))
-        row=len(fields)*2+3
-        ttk.Checkbutton(self.form,text='Mostrar senha',variable=self.show_password,command=self.toggle_password).grid(row=row,column=0,sticky='w',pady=(6,0))
-        ttk.Label(self.form,textvariable=self.error,foreground='#a52525',wraplength=510).grid(row=row+1,column=0,sticky='w',pady=6)
-        self.primary_button=ttk.Button(self.form,text='Entrar' if self.mode=='LOGIN' else 'Recuperar acesso' if self.mode=='RECOVERY' else 'Salvar e entrar',style='Primary.TButton',command=self.submit)
-        self.primary_button.grid(row=row+2,column=0,sticky='ew');self.primary_button.bind('<Return>',lambda event:self.submit_key())
-        actions=ttk.Frame(self.form);actions.grid(row=row+3,column=0,sticky='ew',pady=8)
-        if self.mode=='LOGIN':ttk.Button(actions,text='Recuperar acesso',command=lambda:self.set_mode('RECOVERY')).pack(side='left')
-        elif self.mode=='RECOVERY':ttk.Button(actions,text='Voltar',command=lambda:self.set_mode('LOGIN')).pack(side='left')
+        ttk.Checkbutton(self.form,text='Mostrar senha',variable=self.show_password,command=self.toggle_password).grid(row=7,column=0,sticky='w',pady=6)
+        ttk.Label(self.form,textvariable=self.error,foreground='#a52525',wraplength=510).grid(row=8,column=0,sticky='w',pady=6)
+        self.primary_button=ttk.Button(self.form,text='Entrar',style='Primary.TButton',command=self.submit)
+        self.primary_button.grid(row=9,column=0,sticky='ew');self.primary_button.bind('<Return>',lambda event:self.submit_key())
+        actions=ttk.Frame(self.form);actions.grid(row=10,column=0,sticky='ew',pady=8)
+        ttk.Button(actions,text='Recuperar acesso',command=lambda:self.set_mode('RECOVERY')).pack(side='left')
+        if self.emails and not self.emails.bound:ttk.Button(actions,text='Refazer cadastro',command=lambda:self.set_mode('ENROLL')).pack(side='left',padx=8)
         ttk.Button(actions,text='Fechar',command=self.on_cancel).pack(side='right')
-        self._focus_job=self.after_idle(next(iter(self.inputs.values())).focus_set)
+        self._focus_job=self.after_idle(self.inputs['username'].focus_set)
+
+    def email_completed(self,username):
+        self.set_mode('LOGIN');self.inputs['username'].insert(0,username)
+        self.error.set('Acesso salvo. Entre com sua nova senha.')
 
     def advance(self,index):
-        entries=list(self.inputs.values());current=entries[index]
-        if not current.get():self.error.set('Preencha este campo para continuar.');return 'break'
+        entries=list(self.inputs.values())
+        if not entries[index].get():self.error.set('Preencha este campo para continuar.');return 'break'
         (entries[index+1] if index+1<len(entries) else self.primary_button).focus_set();return 'break'
 
     def toggle_password(self):
-        # Can be called by the checkbutton or directly by keyboard/test automation.
         value='' if self.show_password.get() else '*'
-        if not self.show_password.get() and self.inputs['password'].cget('show')=='*':
-            self.show_password.set(True);value=''
-        for name in ('password','password_confirm'):
-            if name in self.inputs:self.inputs[name].configure(show=value)
+        if not self.show_password.get() and self.inputs['password'].cget('show')=='*':self.show_password.set(True);value=''
+        self.inputs['password'].configure(show=value)
 
-    def submit_key(self):
-        self.submit();return 'break'
+    def submit_key(self):self.submit();return 'break'
 
     def submit(self):
+        if self.mode!='LOGIN':return self.wizard.submit()
         if self.busy:return False
         self.busy=True
         try:
-            values={name:entry.get() for name,entry in self.inputs.items()}
-            if self.mode=='LOGIN':
-                session=self.accounts.login(values['username'],values['password'])
-            else:
-                if values['password']!=values['password_confirm']:raise BusinessError('As senhas não coincidem.')
-                if values['pin']!=values['pin_confirm']:raise BusinessError('Os PINs não coincidem.')
-                if self.mode=='RECOVERY':
-                    key=self.accounts.recover(values['key'],values['password'],values['pin'],new_username=values['username'])
-                    messagebox.showinfo('Guarde a nova chave','A chave anterior não funciona mais. Guarde fora do computador:\n\n'+key,parent=self)
-                    self.set_mode('LOGIN')
-                    self.inputs['username'].insert(0,values['username'].strip().casefold())
-                    return True
-                proof=None
-                if self.mode=='TRANSITION':
-                    proof=(self.security.authorize_recovery(values['proof'],'access.configure') if self.proof_kind.get()=='Chave de recuperação' else self.security.authorize(values['proof'],'access.configure'))
-                key=self.accounts.create(values['username'],values['password'],values['pin'],proof)
-                messagebox.showinfo('Guarde sua chave de recuperação','Guarde esta chave fora do computador. Ela recupera usuário, senha e PIN e não será exibida novamente:\n\n'+key,parent=self)
-                session=self.accounts.login(values['username'],values['password'])
+            session=self.accounts.login(self.inputs['username'].get(),self.inputs['password'].get())
             self.on_authenticated(session);return True
         except (BusinessError,sqlite3.Error,OSError) as error:
-            wait=max(self.accounts.remaining_wait(),self.security.remaining_wait())
-            self.error.set(str(error)+(f' Aguarde {wait} segundos.' if wait else ''));return False
+            self.error.set(str(error));return False
         finally:self.busy=False
 
     def destroy(self):

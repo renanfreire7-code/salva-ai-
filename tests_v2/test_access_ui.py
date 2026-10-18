@@ -10,15 +10,23 @@ class AccessUITest(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.root=Path(self.tmp.name);self.app=build_application(self.root);self.addCleanup(self.app.close)
+        from tests_v2.email_support import EmailHarness
+        from tests_v2.support import FakeClock
+        self.h=EmailHarness(self.app.db,FakeClock());self.app.emails=self.h.flow;self.app.accounts.emails=self.h.flow;self.app.require_login()
 
     def fill(self,view,**values):
         for key,value in values.items():view.inputs[key].delete(0,'end');view.inputs[key].insert(0,value)
 
+    def confirm_email(self,wizard):
+        from tests_v2.test_email_provider import EMAIL,session,user
+        self.fill(wizard,email=EMAIL);self.h.transport.responses.append((200,{},{}));wizard.submit();self.h.runner.run_next()
+        self.fill(wizard,code='654321');self.h.transport.responses.extend([(200,{},session()),(200,{},user())]);wizard.submit();self.h.runner.run_next()
+
     def signup(self):
-        self.assertTrue(hasattr(self.app,'access_view'),'Tela de entrada ausente')
-        view=self.app.access_view
-        self.fill(view,username='bar',password='  café 42 ',password_confirm='  café 42 ',pin='007',pin_confirm='007')
-        with patch('salva_ai_v2.ui.access.messagebox.showinfo'):self.assertTrue(view.submit())
+        w=self.app.access_view.wizard;self.confirm_email(w)
+        self.fill(w,username='bar',password='  café 42 ',password_confirm='  café 42 ',pin='007',pin_confirm='007')
+        with patch('salva_ai_v2.ui.email_access.messagebox.showinfo'):self.assertTrue(w.submit())
+        self.fill(self.app.access_view,password='  café 42 ');self.assertTrue(self.app.access_view.submit())
 
     def test_operational_views_and_shortcuts_absent_before_login(self):
         self.assertEqual(self.app.views,[])
@@ -34,18 +42,17 @@ class AccessUITest(unittest.TestCase):
         self.assertEqual(view.inputs['username'].get(),'bar')
         self.fill(view,password='  café 42 ');view.toggle_password()
         self.assertEqual(view.inputs['password'].cget('show'),'');self.assertTrue(view.submit())
-        # The recovery surface is reachable without operational views.
         self.app.require_login();self.app.access_view.set_mode('RECOVERY')
-        self.assertIn('key',self.app.access_view.inputs)
-        self.fill(self.app.access_view,key='incorreta',username='bar',password='Outra senha',password_confirm='Outra senha',pin='009',pin_confirm='009')
-        self.assertFalse(self.app.access_view.submit());self.assertFalse(self.app.authenticated)
+        self.assertEqual(set(self.app.access_view.wizard.inputs),{'email'})
+        self.assertFalse(self.app.authenticated)
 
     def test_transition_accepts_old_pin_and_recovery_alternative(self):
         seed_legacy_pin(self.app.db);self.app.require_login();view=self.app.access_view
         self.assertEqual(view.mode,'TRANSITION');self.assertEqual(self.app.security.pin_length,6)
-        self.fill(view,username='bar',password='12345678',password_confirm='12345678',pin='007',pin_confirm='007',proof='681942')
-        with patch('salva_ai_v2.ui.access.messagebox.showinfo'):self.assertTrue(view.submit())
-        self.assertEqual(self.app.security.pin_length,3);self.assertTrue(self.app.authenticated)
+        w=view.wizard;self.confirm_email(w)
+        self.fill(w,username='bar',password='12345678',password_confirm='12345678',pin='007',pin_confirm='007',legacy_pin='681942')
+        with patch('salva_ai_v2.ui.email_access.messagebox.showinfo'):self.assertTrue(w.submit())
+        self.assertEqual(self.app.security.pin_length,3);self.assertFalse(self.app.authenticated)
 
     def test_enter_focuses_action_before_submitting(self):
         self.signup();self.app.require_login();view=self.app.access_view
@@ -86,15 +93,12 @@ class AccessUITest(unittest.TestCase):
         self.assertIsNone(self.app.db.conn)
 
     def test_recovery_defines_username_and_password_without_old_login(self):
-        key=self.app.accounts.create('usuario digitado errado','Senha esquecida 42','007')
-        self.app.require_login();view=self.app.access_view;view.set_mode('RECOVERY')
-        self.assertIn('username',view.inputs,'A recuperação precisa permitir escolher novo usuário')
-        self.fill(view,key='incorreta',username=' Novo Bar ',password='  senha nova 42 ',password_confirm='  senha nova 42 ',pin='009',pin_confirm='009')
-        self.assertFalse(view.submit());self.assertEqual(view.inputs['username'].get(),' Novo Bar ')
-        self.assertEqual(view.inputs['password'].get(),'  senha nova 42 ')
-        self.fill(view,key=key)
-        with patch('salva_ai_v2.ui.access.messagebox.showinfo'):self.assertTrue(view.submit())
-        self.assertFalse(self.app.authenticated);self.assertEqual(view.mode,'LOGIN')
-        self.assertEqual(view.inputs['username'].get(),'novo bar');self.assertEqual(view.inputs['password'].get(),'')
+        self.app.accounts.create('usuario errado','Senha esquecida 42','007')
+        self.app.accounts.reenroll_with_email(self.h.proof(),'usuario errado','Senha esquecida 42','007');self.h.advance(61)
+        self.app.require_login();self.app.access_view.set_mode('RECOVERY');w=self.app.access_view.wizard;self.confirm_email(w)
+        self.fill(w,username=' Novo Bar ',password='  senha nova 42 ',password_confirm='diferente')
+        self.assertFalse(w.submit());self.assertEqual(w.inputs['username'].get(),' Novo Bar ')
+        self.fill(w,password_confirm='  senha nova 42 ');self.assertTrue(w.submit())
+        view=self.app.access_view;self.assertEqual(view.mode,'LOGIN');self.assertEqual(view.inputs['password'].get(),'')
         self.fill(view,password='  senha nova 42 ');self.assertTrue(view.submit())
-        self.assertTrue(self.app.authenticated);self.assertIn('SALVA AI HEADSHOP',self.app.window.title())
+        self.assertIn('SALVA AI HEADSHOP',self.app.window.title())

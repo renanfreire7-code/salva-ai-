@@ -54,7 +54,8 @@ class BrandingTest(unittest.TestCase):
                             yield child
                             yield from descendants(child)
                     from tkinter import ttk
-                    controls=[*app.access_view.inputs.values(),app.access_view.primary_button]+[w for w in descendants(app.access_view.form) if isinstance(w,ttk.Button)]
+                    w=app.access_view.wizard
+                    controls=[*w.inputs.values(),w.primary_button]+[w for w in descendants(app.access_view.form) if isinstance(w,ttk.Button)]
                     for control in controls:
                         ancestor=control.master
                         while ancestor!=app.window:
@@ -68,9 +69,17 @@ class BrandingTest(unittest.TestCase):
         from scripts.demo_v2 import main
         def run(app):
             self.assertFalse(app.accounts.configured)
-            view=app.access_view
-            for key,value in dict(username='bar',password='12345678',password_confirm='12345678',pin='007',pin_confirm='007').items():view.inputs[key].insert(0,value)
-            with patch('salva_ai_v2.ui.access.messagebox.showinfo'):self.assertTrue(view.submit())
+            from tests_v2.email_support import EmailHarness
+            from tests_v2.support import FakeClock
+            from tests_v2.test_email_provider import EMAIL,session,user
+            start=app.access_view.on_authenticated
+            h=EmailHarness(app.db,FakeClock());app.emails=h.flow;app.accounts.emails=h.flow;app.require_login();app.access_view.on_authenticated=start
+            view=app.access_view;w=view.wizard
+            w.inputs['email'].insert(0,EMAIL);h.transport.responses.append((200,{},{}));w.submit();h.runner.run_next()
+            w.inputs['code'].insert(0,'654321');h.transport.responses.extend([(200,{},session()),(200,{},user())]);w.submit();h.runner.run_next()
+            for key,value in dict(username='bar',password='12345678',password_confirm='12345678',pin='007',pin_confirm='007').items():w.inputs[key].insert(0,value)
+            with patch('salva_ai_v2.ui.email_access.messagebox.showinfo'):self.assertTrue(w.submit())
+            view.inputs['password'].insert(0,'12345678');self.assertTrue(view.submit())
             self.assertEqual(len(app.services.inventory.products()),3)
             self.assertTrue(app.data_dir.name.startswith('salva_ai_v2_demo_'))
         with patch('salva_ai_v2.bootstrap.Application.run',run):main()

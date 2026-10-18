@@ -64,7 +64,7 @@ class AccessEndToEndTest(unittest.TestCase):
     def test_abandoned_setup_is_retryable(self):
         from salva_ai_v2.bootstrap import build_application
         with tempfile.TemporaryDirectory() as directory:
-            app=build_application(Path(directory));app.access_view.inputs['username'].insert(0,'rascunho');app.close()
+            app=build_application(Path(directory));app.access_view.wizard.inputs['email'].insert(0,'draft@example.com');app.close()
             app=build_application(Path(directory))
             try:self.assertEqual(app.accounts.mode,'SETUP');self.assertFalse(app.security.configured)
             finally:app.close()

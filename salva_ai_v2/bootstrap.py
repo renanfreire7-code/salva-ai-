@@ -39,7 +39,18 @@ class Application:
             self.db.close()
             raise
         from .security.accounts import AccountService
-        self.accounts=AccountService(self.db,self.security)
+        from .security.email_config import load_email_config
+        from .security.email_provider import SupabaseOTPClient
+        from .security.email_flow import EmailAccessService
+        from .ui.network_jobs import TkNetworkRunner
+        self.backups=BackupService(self.db,self.data_dir / 'backups')
+        self.network_runner=TkNetworkRunner(self.window)
+        row=self.db.conn.execute('SELECT email_issuer FROM establishment_account WHERE id=1').fetchone()
+        self.email_configuration_error=None
+        try:config=load_email_config(self.data_dir / 'auth_service.json',bound_issuer=row[0] if row else None)
+        except BusinessError as error:config=None;self.email_configuration_error=str(error)
+        self.emails=EmailAccessService(self.db,SupabaseOTPClient(config) if config else None,self.network_runner)
+        self.accounts=AccountService(self.db,self.security,emails=self.emails,backups=self.backups)
         self.authenticated=False
         self.require_login()
 
@@ -54,6 +65,7 @@ class Application:
             self.close();raise
 
     def require_login(self):
+        self.emails.invalidate_all()
         self.accounts.logout();self.authenticated=False
         self.window.show_identity()
         # Popups and old callbacks must not retain operational surfaces after restore.
@@ -67,7 +79,7 @@ class Application:
             if hasattr(self,name):delattr(self,name)
         self.window.cash_state.set('Acesso protegido')
         from .ui.access import AccessView
-        self.access_view=AccessView(self.window.body,self.accounts,self.security,self.unlock,self.close)
+        self.access_view=AccessView(self.window.body,self.accounts,self.security,self.unlock,self.close,emails=self.emails)
         self.access_view.pack(fill='both',expand=True)
         self.window.status.set('Entre para abrir o atendimento.')
 
@@ -193,6 +205,8 @@ class Application:
             return
         self._closed = True
         try:
+            if hasattr(self,'emails') and self.db is not None and self.db.conn is not None:self.emails.invalidate_all()
+            if hasattr(self,'network_runner'):self.network_runner.close()
             if self.window is not None:
                 self.window.destroy()
         finally:

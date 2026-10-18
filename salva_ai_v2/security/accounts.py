@@ -31,7 +31,7 @@ class AccountService:
         if not 1<=len(username)<=64:raise BusinessError('Informe um usuário com até 64 caracteres.')
         return username
 
-    def create(self,username,password,pin,proof=None):
+    def _create(self,username,password,pin,proof=None):
         username=self._username(username)
         self._password(password);self.security._pin(pin)
         salt=secrets.token_bytes(16)
@@ -43,6 +43,10 @@ class AccountService:
             self.db.conn.execute('INSERT INTO establishment_account(id,username,salt,password_hash,iterations) VALUES(1,?,?,?,?)',
                 (username,salt,self.security._hash(password,salt),ITERATIONS))
             Audit(self.db).record('access.created','establishment',{}, {'configured':True},None)
+        return key
+
+    def create(self,username,password,pin,proof=None):
+        key=self._create(username,password,pin,proof)
         self.logout()
         return key
 
@@ -107,8 +111,7 @@ class AccountService:
         identity=self._email_identity(proof,'SETUP')
         with self.db.transaction():
             self.emails.consume(proof,'SETUP')
-            # Existing create clears sessions only for an unconfigured account.
-            key=self.create(username,password,pin,legacy_proof)
+            key=self._create(username,password,pin,legacy_proof)
             self._bind_email(identity)
         self._finish_email_change()
         return key

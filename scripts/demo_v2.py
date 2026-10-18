@@ -8,6 +8,11 @@ from salva_ai_v2.inventory.models import PurchaseLine
 
 def main():
     with TemporaryDirectory(prefix='salva_ai_v2_demo_') as folder:
+        public=Path.home()/'SalvaAiHeadshopV2'/'auth_service.json'
+        if public.is_file():
+            from salva_ai_v2.security.email_config import load_email_config,save_email_config
+            config=load_email_config(public)
+            if config:save_email_config(Path(folder)/'auth_service.json',config)
         app = build_application(Path(folder))
         try:
             def start(session):
