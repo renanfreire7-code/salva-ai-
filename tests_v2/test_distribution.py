@@ -14,12 +14,16 @@ class DistributionTest(unittest.TestCase):
             archive=build_v2(root/'dist')
             with zipfile.ZipFile(archive) as z:
                 names=z.namelist()
-                self.assertEqual(archive.name,'Bar_Simples_0.3.2-dev.zip')
+                self.assertEqual(archive.name,'Bar_Simples_0.4.0-dev.zip')
                 import json,hashlib
                 manifest=json.loads(z.read('MANIFEST-SHA256.json'))
                 self.assertEqual(set(manifest),set(names)-{'MANIFEST-SHA256.json'})
                 for name,digest in manifest.items():self.assertEqual(hashlib.sha256(z.read(name)).hexdigest(),digest,name)
                 self.assertIn('INICIAR_V2.bat',names)
+                for required in ('CONFIGURAR_EMAIL.bat','CONFIGURAR_EMAIL.md','scripts/configure_email.py','auth_service.example.json'):
+                    self.assertIn(required,names)
+                self.assertEqual(json.loads(z.read('auth_service.example.json')),{'url':'','publishable_key':''})
+                self.assertFalse(any(name.endswith('auth_service.json') for name in names))
                 self.assertIn('scripts/demo_v2.py',names)
                 self.assertIn('salva_ai_v2/__main__.py',names)
                 self.assertIn('MANIFEST-SHA256.json',names)

@@ -3,7 +3,7 @@
 ## Estado desta evolução
 
 O Bar Simples sucede a reconstrução Salva AI 0.2.0-dev, mantendo a mesma pasta
-de dados. Esta é a versão de desenvolvimento **0.3.2-dev**, para ensaio com dados fictícios.
+de dados. Esta é a versão de desenvolvimento **0.4.0-dev**, para ensaio com dados fictícios.
 Os resultados de verificação estão no relatório `validacao-bar-simples.md`.
 Windows nativo nas escalas 100% e 125% ainda precisa de ensaio antes de uso real.
 
@@ -17,41 +17,44 @@ login, a identidade Bar Simples volta a aparecer até a nova autenticação.
 
 ## Usuário, senha e PIN
 
-No primeiro acesso, escolha o usuário, uma senha com pelo menos oito caracteres
-e um PIN de exatamente três dígitos (incluindo zeros iniciais). Confirme ambos.
-Espaços fazem parte da senha. Guarde a chave de recuperação fora do computador:
-ela será mostrada uma vez, antes de entrar no atendimento.
+No primeiro acesso, configure o serviço pelo arquivo CONFIGURAR_EMAIL.md, confirme
+seu e-mail com um código de seis dígitos e escolha usuário, senha de oito ou mais
+caracteres e PIN de três dígitos. Espaços fazem parte da senha. Guarde a chave
+administrativa exibida fora do computador; ela continua sendo uma proteção do PIN.
 
-Na atualização de uma instalação existente, confirme seu PIN anterior de seis
-dígitos ou escolha Chave de recuperação. Só depois será criada a conta com o
-novo PIN. Os números antigos não são cortados nem substituídos automaticamente.
-Se cancelar, pode repetir a configuração sem perder os dados cadastrados.
+Para refazer uma conta antiga ainda sem e-mail, clique em **Refazer cadastro**,
+confirme o endereço e informe o PIN atual no computador. Uma cópia verificada é
+criada antes da atualização. Usuário/senha são substituídos; PIN e dados comerciais
+são mantidos. Depois de vinculado o e-mail, use **Recuperar acesso**: informe o
+endereço, confirme o código e escolha novo usuário/senha. Não pede a chave antiga,
+nem altera o PIN. Após salvar, o usuário aparece preenchido e a senha fica vazia
+para você entrar. Não apague o banco nem use uma pasta vazia para resolver o acesso.
 
-A senha permite entrar no programa; o PIN confirma operações sensíveis como
-reembolso, ajustes e exclusões. Após cinco erros consecutivos há espera
-temporária. Reiniciar o programa não remove esse tempo de espera.
+A transição de um banco mais antigo, que tinha apenas PIN de seis dígitos, exige
+esse PIN atual e e-mail confirmado para cadastrar conta/PIN de três dígitos.
+Cancelar não apaga os dados. Após cinco erros consecutivos há espera temporária.
+Códigos expiram, reenvio tem espera mínima de60 segundos, e cada desafio admite
+no máximo cinco códigos incorretos. O provedor pode impor limites adicionais.
 
-Em Recuperar acesso, informe a chave e escolha novo usuário, nova senha e PIN de
-três dígitos. Não é necessário lembrar o usuário ou a senha antigos. Ao concluir,
-o login terá o novo usuário preenchido; digite a nova senha para entrar. Guarde a
-nova chave exibida: a anterior deixa de valer. Produtos, vendas e histórico ficam
-preservados. Sem chave não existe senha mestre.
-Usuário, senha e PIN funcionam sem internet; o banco não é criptografado por
-essas credenciais. Proteja também o acesso ao computador e aos backups.
+O login habitual e o atendimento continuam offline. Internet é necessária para
+confirmar endereço/recuperar usuário e senha. **Envio ainda não ativado** até criar
+projeto/remetente e testar um código real. O pacote não inclui credenciais de envio.
+Veja CONFIGURAR_EMAIL.md. A demonstração também exige configuração real, usa uma
+pasta temporária e só insere produtos fictícios depois de você entrar.
 
-Restaurar um backup pede novo login e usa as credenciais que estavam naquele
-backup. Se ele for anterior à conta, a atualização de acesso será solicitada
-novamente com o PIN ou a chave que existiam no backup.
+Restaurar um backup pede novo login e usa as credenciais e o vínculo daquele backup.
+Confirmações pendentes são canceladas; solicite outro código se necessário. Proteja
+o computador e os backups: usuário/senha/PIN não criptografam o banco.
 
 ## Instalação no Windows
 
 1. Instale Python 3.12 ou superior com Tkinter pelo instalador oficial.
 2. Extraia todo o ZIP em uma pasta própria, diferente da versão antiga.
 3. Execute **INICIAR_V2.bat**. Não mova o BAT para fora da pasta extraída.
-4. Cadastre usuário, senha e PIN de três dígitos; confirme e guarde a chave de recuperação fora do computador.
+4. Para cadastro novo/recadastro, configure o envio seguindo CONFIGURAR_EMAIL.md e confirme o e-mail. Escolha usuário/senha e guarde a chave administrativa. Contas existentes continuam entrando offline.
 5. Cadastre os produtos e entradas com dados fictícios para o ensaio inicial.
 
-Não é necessário pip, servidor, conexão com internet ou conta em serviço externo.
+Não é necessário pip ou servidor próprio. Confirmação de e-mail exige internet e um projeto Supabase configurado; login e atendimento habituais são offline.
 O ZIP contém o código, a biblioteca XlsxWriter com licença e manifesto SHA-256.
 Ainda não foi produzido um instalador executável independente do Python.
 
@@ -79,11 +82,11 @@ Use um PIN fictício no ensaio. Não altere HOME para testar.
 ## Atualizar das reconstruções 0.1.0-dev ou 0.2.0-dev
 
 Feche a versão anterior, faça uma cópia da pasta `~/SalvaAiHeadshopV2` e
-extraia o ZIP Bar Simples 0.3.2-dev em outra pasta de programa. Inicie pelo novo BAT.
+extraia o ZIP Bar Simples 0.4.0-dev em outra pasta de programa. Inicie pelo novo BAT.
 A pasta de dados continua a mesma: não copie nem substitua o banco pelo ZIP.
 A migração é aditiva e cria um backup antes de alterar a estrutura; preserva
 IDs, PIN, estoque e movimentos. A versão 0.3.6-beta de referência não é importada.
-Depois de atualizar, use o código Bar Simples 0.3.2; não abra o banco atualizado com versões anteriores.
+Depois de atualizar, use o código Bar Simples 0.4.0; não abra o banco atualizado com versões anteriores.
 Em pedidos anteriores, momento de pagamento e troco aparecem como não informados.
 
 ## Organização das telas
@@ -309,7 +312,7 @@ Depois, abra o aplicativo novamente; o PIN será o existente no backup.
 Um journal permite recuperar uma substituição interrompida.
 
 A senha, o PIN e a chave não são armazenados em texto puro. Após cinco erros há espera
-progressiva. A chave permite trocar o PIN e é renovada após uso.
+progressiva. A chave administrativa permite trocar o PIN pelos procedimentos de manutenção legados e é renovada após uso; a tela nova recupera usuário/senha por e-mail sem alterar o PIN.
 Sem PIN e sem chave não há senha mestre oculta.
 O PIN não criptografa o banco; proteja acesso ao computador e aos backups.
 

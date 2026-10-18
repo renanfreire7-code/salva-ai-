@@ -4,10 +4,13 @@ O atendimento/login habitual continuam offline. Cadastro/recadastro com e-mail e
 recuperação precisam de internet, de um projeto Supabase configurado e de envio
 real habilitado. A instalação não envia códigos antes dessa configuração.
 
-1. No painel oficial https://supabase.com/dashboard, crie ou escolha um projeto.
+1. Abra https://supabase.com/dashboard e crie uma conta (pode usar sua conta GitHub).
+   Crie uma organização e clique em New project. Escolha um nome, região e uma
+   senha forte para o banco; guarde essa senha com você, sem enviar no chat.
+   Aguarde a criação do projeto. Confira o plano e os limites antes de confirmar.
 2. Em Authentication, habilite Email e configure o template de acesso por e-mail
    para conter `{{ .Token }}`: esse é o código numérico, não apenas um link.
-3. Configure Email OTP expiration em600 segundos. Preserve os limites de envio e
+3. Configure o código Email OTP com seis dígitos e expiração em600 segundos. Preserve os limites de envio e
    verificação do provedor. O aplicativo também limita reenvios e tentativas.
 4. Configure SMTP/remetente autorizado no painel do Supabase para uso real. O
    remetente padrão é restrito aos membros da equipe do projeto e serve a testes;

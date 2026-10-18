@@ -1,0 +1,73 @@
+# Validação — acesso por e-mail, 0.4.0-dev
+
+Status: implementação em validação. **Envio real não ativado**: o operador ainda
+não tem projeto Supabase. Nenhum e-mail foi enviado e nenhum código real foi aceito
+nesta execução. A recuperação operacional no computador do usuário depende dessa
+ativação e do ensaio real. Não substituir/apagar o banco para contornar o cadastro.
+
+## Comportamento entregue
+
+Entrada Bar Simples; operação SALVA AI HEADSHOP, com logo refinada e moto no delivery.
+Login e operação offline. Cadastro novo confirma e-mail e cria conta/PIN; recadastro
+excepcional de conta sem e-mail exige PIN atual e backup verificado, mantendo o PIN.
+Recuperação por e-mail redefine usuário/senha e preserva o PIN. Vínculo inclui e-mail,
+UID e projeto confirmado pelo endpoint autenticado do Supabase, sem confiar em
+user_metadata. Códigos, tokens, senhas e segredos SMTP não são persistidos.
+
+A atualização017 é aditiva e cria backup antes da migração. Dados continuam em
+`~/SalvaAiHeadshopV2`, sem mudar para a pasta vazia da versão0.2 sem login.
+Respostas tardias após cancelar/restaurar/fechar não geram confirmação aproveitável.
+Uma falha local após OTP mantém credenciais anteriores e permite repetir a prova
+válida no mesmo processo; depois de reiniciar exige outro código.
+
+## Verificação reproduzível
+
+No checkout, com Python3.12/Tk e Xvfb:
+
+```bash
+python3 -m unittest tests_v2.test_email_config tests_v2.test_email_provider
+xvfb-run -a python3 -m unittest discover -s tests_v2 -t .
+xvfb-run -a python3 -m unittest discover -s tests -t .
+python3 -m scripts.build_v2
+```
+
+Testes usam somente identidades, produtos e transportes fictícios. O adapter real
+fica distribuído sem modo de teste. O ZIP contém manifesto SHA256, configuração
+pública vazia de exemplo, configurador e guia; não inclui banco, cache, testes,
+configuração ativa, service_role ou segredo SMTP.
+
+Verificações específicas: validação de respostas/autenticidade, limite de tamanho,
+429, erro de rede, espera persistida e relógio atrasado; prova opaca e consumo
+atômico; erro SQLite/backup/PIN, sessões antigas; runner separado do Tk/SQLite;
+conta antiga offline; operações comerciais após recadastro/recuperação e restore.
+
+Inspeção visual agrupada SETUP/TRANSITION/ENROLL/RECOVER, com erro e reenvio,
+em1260×680 e1366×768 sob Xvfb: controles sem corte. Nenhum redesenho cosmético
+adicional. [Capturas](validacao-email/entrada-xvfb.png).
+
+A suíte extraída recebe os testes por fora do artefato e exclui apenas
+`test_distribution` (empacotador não distribuído) e `test_access_diagnostic`
+(ferramenta separada). Ambos permanecem na suíte completa do checkout.
+
+Resultados finais e revisão serão registrados abaixo após conclusão.
+
+## Decisões de execução
+
+- Reusar checkout isolado da nuvem, conforme escolha anterior e orientação de
+  onboarding. Custo se inadequado: isolamento depende do checkout fornecido.
+- Helpers das skills não existem localmente; usar briefs/ledger/logs equivalentes
+  fora do checkout. Custo: coordenação manual.
+- Acrescentar verify_after aos desafios:429 deve limitar conferência além do
+  reenvio. Custo: uma coluna interna aditiva, sem mudança na API externa.
+
+## Pendências externas
+
+Criar projeto no painel Supabase, habilitar Email/template com `{{ .Token }}`,
+OTP de seis dígitos com expiração600s, configurar SMTP/remetente autorizado, salvar
+somente URL/chave pública pelo configurador e confirmar recebimento no endereço do
+operador. O remetente padrão limita destinatários a membros da equipe e não é uma
+configuração de envio geral. Não compartilhar senhas/PIN/códigos/segredos no chat.
+
+Windows nativo100%/125%, recebimento real e aceite do operador ainda pendentes.
+Consulte [configuração](configuracao-email.md). Não houve merge, release ou mudança
+na branch main; somente a branch de desenvolvimento e seu ZIP específico.
