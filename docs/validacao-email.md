@@ -105,3 +105,16 @@ Decisões sobre itens não julgados pelo revisor:
 - Histórico anterior a39a6927: preservar trabalho anterior e testar regressões; a
   revisão desta evolução não reaudita todo o código histórico. Custo: defeitos
   preexistentes fora do escopo da revisão podem permanecer.
+
+
+## Entrega verificada
+
+Branch feat/salva-ai-v2 enviada sob autorização anterior, sem merge/main/release.
+Download do ZIP retornou HTTP200 e SHA256 idêntico ao artefato local:
+`b40f9822712b7cb5e94c1776c117aec5ac1541adafc2e4f8610dd3f84f7b568e`.
+HEAD remoto conferido após push; nenhum ZIP anterior foi removido/substituído.
+
+[Baixar0.4.0-dev](https://raw.githubusercontent.com/renanfreire7-code/salva-ai-/refs/heads/feat/salva-ai-v2/dist/Bar_Simples_0.4.0-dev.zip)
+
+Próximo passo externo: criar conta/projeto Supabase e configurar o remetente pelo
+guia. O recebimento real e o aceite no computador do operador continuam pendentes.
