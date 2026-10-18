@@ -1,6 +1,6 @@
 # Bar Simples / Salva AI — recadastro e recuperação por e-mail
 
-Estado: proposta para revisão do usuário; não implementada. Substitui a entrega
+Estado: aprovada pelo usuário nesta sessão; implementação ainda não iniciada. Substitui a entrega
 antiga0.2 como direção de evolução, preservando a base atual0.3.2 e suas melhorias.
 
 ## Resultado para o operador
