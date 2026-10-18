@@ -9,9 +9,10 @@ from ..common.errors import BusinessError,AuthorizationError
 
 
 class AccountService:
-    def __init__(self,db,security,clock=None):
+    def __init__(self,db,security,clock=None,*,emails=None,backups=None):
         self.db,self.security,self.clock=db,security,clock or db.clock
         self._sessions={}
+        self.emails,self.backups=emails,backups
 
     @property
     def configured(self):
@@ -88,3 +89,56 @@ class AccountService:
                 (username,salt,self.security._hash(new_password,salt),ITERATIONS))
             Audit(self.db).record('access.recovered','establishment',{}, {'recovery_key_rotated':True,'username_redefined':username is not None},None)
         self.logout();return key
+
+    def _email_identity(self,proof,purpose):
+        if self.emails is None:raise BusinessError('Configure o serviço de e-mail antes de continuar.')
+        return self.emails.validate(proof,purpose)
+
+    def _bind_email(self,identity):
+        from datetime import datetime,timezone
+        self.db.conn.execute('UPDATE establishment_account SET email=?,email_subject=?,email_issuer=?,email_verified_at=? WHERE id=1',
+            (identity.email,identity.subject,identity.issuer,datetime.fromtimestamp(identity.verified_at,timezone.utc).isoformat()))
+
+    def _finish_email_change(self):
+        self.logout();self.emails.invalidate_all()
+
+    def create_with_email(self,proof,username,password,pin,legacy_proof=None):
+        self._username(username);self._password(password);self.security._pin(pin)
+        identity=self._email_identity(proof,'SETUP')
+        with self.db.transaction():
+            self.emails.consume(proof,'SETUP')
+            # Existing create clears sessions only for an unconfigured account.
+            key=self.create(username,password,pin,legacy_proof)
+            self._bind_email(identity)
+        self._finish_email_change()
+        return key
+
+    def reenroll_with_email(self,proof,username,password,current_pin):
+        from uuid import uuid4
+        username=self._username(username);self._password(password)
+        identity=self._email_identity(proof,'ENROLL')
+        if self.backups is None:raise BusinessError('O backup é necessário antes de refazer o acesso.')
+        initial=self.security.authorize(current_pin,'access.reenroll')
+        self.security._grants.pop(initial.id,None)
+        backup=self.backups.create('antes_recadastro',str(uuid4()))
+        self.backups.verify(backup.path)
+        grant=self.security.authorize(current_pin,'access.reenroll')
+        salt=secrets.token_bytes(16)
+        with self.db.transaction():
+            self.emails.consume(proof,'ENROLL')
+            self.security.consume(grant,'access.reenroll')
+            self.db.conn.execute('UPDATE establishment_account SET username=?,salt=?,password_hash=?,iterations=?,revision=revision+1,failures=0,blocked_until=0 WHERE id=1',
+                (username,salt,self.security._hash(password,salt),ITERATIONS))
+            self._bind_email(identity)
+            Audit(self.db).record('access.email_enrolled','establishment',{}, {'email_confirmed':True},None)
+        self._finish_email_change()
+
+    def recover_with_email(self,proof,username,password):
+        username=self._username(username);self._password(password)
+        self._email_identity(proof,'RECOVER');salt=secrets.token_bytes(16)
+        with self.db.transaction():
+            self.emails.consume(proof,'RECOVER')
+            self.db.conn.execute('UPDATE establishment_account SET username=?,salt=?,password_hash=?,iterations=?,revision=revision+1,failures=0,blocked_until=0 WHERE id=1',
+                (username,salt,self.security._hash(password,salt),ITERATIONS))
+            Audit(self.db).record('access.email_recovered','establishment',{}, {'email_confirmed':True},None)
+        self._finish_email_change()
