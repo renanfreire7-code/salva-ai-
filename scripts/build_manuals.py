@@ -16,10 +16,10 @@ from reportlab.platypus.tableofcontents import TableOfContents
 
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/'docs'/'manuais';IMAGES=SOURCE/'imagens';OUT=ROOT/'dist'
-VERSION='0.4.2-dev';EDITION='19 de outubro de 2026'
-ZIP='https://raw.githubusercontent.com/renanfreire7-code/salva-ai-/refs/heads/feat/salva-ai-v2/dist/Bar_Simples_0.4.2-dev_sem_login.zip'
+VERSION='0.4.3-dev';EDITION='19 de outubro de 2026'
+ZIP='https://raw.githubusercontent.com/renanfreire7-code/salva-ai-/refs/heads/feat/salva-ai-v2/dist/Bar_Simples_0.4.3-dev_sem_login.zip'
 REPO='https://github.com/renanfreire7-code/salva-ai-'
-CODE=REPO+'/tree/397acca183f7ecd8283c3fdad60d2d35548b141d'
+CODE=REPO+'/tree/ed6b1e94d178c044418919af5954ad688439a8d4'
 GREEN=colors.HexColor('#164C3B');ORANGE=colors.HexColor('#B7472C');INK=colors.HexColor('#233D3D');MUTED=colors.HexColor('#52645D');CREAM=colors.HexColor('#FAF7EF');PALE=colors.HexColor('#EDF4EF');LINE=colors.HexColor('#D7E3DA')
 W,H=A4;LEFT=44;WIDTH=W-88;FRAME_H=H-105
 FONTDIR=Path('/usr/share/fonts/truetype/noto')
@@ -84,7 +84,7 @@ class Diagram(Flowable):
 class ManualDoc(BaseDocTemplate):
  def __init__(self,path,kind):
   self.kind=kind;self.manual='Manual de instalação' if kind=='installation' else 'Manual de uso'
-  super().__init__(str(path),pagesize=A4,leftMargin=LEFT,rightMargin=LEFT,topMargin=60,bottomMargin=45,title='Bar Simples — '+self.manual+' — 0.4.2',author='Documentação do projeto Bar Simples',subject='Guia didático com imagens da versão 0.4.2-dev',pageCompression=1,allowSplitting=1)
+  super().__init__(str(path),pagesize=A4,leftMargin=LEFT,rightMargin=LEFT,topMargin=60,bottomMargin=45,title='Bar Simples — '+self.manual+' — 0.4.3',author='Documentação do projeto Bar Simples',subject='Guia didático com imagens da versão 0.4.3-dev',pageCompression=1,allowSplitting=1)
   frame=Frame(LEFT,45,WIDTH,FRAME_H,id='content',leftPadding=0,rightPadding=0,topPadding=0,bottomPadding=0)
   self.addPageTemplates([PageTemplate(id='cover',frames=[frame],onPage=self.cover),PageTemplate(id='normal',frames=[frame],onPage=self.normal)])
  def cover(self,c,doc):
@@ -94,7 +94,7 @@ class ManualDoc(BaseDocTemplate):
   c.setFillColor(GREEN);c.setFont('ManualBold',28);c.drawCentredString(W/2,390,self.manual)
   subtitle='Do download ao ícone na Área de Trabalho' if self.kind=='installation' else 'Todas as funções, explicadas passo a passo'
   p=Paragraph(text(subtitle),ParagraphStyle('CoverSub',fontName='Manual',fontSize=15,leading=21,textColor=INK,alignment=1));_,h=p.wrap(W-110,80);p.drawOn(c,55,350-h)
-  c.setFillColor(GREEN);c.roundRect(W/2-115,260,230,34,7,fill=1,stroke=0);c.setFillColor(colors.white);c.setFont('ManualBold',11);c.drawCentredString(W/2,272,'VERSÃO 0.4.2-DEV · '+('GUIA 1 DE 2' if self.kind=='installation' else 'GUIA 2 DE 2'))
+  c.setFillColor(GREEN);c.roundRect(W/2-115,260,230,34,7,fill=1,stroke=0);c.setFillColor(colors.white);c.setFont('ManualBold',11);c.drawCentredString(W/2,272,'VERSÃO 0.4.3-DEV · '+('GUIA 1 DE 2' if self.kind=='installation' else 'GUIA 2 DE 2'))
   for y,line in [(218,'Abertura direta · Sem login · PIN administrativo'),(196,'Com imagens reais e exemplos fictícios'),(124,'Edição: '+EDITION)]:
    c.setFillColor(INK if y>130 else MUTED);c.setFont('Manual',10.4 if y>130 else 9);c.drawCentredString(W/2,y,line)
   c.setStrokeColor(LINE);c.line(50,95,W-50,95)
@@ -103,7 +103,7 @@ class ManualDoc(BaseDocTemplate):
  def normal(self,c,doc):
   c.saveState();c.setStrokeColor(LINE);c.line(LEFT,H-43,W-LEFT,H-43)
   c.setFont('ManualBold',8.5);c.setFillColor(GREEN);c.drawString(LEFT,H-29,'BAR SIMPLES')
-  c.setFont('Manual',8.5);c.setFillColor(MUTED);c.drawRightString(W-LEFT,H-29,self.manual+' · 0.4.2-dev')
+  c.setFont('Manual',8.5);c.setFillColor(MUTED);c.drawRightString(W-LEFT,H-29,self.manual+' · 0.4.3-dev')
   c.line(LEFT,34,W-LEFT,34);c.setFont('Manual',8);c.drawString(LEFT,21,'Exemplos fictícios · Consulte o sumário para localizar uma função.')
   c.drawRightString(W-LEFT,21,str(doc.page));c.restoreState()
  def afterFlowable(self,flowable):
@@ -165,22 +165,22 @@ def reference_pages(kind,pages):
  heading=para('Referências e versão','kicker');heading.toc_key=kind+'-references';heading.toc_level=0
  title=para('Fontes e links úteis','h1');title.toc_key=kind+'-links';title.toc_level=1
  flows=[PageBreak(),heading,title,para('Os links abaixo ajudam a conferir a versão, baixar o programa e consultar as instruções oficiais. As explicações de funções foram conferidas no código da versão entregue.','intro')]
- refs=[('Baixar Bar Simples 0.4.2-dev com atalho',ZIP),('Repositório do projeto e documentos',REPO),('Código-base do programa 0.4.2-dev (commit 397acca)',CODE),('Python: downloads oficiais para Windows','https://www.python.org/downloads/windows/'),('Python: uso e instalação no Windows (documentação oficial)','https://docs.python.org/pt-br/3/using/windows.html'),('Microsoft: comando wscript e Windows Script Host','https://learn.microsoft.com/pt-br/windows-server/administration/windows-commands/wscript')]
+ refs=[('Baixar Bar Simples 0.4.3-dev com atalho',ZIP),('Repositório do projeto e documentos',REPO),('Código-base do programa 0.4.3-dev (commit ed6b1e9)',CODE),('Python: downloads oficiais para Windows','https://www.python.org/downloads/windows/'),('Python: uso e instalação no Windows (documentação oficial)','https://docs.python.org/pt-br/3/using/windows.html'),('Microsoft: comando wscript e Windows Script Host','https://learn.microsoft.com/pt-br/windows-server/administration/windows-commands/wscript')]
  for label,url in refs:flows.extend([link(label,url),Spacer(1,9)])
- flows.extend([Spacer(1,10),box('Sobre as imagens.','As telas do Bar Simples foram capturadas diretamente em Linux/Xvfb, em dados de demonstração isolados. No Windows, fontes e bordas podem variar. Diagramas de pastas, ZIP, Python e atalho são esquemas explicativos, não telas oficiais do Windows.'),Spacer(1,10),box('Sobre esta edição.','Programa 0.4.2-dev, edição 19/10/2026. A criação real do atalho e a ausência de console precisam ser confirmadas no notebook Windows. O programa continua dependente do Python instalado. Estes PDFs não instalam nem alteram seus dados.')])
+ flows.extend([Spacer(1,10),box('Sobre as imagens.','As telas do Bar Simples foram capturadas na versão 0.4.2-dev, em Linux/Xvfb e dados isolados. A versão 0.4.3-dev mantém essas telas; a correção está na confirmação da restauração. No Windows, fontes e bordas podem variar. Diagramas de pastas, ZIP, Python e atalho são esquemas explicativos, não telas oficiais do Windows.'),Spacer(1,10),box('Sobre esta edição.','Programa 0.4.3-dev, edição 19/10/2026. A criação real do atalho e a ausência de console precisam ser confirmadas no notebook Windows. O programa continua dependente do Python instalado. Estes PDFs não instalam nem alteram seus dados.')])
  if kind=='usage':
   provenance=para('Como este guia foi conferido','h1');provenance.toc_key=kind+'-provenance';provenance.toc_level=1
   flows.extend([PageBreak(),para('Referências e versão','kicker'),provenance,para('Cada grupo foi comparado às telas, aos formulários e às regras do programa. A tabela indica as fontes primárias para manutenção e conferência; você não precisa ler código para usar o sistema.','intro')])
   sources=[('Atendimento e comandas','ui/sales.py · ui/tabs.py · ui/payment.py'),('Delivery e entregador','ui/delivery.py · ui/delivery_editor.py · ui/settlement.py · delivery/cancellation.py'),('Produtos e compras','ui/products.py · ui/purchases.py · inventory/service.py'),('Caixa e fechamento','ui/cash.py · cash/closing.py'),('Despesas e recorrências','ui/finance.py · ui/recurrence.py · finance/service.py'),('Histórico e backups','ui/history.py · ui/audit.py · maintenance/restore.py · security/service.py'),('Resultados e reposição','ui/monthly.py · ui/results.py · reporting/queries.py'),('Abertura e atalho','bootstrap.py · desktop.py · CRIAR_ATALHO.vbs')]
   for title,source in sources:flows.extend([para(title,'subhead'),para(source,'small'),Spacer(1,6)])
-  flows.extend([Spacer(1,8),box('Limite conhecido de restauração.','Nesta edição, a mensagem final pode falhar depois da substituição dos dados, porque a interface é reconstruída. Por isso o guia manda preservar uma cópia antes e reabrir/conferir antes de voltar a atender. Falta de mensagem não comprova que nada foi restaurado.'),Spacer(1,8),para('Logo e identidade visual: arquivos da identidade Bar Simples presentes no projeto. Dados nas figuras: exclusivamente fictícios. O resultado financeiro é estimativa gerencial, não apuração fiscal.','small')])
+  flows.extend([Spacer(1,8),box('Restauração conferida.','Na versão 0.4.3-dev, a confirmação usa a janela principal, que continua disponível após a reconstrução da interface. Ao confirmar o aviso final, o programa fecha. Os testes também verificam cancelamento e falha de gravação; reabra e confira os dados antes de atender.'),Spacer(1,8),para('Logo e identidade visual: arquivos da identidade Bar Simples presentes no projeto. Dados nas figuras: exclusivamente fictícios. O resultado financeiro é estimativa gerencial, não apuração fiscal.','small')])
  return flows
 
 
 def build(kind):
  filename='instalacao.json' if kind=='installation' else 'uso.json'
  pages=json.loads((SOURCE/filename).read_text());OUT.mkdir(exist_ok=True)
- target=OUT/('Manual_Instalacao_Bar_Simples_0.4.2.pdf' if kind=='installation' else 'Manual_Uso_Bar_Simples_0.4.2.pdf')
+ target=OUT/('Manual_Instalacao_Bar_Simples_0.4.3.pdf' if kind=='installation' else 'Manual_Uso_Bar_Simples_0.4.3.pdf')
  doc=ManualDoc(target,kind)
  toc=TableOfContents();toc.levelStyles=[ParagraphStyle('TOC0',fontName='ManualBold',fontSize=10.2,leading=14,leftIndent=0,firstLineIndent=0,spaceBefore=9,textColor=GREEN),ParagraphStyle('TOC1',fontName='Manual',fontSize=9.1,leading=12.4,leftIndent=12,firstLineIndent=0,spaceBefore=2,textColor=INK)]
  story=[Spacer(1,650),NextPageTemplate('normal'),PageBreak(),para('Sumário','toc_title'),para('Clique em um título para ir à página. Também é possível abrir os marcadores do seu leitor de PDF.','intro'),toc]

@@ -3,10 +3,10 @@
     "id": "inst-visao",
     "section": "Antes de começar",
     "title": "O que você vai instalar",
-    "intro": "Este guia é para colocar o Bar Simples 0.4.2-dev em um notebook Windows e criar o atalho com a logo. Não é necessário cadastrar usuário, senha ou e-mail.",
+    "intro": "Este guia é para colocar o Bar Simples 0.4.3-dev em um notebook Windows e criar o atalho com a logo. Não é necessário cadastrar usuário, senha ou e-mail.",
     "steps": [
       "O programa precisa de Python 3.12 ou superior com Tcl/Tk. O Python é a ferramenta que permite executar o aplicativo; você não precisa aprender a programar.",
-      "Use o ZIP da versão 0.4.2-dev indicado neste manual. Não use a versão antiga 0.2 sem login, que trabalha com outra pasta isolada.",
+      "Use o ZIP da versão 0.4.3-dev indicado neste manual. Não use a versão antiga 0.2 sem login, que trabalha com outra pasta isolada.",
       "Conecte o notebook à internet para baixar os arquivos. Depois da instalação, o atendimento normal funciona offline.",
       "Separe uma pasta permanente para o programa, por exemplo Documentos\\Bar Simples. Uma pasta é o local onde os arquivos ficam guardados.",
       "Tenha este PDF por perto. Faça uma etapa por vez e confira o resultado antes de continuar."
@@ -25,7 +25,7 @@
     "title": "Programa é uma coisa; seus dados são outra",
     "intro": "O ZIP leva as funções e a aparência. Produtos, vendas, caixa e despesas ficam em uma pasta de dados separada. Entender essa diferença evita levar os testes para o bar.",
     "steps": [
-      "Transfira para o notebook do dono somente o ZIP Bar_Simples_0.4.2-dev_sem_login.zip.",
+      "Transfira para o notebook do dono somente o ZIP Bar_Simples_0.4.3-dev_sem_login.zip.",
       "Não transfira a pasta SalvaAiHeadshopV2 do seu computador de testes: ela contém seus cadastros e movimentos.",
       "Em um notebook onde esta reconstrução nunca foi usada, abrir o programa cria um banco novo, sem produtos, despesas ou vendas.",
       "Se o programa já foi usado nesse notebook, os dados que já estavam nele serão encontrados. Extrair outro ZIP não zera esses dados.",
@@ -65,9 +65,9 @@
     "title": "Baixar o programa atualizado",
     "intro": "Baixar significa salvar o arquivo ZIP no notebook. Um ZIP é um pacote que reúne várias pastas e arquivos.",
     "steps": [
-      "Use o botão ou link Baixar Bar Simples 0.4.2-dev disponível nas referências deste PDF.",
+      "Use o botão ou link Baixar Bar Simples 0.4.3-dev disponível nas referências deste PDF.",
       "Aguarde o download terminar. No navegador, a seta de downloads normalmente mostra o arquivo recebido.",
-      "Abra a pasta Downloads e localize Bar_Simples_0.4.2-dev_sem_login.zip. A extensão .zip pode ficar escondida pelo Windows.",
+      "Abra a pasta Downloads e localize Bar_Simples_0.4.3-dev_sem_login.zip. A extensão .zip pode ficar escondida pelo Windows.",
       "Se o navegador abrir uma página do GitHub em vez de baixar, procure Download raw file ou Baixar arquivo bruto.",
       "Confira o nome e a versão. Para evitar confusão, deixe os pacotes antigos em outra pasta.",
       "Não tente abrir o programa dentro do ZIP. O próximo passo é extrair todos os arquivos."

@@ -3,7 +3,7 @@
     "id": "uso-comecar",
     "section": "Comece por aqui",
     "title": "Como usar este manual",
-    "intro": "Este é o guia do operador do Bar Simples 0.4.2-dev. Ele explica cada função em páginas curtas: onde clicar, o que preencher, o que muda e o que conferir.",
+    "intro": "Este é o guia do operador do Bar Simples 0.4.3-dev. Ele explica cada função em páginas curtas: onde clicar, o que preencher, o que muda e o que conferir.",
     "steps": [
       "Para preparar o notebook e o atalho, use o PDF separado Manual de instalação. Aqui, partimos do programa já aberto.",
       "Leia primeiro o roteiro do primeiro turno. Depois, use o sumário e os marcadores do leitor de PDF para ir direto à função que precisa.",
@@ -1345,12 +1345,12 @@
       "Clique em Restaurar arquivo e escolha um arquivo .sqlite3 de backup. Não selecione o banco ativo como origem.",
       "Autorize com PIN. Leia a confirmação com o nome do backup e a versão de estrutura. Só confirme Substituir os dados atuais? se a escolha estiver correta.",
       "Aguarde a operação. O processo preserva uma cópia anterior do banco; não desligue o computador durante a substituição.",
-      "Nesta versão, a mensagem final ou o fechamento da janela pode falhar após a substituição. Se isso ocorrer, encerre e abra novamente o aplicativo antes de retomar o atendimento.",
+      "Ao aparecer Restauração concluída, leia o aviso e clique em OK. O aplicativo será fechado. Abra novamente pelo atalho Bar Simples antes de retomar o atendimento.",
       "Confira os dados que esperava recuperar: produtos, vendas, contas e caixa. Em ações protegidas, use o PIN que existia no backup, se ele for diferente do atual."
     ],
     "example": "Restaurar uma cópia de segunda-feira faz o aplicativo voltar àquele conjunto de dados. Antes de confirmar, preserve o estado de hoje e considere as operações feitas depois de segunda-feira.",
     "notes": [
-      "Não conclua que nada foi restaurado apenas porque faltou a mensagem final. Reabra e confira o conteúdo antes de tentar novamente.",
+      "Se aparecer um erro, leia a mensagem e preserve os arquivos. Antes de tentar de novo, reabra o programa e confira qual conjunto de dados está disponível.",
       "Se houver erro de recuperação, preserve os arquivos e a cópia anterior; não faça exclusões manuais para forçar a abertura."
     ],
     "image": "backup",
@@ -1422,7 +1422,7 @@
     "example": "",
     "notes": [
       "Se ocorrer erro após confirmar uma operação, consulte histórico e valores antes de repetir. Isso evita cadastrar duas vezes um fato que já foi gravado.",
-      "Em restauração, a mensagem final pode falhar nesta edição. Reabra e confira os dados antes de tentar restaurar outra vez."
+      "Depois da restauração confirmada, o aplicativo fecha. Abra novamente e confira os dados recuperados antes de voltar a atender."
     ],
     "image": "delivery",
     "source": []
