@@ -51,13 +51,13 @@ class View(ttk.Frame):
         super().__init__(parent,padding=12)
         self.s=services
 
-    def act(self,func):
+    def act(self,func,*,error_parent=None):
         try:
             value=func()
             self.s.application.refresh()
             return value
         except (BusinessError,ValueError,OSError,sqlite3.Error,InvalidOperation) as error:
-            messagebox.showerror("Não foi possível concluir",str(error),parent=self)
+            messagebox.showerror("Não foi possível concluir",str(error),parent=error_parent if error_parent is not None else self)
             self.s.application.refresh()
 
     def selected(self,tree):

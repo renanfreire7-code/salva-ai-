@@ -67,15 +67,20 @@ class AuditView(View):
             path=filedialog.askopenfilename(parent=window,title='Escolher backup para restaurar',filetypes=[('Backup SQLite','*.sqlite3')])
             if not path:
                 return
+            application=self.s.application
             preview=self.s.restore.prepare(Path(path),self.grant('backup.restore'))
             confirmed=messagebox.askyesno('Confirmar substituição',f'Backup: {preview.source.name}\nVersão de estrutura: {preview.schema_version}\n\nSubstituir os dados atuais?\nO aplicativo será fechado após a restauração.',parent=window)
             self.s.restore.apply(preview,confirmed)
             if confirmed:
-                messagebox.showinfo('Restauração concluída','A cópia anterior foi preservada. Abra o aplicativo novamente. O PIN será o existente no backup.',parent=window)
-                self.s.application.close()
+                # apply() recria as telas e destrói este popup. A janela principal
+                # permanece viva e pode hospedar a confirmação com segurança.
+                try:
+                    messagebox.showinfo('Restauração concluída','A cópia anterior foi preservada. Abra o aplicativo novamente. O PIN será o existente no backup.',parent=application.window)
+                finally:
+                    application.close()
         row=ttk.Frame(root);row.pack(fill='x',pady=6)
         for label,callback in (('Criar backup',manual),('Verificar selecionado',verify),('Pasta adicional',external),('Restaurar arquivo',restore),('Recuperar PIN',self.s.application.admin.recover)):
-            ttk.Button(row,text=label,command=lambda f=callback:root.act(f)).pack(side='left',padx=4)
+            ttk.Button(row,text=label,command=lambda f=callback:root.act(f,error_parent=self.s.application.window)).pack(side='left',padx=4)
         refresh()
 
     def finish_refund(self):

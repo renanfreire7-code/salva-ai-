@@ -7,17 +7,18 @@ Inclui atendimento, comandas, promoções por quantidade, estoque com custo méd
 caixa, financeiro auditável, delivery/acertos, resultados e backups.
 
 - **Iniciar:** `python3 -m salva_ai_v2`; no Windows, execute `CRIAR_ATALHO.vbs` uma vez e use o ícone Bar Simples da Área de Trabalho. Abertura silenciosa: `ABRIR_BAR_SIMPLES.vbs`; diagnóstico: `INICIAR_V2.bat`.
+- **Apresentação do protótipo:** [roteiro curto com dados fictícios](docs/roteiro-apresentacao.md).
 - **Ensaio isolado:** `python3 -m scripts.demo_v2`.
 - **Gerar ZIP:** `python3 -m scripts.build_v2`.
 - **Evolução de interface e delivery:** [plano aprovado](docs/superpowers/plans/2026-10-16-interface-atendimento-delivery.md).
-- **Validação atual:** [abertura direta](docs/validacao-sem-login.md) e [atalho sem console](docs/validacao-atalho.md).
+- **Validação atual:** [correção e testes antes da apresentação](docs/validacao-pre-apresentacao.md), [abertura direta](docs/validacao-sem-login.md) e [atalho sem console](docs/validacao-atalho.md).
 - **Acesso:** abertura direta, sem login, senha ou e-mail. PIN apenas em operações administrativas. [Validação da versão sem login](docs/validacao-sem-login.md).
-- **Documentação:** [manual da nova aplicação](docs/manual-v2.md).
+- **Documentação:** [manual da nova aplicação](docs/manual-v2.md) e [manuais PDF ilustrados](docs/manuais/README.md).
 - **Desenho e tarefas:** [plano geral](docs/superpowers/plans/2026-10-16-salva-ai-plano-geral.md).
 - **Testes novos:** `python3 -m unittest discover -s tests_v2 -t . -v` com display;
   no Linux sem monitor, usar Xvfb conforme o manual.
 
-Requer Python 3.12 ou superior com Tkinter. A versão `0.4.2-dev` identifica a
+Requer Python 3.12 ou superior com Tkinter. A versão `0.4.3-dev` identifica a
 reconstrução, ainda pendente de validação no Windows e ensaio com o operador.
 Não use o banco do estabelecimento para testes. Não foi feita release nem merge.
 

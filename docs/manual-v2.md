@@ -3,7 +3,7 @@
 ## Estado desta evolução
 
 O Bar Simples sucede a reconstrução Salva AI 0.2.0-dev, mantendo a mesma pasta
-de dados. Esta é a versão de desenvolvimento **0.4.2-dev**, para ensaio com dados fictícios.
+de dados. Esta é a versão de desenvolvimento **0.4.3-dev**, para ensaio com dados fictícios.
 Os resultados de verificação estão no relatório da versão sem login no repositório do projeto.
 Windows nativo nas escalas 100% e 125% ainda precisa de ensaio antes de uso real.
 
@@ -33,7 +33,7 @@ o PIN passa a ser o que estava no backup restaurado.
 
 1. Feche todas as versões anteriores do programa.
 2. Faça uma cópia da pasta de dados `SalvaAiHeadshopV2`, na sua pasta de usuário.
-3. Extraia **Bar_Simples_0.4.2-dev_sem_login.zip** em uma nova pasta de programa.
+3. Extraia **Bar_Simples_0.4.3-dev_sem_login.zip** em uma nova pasta de programa.
 4. Guarde a pasta extraída em um local permanente, por exemplo `Documentos\Bar Simples`.
 5. Dê dois cliques em **CRIAR_ATALHO.vbs**. Aguarde a mensagem de que foi criado.
 6. Na Área de Trabalho, abra **Bar Simples**, com a logo do balcão/copo. O programa abre direto, sem login e sem janela preta.
@@ -84,7 +84,7 @@ Use um PIN fictício no ensaio. Não altere HOME para testar.
 ## Atualizar das reconstruções 0.1.0-dev ou 0.2.0-dev
 
 Feche a versão anterior, faça uma cópia da pasta `~/SalvaAiHeadshopV2` e
-extraia o ZIP Bar Simples 0.4.2-dev em outra pasta de programa. Inicie pelo novo BAT.
+extraia o ZIP Bar Simples 0.4.3-dev em outra pasta de programa. Inicie pelo novo BAT.
 A pasta de dados continua a mesma: não copie nem substitua o banco pelo ZIP.
 A migração é aditiva e cria um backup antes de alterar a estrutura; preserva
 IDs, PIN, estoque e movimentos. A versão 0.3.6-beta de referência não é importada.

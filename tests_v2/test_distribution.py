@@ -14,7 +14,7 @@ class DistributionTest(unittest.TestCase):
             archive=build_v2(root/'dist')
             with zipfile.ZipFile(archive) as z:
                 names=z.namelist()
-                self.assertEqual(archive.name,'Bar_Simples_0.4.2-dev_sem_login.zip')
+                self.assertEqual(archive.name,'Bar_Simples_0.4.3-dev_sem_login.zip')
                 import json,hashlib
                 manifest=json.loads(z.read('MANIFEST-SHA256.json'))
                 self.assertEqual(set(manifest),set(names)-{'MANIFEST-SHA256.json'})
