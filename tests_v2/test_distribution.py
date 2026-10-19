@@ -14,15 +14,14 @@ class DistributionTest(unittest.TestCase):
             archive=build_v2(root/'dist')
             with zipfile.ZipFile(archive) as z:
                 names=z.namelist()
-                self.assertEqual(archive.name,'Bar_Simples_0.4.0-dev.zip')
+                self.assertEqual(archive.name,'Bar_Simples_0.4.1-dev_sem_login.zip')
                 import json,hashlib
                 manifest=json.loads(z.read('MANIFEST-SHA256.json'))
                 self.assertEqual(set(manifest),set(names)-{'MANIFEST-SHA256.json'})
                 for name,digest in manifest.items():self.assertEqual(hashlib.sha256(z.read(name)).hexdigest(),digest,name)
                 self.assertIn('INICIAR_V2.bat',names)
-                for required in ('CONFIGURAR_EMAIL.bat','CONFIGURAR_EMAIL.md','scripts/configure_email.py','auth_service.example.json'):
-                    self.assertIn(required,names)
-                self.assertEqual(json.loads(z.read('auth_service.example.json')),{'url':'','publishable_key':''})
+                for removed in ('CONFIGURAR_EMAIL.bat','CONFIGURAR_EMAIL.md','scripts/configure_email.py','auth_service.example.json'):
+                    self.assertNotIn(removed,names)
                 self.assertFalse(any(name.endswith('auth_service.json') for name in names))
                 self.assertIn('scripts/demo_v2.py',names)
                 self.assertIn('salva_ai_v2/__main__.py',names)
@@ -39,7 +38,7 @@ class DistributionTest(unittest.TestCase):
             result=subprocess.run([sys.executable,'-m','salva_ai_v2','--help'],cwd=root/'extraído com espaços',capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr)
             self.assertIn('--data-dir',result.stdout)
-            code="from pathlib import Path; from scripts.demo_v2 import main; from salva_ai_v2.bootstrap import build_application; app=build_application(Path('dados fictícios')); assert app.views==[]; key=app.accounts.create('bar','Senha fictícia 42','007'); app.accounts.recover(key,'Nova senha fictícia 42','009',new_username='novo'); app.unlock(app.accounts.login('novo','Nova senha fictícia 42')); assert len(app.views)==11; assert 'SALVA AI HEADSHOP' in app.window.title(); app.window.update(); app.close()"
+            code="from pathlib import Path; from scripts.demo_v2 import main; from salva_ai_v2.bootstrap import build_application; app=build_application(Path('dados fictícios')); assert len(app.views)==11; assert not hasattr(app,'access_view'); assert not hasattr(app,'accounts'); assert not hasattr(app,'emails'); assert not app.security.configured; assert 'SALVA AI HEADSHOP' in app.window.title(); app.window.update(); app.close()"
             result=subprocess.run([sys.executable,'-c',code],cwd=root/'extraído com espaços',capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr)
 

@@ -20,21 +20,21 @@ class FinalReviewRegressions(unittest.TestCase):
         grant=self.app.security.authorize('681','backup.restore')
         return s.restore,s.restore.prepare(backup,grant)
 
-    def test_restore_log_failure_relocks_before_returning_error(self):
+    def test_restore_log_failure_rebuilds_views_before_returning_error(self):
         restore,preview=self.restore_preview();execute=CommandBus.execute
         def fail_completed(bus,command_id,kind,*args,**kwargs):
             if kind=='restore.completed':raise sqlite3.OperationalError('Disco indisponível')
             return execute(bus,command_id,kind,*args,**kwargs)
         with patch.object(CommandBus,'execute',fail_completed):
             with self.assertRaises(sqlite3.OperationalError):restore.apply(preview,True)
-        self.assertFalse(self.app.authenticated)
-        self.assertEqual(self.app.views,[])
-        self.assertFalse(hasattr(self.app,'services'))
+        self.assertTrue(self.app.authenticated)
+        self.assertEqual(len(self.app.views),11)
+        self.assertFalse(hasattr(self.app,'access_view'))
         self.assertEqual(self.app.security._grants,{})
 
     def test_restore_failure_and_broken_access_screen_close_application(self):
         restore,preview=self.restore_preview()
-        with patch.object(restore,'_reopen',side_effect=sqlite3.OperationalError('Migração falhou')),patch('salva_ai_v2.ui.access.AccessView',side_effect=RuntimeError('Entrada indisponível')):
+        with patch.object(restore,'_reopen',side_effect=sqlite3.OperationalError('Migração falhou')),patch('salva_ai_v2.ui.sales.SalesView',side_effect=RuntimeError('Atendimento indisponível')):
             with self.assertRaises((sqlite3.OperationalError,RuntimeError)):restore.apply(preview,True)
         self.assertFalse(self.app.authenticated)
         self.assertIsNone(self.app.db.conn)

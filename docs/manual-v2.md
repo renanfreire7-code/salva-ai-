@@ -3,60 +3,48 @@
 ## Estado desta evolução
 
 O Bar Simples sucede a reconstrução Salva AI 0.2.0-dev, mantendo a mesma pasta
-de dados. Esta é a versão de desenvolvimento **0.4.0-dev**, para ensaio com dados fictícios.
-Os resultados de verificação estão no relatório `validacao-bar-simples.md`.
+de dados. Esta é a versão de desenvolvimento **0.4.1-dev**, para ensaio com dados fictícios.
+Os resultados de verificação estão no relatório da versão sem login no repositório do projeto.
 Windows nativo nas escalas 100% e 125% ainda precisa de ensaio antes de uso real.
 
-## Marca da entrada e do estabelecimento
+## Abertura direta e marca do estabelecimento
 
-A entrada (cadastro, login e recuperação) usa **Bar Simples**. Após o login,
-o título da janela, o cabeçalho, a logo e o ícone usam **SALVA AI HEADSHOP**.
-A logo do estabelecimento mantém o desenho anterior, com contornos refinados.
-A moto continua identificando o delivery. Ao restaurar um backup e retornar ao
-login, a identidade Bar Simples volta a aparecer até a nova autenticação.
+Esta versão abre diretamente no atendimento: não exige usuário, senha, cadastro
+ou confirmação por e-mail. Não é necessário configurar Supabase, Google ou SMTP.
+O nome e a logo SALVA AI HEADSHOP permanecem na operação, assim como a moto no delivery.
+O pacote mantém as melhorias de vendas, comandas, busca, estoque, histórico, financeiro,
+relatórios, promoções, endereço/complemento e pagamento/troco do delivery.
 
-## Usuário, senha e PIN
+## PIN administrativo
 
-No primeiro acesso, configure o serviço pelo arquivo CONFIGURAR_EMAIL.md, confirme
-seu e-mail com um código de seis dígitos e escolha usuário, senha de oito ou mais
-caracteres e PIN de três dígitos. Espaços fazem parte da senha. Guarde a chave
-administrativa exibida fora do computador; ela continua sendo uma proteção do PIN.
+O PIN existente é preservado e continua protegendo reembolsos, ajustes e operações
+administrativas. Ele não é solicitado para abrir o programa. Se a instalação não
+tiver PIN, será solicitado criar e confirmar três dígitos somente ao executar a
+primeira operação administrativa. Guarde a chave administrativa exibida.
+Um PIN legado de seis dígitos continua válido; não é truncado ou substituído.
 
-Para refazer uma conta antiga ainda sem e-mail, clique em **Refazer cadastro**,
-confirme o endereço e informe o PIN atual no computador. Uma cópia verificada é
-criada antes da atualização. Usuário/senha são substituídos; PIN e dados comerciais
-são mantidos. Depois de vinculado o e-mail, use **Recuperar acesso**: informe o
-endereço, confirme o código e escolha novo usuário/senha. Não pede a chave antiga,
-nem altera o PIN. Após salvar, o usuário aparece preenchido e a senha fica vazia
-para você entrar. Não apague o banco nem use uma pasta vazia para resolver o acesso.
+A conta antiga e seus dados ficam preservados no banco por compatibilidade, mas
+não impedem a abertura, mesmo com usuário/senha esquecidos ou bloqueados. As telas
+e serviços de login/e-mail anteriores não são inicializados no fluxo atual.
+Uma restauração recompõe as telas diretamente e invalida as autorizações anteriores;
+o PIN passa a ser o que estava no backup restaurado.
 
-A transição de um banco mais antigo, que tinha apenas PIN de seis dígitos, exige
-esse PIN atual e e-mail confirmado para cadastrar conta/PIN de três dígitos.
-Cancelar não apaga os dados. Após cinco erros consecutivos há espera temporária.
-Códigos expiram, reenvio tem espera mínima de60 segundos, e cada desafio admite
-no máximo cinco códigos incorretos. O provedor pode impor limites adicionais.
+## Instalação e atualização no Windows
 
-O login habitual e o atendimento continuam offline. Internet é necessária para
-confirmar endereço/recuperar usuário e senha. **Envio ainda não ativado** até criar
-projeto/remetente e testar um código real. O pacote não inclui credenciais de envio.
-Veja CONFIGURAR_EMAIL.md. A demonstração também exige configuração real, usa uma
-pasta temporária e só insere produtos fictícios depois de você entrar.
+1. Feche todas as versões anteriores do programa.
+2. Faça uma cópia da pasta de dados `SalvaAiHeadshopV2`, na sua pasta de usuário.
+3. Extraia **Bar_Simples_0.4.1-dev_sem_login.zip** em uma nova pasta de programa.
+4. Abra essa pasta e dê dois cliques em **INICIAR_V2.bat**.
+5. O atendimento será aberto diretamente, com os dados existentes da reconstrução.
 
-Restaurar um backup pede novo login e usa as credenciais e o vínculo daquele backup.
-Confirmações pendentes são canceladas; solicite outro código se necessário. Proteja
-o computador e os backups: usuário/senha/PIN não criptografam o banco.
+Use o BAT da pasta nova: atalhos da versão anterior ainda podem abrir o login antigo.
+O ZIP não contém banco vazio para substituir seus dados. A pasta de dados permanece
+`~/SalvaAiHeadshopV2`; não volte ao pacote0.2 sem login e sua pasta isolada.
+O banco de referência0.3.6-beta original não é importado automaticamente.
 
-## Instalação no Windows
-
-1. Instale Python 3.12 ou superior com Tkinter pelo instalador oficial.
-2. Extraia todo o ZIP em uma pasta própria, diferente da versão antiga.
-3. Execute **INICIAR_V2.bat**. Não mova o BAT para fora da pasta extraída.
-4. Para cadastro novo/recadastro, configure o envio seguindo CONFIGURAR_EMAIL.md e confirme o e-mail. Escolha usuário/senha e guarde a chave administrativa. Contas existentes continuam entrando offline.
-5. Cadastre os produtos e entradas com dados fictícios para o ensaio inicial.
-
-Não é necessário pip ou servidor próprio. Confirmação de e-mail exige internet e um projeto Supabase configurado; login e atendimento habituais são offline.
-O ZIP contém o código, a biblioteca XlsxWriter com licença e manifesto SHA-256.
-Ainda não foi produzido um instalador executável independente do Python.
+Requer Python3.12 ou superior com Tkinter. Não precisa de pip, internet ou conta em
+serviço externo. O ZIP contém código, biblioteca XlsxWriter/licença e manifesto SHA256.
+Ainda não é um executável independente do Python.
 
 ## Dados separados e início para desenvolvimento
 
@@ -82,11 +70,11 @@ Use um PIN fictício no ensaio. Não altere HOME para testar.
 ## Atualizar das reconstruções 0.1.0-dev ou 0.2.0-dev
 
 Feche a versão anterior, faça uma cópia da pasta `~/SalvaAiHeadshopV2` e
-extraia o ZIP Bar Simples 0.4.0-dev em outra pasta de programa. Inicie pelo novo BAT.
+extraia o ZIP Bar Simples 0.4.1-dev em outra pasta de programa. Inicie pelo novo BAT.
 A pasta de dados continua a mesma: não copie nem substitua o banco pelo ZIP.
 A migração é aditiva e cria um backup antes de alterar a estrutura; preserva
 IDs, PIN, estoque e movimentos. A versão 0.3.6-beta de referência não é importada.
-Depois de atualizar, use o código Bar Simples 0.4.0; não abra o banco atualizado com versões anteriores.
+Depois de atualizar, use o BAT desta versão para abrir diretamente no atendimento.
 Em pedidos anteriores, momento de pagamento e troco aparecem como não informados.
 
 ## Organização das telas
@@ -311,8 +299,8 @@ antes da substituição. Feche outras ferramentas que estejam usando o arquivo.
 Depois, abra o aplicativo novamente; o PIN será o existente no backup.
 Um journal permite recuperar uma substituição interrompida.
 
-A senha, o PIN e a chave não são armazenados em texto puro. Após cinco erros há espera
-progressiva. A chave administrativa permite trocar o PIN pelos procedimentos de manutenção legados e é renovada após uso; a tela nova recupera usuário/senha por e-mail sem alterar o PIN.
+O PIN e a chave administrativa não são armazenados em texto puro. Após cinco erros de PIN há espera
+progressiva. A chave administrativa permite trocar o PIN e é renovada após uso. Não há recuperação por e-mail nesta versão.
 Sem PIN e sem chave não há senha mestre oculta.
 O PIN não criptografa o banco; proteja acesso ao computador e aos backups.
 

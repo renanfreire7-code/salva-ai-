@@ -8,7 +8,7 @@ from .ui.app import MainWindow
 from .ui.dialogs import AdminDialog
 
 
-class Application:
+class CredentialApplication:
     def __init__(self, data_dir):
         self._closed = False
         self.window = None
@@ -24,7 +24,7 @@ class Application:
             self.close()
             raise
 
-    def _initialize(self):
+    def _initialize_local(self):
         from .maintenance.restore import recover_restore
         recover_restore(self.data_dir)
         self.db = Database(self.data_dir / "dados" / "salva_ai.sqlite3")
@@ -38,6 +38,9 @@ class Application:
         except BaseException:
             self.db.close()
             raise
+    def _initialize(self):
+        self._initialize_local()
+        from .maintenance.backup import BackupService
         from .security.accounts import AccountService
         from .security.email_config import load_email_config
         from .security.email_provider import SupabaseOTPClient
@@ -214,6 +217,37 @@ class Application:
                 self.db.close()
             if self.instance_lock is not None:
                 self.instance_lock.close()
+
+
+class Application(CredentialApplication):
+    """Operação direta: nenhuma conta ou serviço de e-mail é inicializado."""
+    def _initialize(self):
+        self._initialize_local()
+        self._open_direct()
+
+    def _open_direct(self):
+        import tkinter as tk
+        self.authenticated=False
+        self.security._grants.clear()
+        for child in self.window.winfo_children():
+            if isinstance(child,tk.Toplevel):child.destroy()
+        for key in range(1,13):self.window.unbind_all(f'<F{key}>')
+        for child in self.window.body.winfo_children():child.destroy()
+        self.views=[]
+        for name in ('services','shell','shortcuts'):
+            if hasattr(self,name):delattr(self,name)
+        try:
+            self.authenticated=True
+            self._build_operations()
+            self.window.show_identity(establishment=True)
+            self.window.status.set('Pronto para atender. O PIN é solicitado apenas nas operações administrativas.')
+        except BaseException:
+            self.authenticated=False
+            self.close()
+            raise
+
+    def _after_restore(self):
+        self._open_direct()
 
 
 def build_application(data_dir=None):

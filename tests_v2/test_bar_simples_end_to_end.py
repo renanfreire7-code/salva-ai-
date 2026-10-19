@@ -14,9 +14,9 @@ class BarSimplesEndToEndTest(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='Bar Simples ensaio com acentuação ') as folder:
             root=Path(folder);old=seed_previous_store(root);app=build_application(root)
             try:
-                key=app.accounts.create('bar','12345678','007',app.security.authorize('681942','access.configure'))
-                app.unlock(app.accounts.login('bar','12345678'));s=app.services;pid=old['pid']
-                grant=lambda action:s.security.authorize('007',action)
+                self.assertTrue(app.authenticated);self.assertFalse(hasattr(app,'access_view'))
+                s=app.services;pid=old['pid']
+                grant=lambda action:s.security.authorize('681942',action)
                 s.pricing.set_promotion(pid,3,1200,True,'promo');s.inventory.assign_shortcut(1,pid,'shortcut')
                 def pay(dialog):
                     dialog.inputs['method'].set('Pix');dialog.update_method()
@@ -43,11 +43,11 @@ class BarSimplesEndToEndTest(unittest.TestCase):
                 self.assertEqual(s.delivery_queries.detail(second.id)['order']['complement'],'Apto 202')
                 closing=s.closing.begin(10300,None,None,'close');self.assertTrue(closing.complete)
                 backup=closing.backup_path
-                app.close();app=build_application(root);self.assertFalse(app.authenticated);app.unlock(app.accounts.login('bar','12345678'));s=app.services
+                app.close();app=build_application(root);self.assertTrue(app.authenticated);s=app.services
                 self.assertEqual(s.delivery.confirm(cash,'cash'),second)
                 oldcart=app.db.conn.execute('SELECT order_id FROM sales WHERE id=?',(old['sale'],)).fetchone()[0]
                 self.assertEqual(s.sales.sell(oldcart,Payment('PIX'),'sale').id,old['sale'])
-                preview=s.restore.prepare(backup,s.security.authorize('007','backup.restore'));s.restore.apply(preview,True)
-                self.assertFalse(app.authenticated);app.unlock(app.accounts.login('bar','12345678'))
+                preview=s.restore.prepare(backup,s.security.authorize('681942','backup.restore'));s.restore.apply(preview,True)
+                self.assertTrue(app.authenticated)
                 self.assertEqual(app.services.inventory.position(pid).physical,11)
             finally:app.close()

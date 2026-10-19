@@ -11,13 +11,13 @@ caixa, financeiro auditável, delivery/acertos, resultados e backups.
 - **Gerar ZIP:** `python3 -m scripts.build_v2`.
 - **Evolução de interface e delivery:** [plano aprovado](docs/superpowers/plans/2026-10-16-interface-atendimento-delivery.md).
 - **Validação atual:** [relatório Bar Simples](docs/validacao-bar-simples.md).
-- **Acesso:** login offline; cadastro/recuperação por e-mail confirmado. [Configuração do envio](docs/configuracao-email.md) e [validação](docs/validacao-email.md). Envio real ainda não ativado.
+- **Acesso:** abertura direta, sem login, senha ou e-mail. PIN apenas em operações administrativas. [Validação da versão sem login](docs/validacao-sem-login.md).
 - **Documentação:** [manual da nova aplicação](docs/manual-v2.md).
 - **Desenho e tarefas:** [plano geral](docs/superpowers/plans/2026-10-16-salva-ai-plano-geral.md).
 - **Testes novos:** `python3 -m unittest discover -s tests_v2 -t . -v` com display;
   no Linux sem monitor, usar Xvfb conforme o manual.
 
-Requer Python 3.12 ou superior com Tkinter. A versão `0.4.0-dev` identifica a
+Requer Python 3.12 ou superior com Tkinter. A versão `0.4.1-dev` identifica a
 reconstrução, ainda pendente de validação no Windows e ensaio com o operador.
 Não use o banco do estabelecimento para testes. Não foi feita release nem merge.
 

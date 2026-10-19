@@ -1,7 +1,7 @@
 from pathlib import Path
 import tempfile,unittest
 from unittest.mock import patch
-from salva_ai_v2.bootstrap import build_application
+from tests_v2.application_support import build_credential_application as build_application
 from salva_ai_v2.common.errors import AuthorizationError
 from tests_v2.security_support import seed_legacy_pin
 

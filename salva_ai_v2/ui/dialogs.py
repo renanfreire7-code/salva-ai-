@@ -25,6 +25,7 @@ class AdminDialog:
         return True
 
     def request(self, action):
+        if not self.security.configured and not self.setup():return None
         pin = simpledialog.askstring("Autorização administrativa", f"Informe seu PIN de {self.security.pin_length} dígitos:", show="*", parent=self.parent)
         if pin is None:
             return None

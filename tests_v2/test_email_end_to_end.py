@@ -1,6 +1,6 @@
 import hashlib,sqlite3,tempfile,unittest
 from pathlib import Path
-from salva_ai_v2.bootstrap import build_application
+from tests_v2.application_support import build_credential_application as build_application
 from salva_ai_v2.common.errors import BusinessError
 from tests_v2.test_access_end_to_end import seed_previous_store
 from tests_v2.email_support import EmailHarness

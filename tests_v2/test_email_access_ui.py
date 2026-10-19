@@ -1,6 +1,6 @@
 from pathlib import Path
 import tempfile,unittest
-from salva_ai_v2.bootstrap import build_application
+from tests_v2.application_support import build_credential_application as build_application
 from tests_v2.email_support import EmailHarness
 from tests_v2.support import FakeClock
 from tests_v2.test_email_provider import EMAIL,session,user

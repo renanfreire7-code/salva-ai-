@@ -34,7 +34,7 @@ def seed_previous_store(root):
 
 class AccessEndToEndTest(unittest.TestCase):
     def test_populated_v02_upgrade_login_sensitive_action_restart_recovery_restore(self):
-        from salva_ai_v2.bootstrap import build_application
+        from tests_v2.application_support import build_credential_application as build_application
         with tempfile.TemporaryDirectory(prefix='bar com acentuação ') as directory:
             root=Path(directory);old=seed_previous_store(root);app=build_application(root)
             try:
@@ -62,7 +62,7 @@ class AccessEndToEndTest(unittest.TestCase):
             finally:app.close()
 
     def test_abandoned_setup_is_retryable(self):
-        from salva_ai_v2.bootstrap import build_application
+        from tests_v2.application_support import build_credential_application as build_application
         with tempfile.TemporaryDirectory() as directory:
             app=build_application(Path(directory));app.access_view.wizard.inputs['email'].insert(0,'draft@example.com');app.close()
             app=build_application(Path(directory))
