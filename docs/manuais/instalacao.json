@@ -1,0 +1,245 @@
+[
+  {
+    "id": "inst-visao",
+    "section": "Antes de começar",
+    "title": "O que você vai instalar",
+    "intro": "Este guia é para colocar o Bar Simples 0.4.2-dev em um notebook Windows e criar o atalho com a logo. Não é necessário cadastrar usuário, senha ou e-mail.",
+    "steps": [
+      "O programa precisa de Python 3.12 ou superior com Tcl/Tk. O Python é a ferramenta que permite executar o aplicativo; você não precisa aprender a programar.",
+      "Use o ZIP da versão 0.4.2-dev indicado neste manual. Não use a versão antiga 0.2 sem login, que trabalha com outra pasta isolada.",
+      "Conecte o notebook à internet para baixar os arquivos. Depois da instalação, o atendimento normal funciona offline.",
+      "Separe uma pasta permanente para o programa, por exemplo Documentos\\Bar Simples. Uma pasta é o local onde os arquivos ficam guardados.",
+      "Tenha este PDF por perto. Faça uma etapa por vez e confira o resultado antes de continuar."
+    ],
+    "example": "",
+    "notes": [
+      "O cabeçalho da operação mostra SALVA AI HEADSHOP, conforme a identidade já escolhida. O nome do atalho e destes guias é Bar Simples.",
+      "Esta edição acompanha uma versão em validação. As telas reais do programa foram fotografadas em Linux; no Windows, bordas e fontes podem variar. O atalho Windows precisa ser conferido no notebook."
+    ],
+    "image": "sales",
+    "source": []
+  },
+  {
+    "id": "inst-separar",
+    "section": "Antes de começar",
+    "title": "Programa é uma coisa; seus dados são outra",
+    "intro": "O ZIP leva as funções e a aparência. Produtos, vendas, caixa e despesas ficam em uma pasta de dados separada. Entender essa diferença evita levar os testes para o bar.",
+    "steps": [
+      "Transfira para o notebook do dono somente o ZIP Bar_Simples_0.4.2-dev_sem_login.zip.",
+      "Não transfira a pasta SalvaAiHeadshopV2 do seu computador de testes: ela contém seus cadastros e movimentos.",
+      "Em um notebook onde esta reconstrução nunca foi usada, abrir o programa cria um banco novo, sem produtos, despesas ou vendas.",
+      "Se o programa já foi usado nesse notebook, os dados que já estavam nele serão encontrados. Extrair outro ZIP não zera esses dados.",
+      "Nesse caso, pare antes de cadastrar valores reais: feche o aplicativo e peça ajuda para guardar uma cópia e separar corretamente os dados de teste. Não apague arquivos por tentativa."
+    ],
+    "example": "É como levar um fichário novo: o ZIP leva as divisórias e as ferramentas. A pasta de dados contém as fichas que você já preencheu.",
+    "notes": [
+      "Atualizar o programa não significa apagar seus dados. A instalação no computador atual continua usando a pasta de dados original."
+    ],
+    "image": "folders_diagram",
+    "source": []
+  },
+  {
+    "id": "inst-python",
+    "section": "Instalação",
+    "title": "Instalar o Python",
+    "intro": "Se o Python já estiver instalado e o programa já funcionar, você pode seguir para o download do ZIP. No notebook novo, faça esta etapa primeiro.",
+    "steps": [
+      "Abra o endereço oficial python.org/downloads/windows/ pelo navegador. Use o link clicável nas referências deste PDF.",
+      "Escolha uma versão estável Python 3.12 ou superior e o instalador compatível com o Windows do notebook. Em um Windows comum de 64 bits, use a opção Windows installer (64-bit). Não escolha versões de pré-lançamento.",
+      "Abra o instalador baixado. Se aparecer Add Python to PATH, marque essa opção. Ela ajuda o Windows a encontrar o Python.",
+      "Mantenha Tcl/Tk e IDLE selecionado quando essa opção aparecer. O Tcl/Tk é necessário para desenhar as telas do Bar Simples.",
+      "Conclua a instalação. Os instaladores recentes podem usar o Python Install Manager e mostrar passos diferentes; siga as instruções oficiais dessa versão.",
+      "Se o criador do atalho disser que não encontrou o Python ou o Tcl/Tk, retorne a esta instalação e escolha reparar/modificar a instalação oficial."
+    ],
+    "example": "",
+    "notes": [
+      "Não é necessário instalar pacotes com pip para operar o Bar Simples. As bibliotecas do programa vêm no pacote.",
+      "A tela ilustrada neste guia é um mapa das escolhas; não simula um instalador oficial específico."
+    ],
+    "image": "python_diagram",
+    "source": []
+  },
+  {
+    "id": "inst-baixar",
+    "section": "Instalação",
+    "title": "Baixar o programa atualizado",
+    "intro": "Baixar significa salvar o arquivo ZIP no notebook. Um ZIP é um pacote que reúne várias pastas e arquivos.",
+    "steps": [
+      "Use o botão ou link Baixar Bar Simples 0.4.2-dev disponível nas referências deste PDF.",
+      "Aguarde o download terminar. No navegador, a seta de downloads normalmente mostra o arquivo recebido.",
+      "Abra a pasta Downloads e localize Bar_Simples_0.4.2-dev_sem_login.zip. A extensão .zip pode ficar escondida pelo Windows.",
+      "Se o navegador abrir uma página do GitHub em vez de baixar, procure Download raw file ou Baixar arquivo bruto.",
+      "Confira o nome e a versão. Para evitar confusão, deixe os pacotes antigos em outra pasta.",
+      "Não tente abrir o programa dentro do ZIP. O próximo passo é extrair todos os arquivos."
+    ],
+    "example": "",
+    "notes": [
+      "Este PDF e o manual de uso são documentos separados; nenhum deles substitui o ZIP do programa."
+    ],
+    "image": "extract_diagram",
+    "source": []
+  },
+  {
+    "id": "inst-extrair",
+    "section": "Instalação",
+    "title": "Extrair e guardar em uma pasta fixa",
+    "intro": "Extrair significa retirar os arquivos do ZIP para uma pasta normal. O programa precisa de toda essa pasta, não apenas de um arquivo.",
+    "steps": [
+      "Em Downloads, clique com o botão direito no ZIP e escolha Extrair Tudo. No Windows 11, a opção pode estar no menu de contexto do arquivo.",
+      "Escolha uma pasta permanente, como Documentos\\Bar Simples, e conclua a extração.",
+      "Abra a pasta extraída. Você deve encontrar CRIAR_ATALHO.vbs, ABRIR_BAR_SIMPLES.vbs, Bar_Simples.pyw, INICIAR_V2.bat e a pasta salva_ai_v2.",
+      "Se houver uma pasta dentro de outra, entre até encontrar esses arquivos. Não mova a pasta scripts ou salva_ai_v2 separadamente.",
+      "Confirme que está vendo arquivos de uma pasta normal. Se o Explorador ainda mostrar o ZIP como pasta compactada, volte e use Extrair Tudo.",
+      "Deixe essa pasta no lugar. O atalho que será criado vai apontar para ela."
+    ],
+    "example": "",
+    "notes": [
+      "Os arquivos .vbs criam/abrem o atalho; .pyw é a entrada sem console; o BAT é uma alternativa para diagnóstico. Você não precisa editar esses arquivos."
+    ],
+    "image": "extract_diagram",
+    "source": []
+  },
+  {
+    "id": "inst-atalho",
+    "section": "Instalação",
+    "title": "Criar o atalho com a logo Bar Simples",
+    "intro": "Esta etapa é feita uma vez em cada notebook. O atalho é um ícone que aponta para o programa guardado na pasta fixa.",
+    "steps": [
+      "Feche qualquer versão do Bar Simples que estiver aberta.",
+      "Na pasta extraída, dê dois cliques em CRIAR_ATALHO.vbs. Se o Windows esconder extensões, pode aparecer apenas CRIAR_ATALHO.",
+      "Aguarde a verificação do Python. Se houver erro, leia o aviso e procure a página de solução de problemas deste guia.",
+      "Quando aparecer Atalho Bar Simples criado na Área de Trabalho, feche a mensagem.",
+      "Vá à Área de Trabalho e procure Bar Simples, com o desenho do balcão e copo.",
+      "Dê dois cliques nesse ícone. O programa deve abrir diretamente no atendimento, sem tela de login e sem a janela preta."
+    ],
+    "example": "",
+    "notes": [
+      "O instalador localiza a Área de Trabalho configurada pelo Windows, inclusive quando ela está no OneDrive.",
+      "Ele aproveita o Python instalado e não pede que você execute comandos. Se scripts VBS forem bloqueados, não altere políticas de segurança por conta própria: peça orientação ao responsável pelo notebook."
+    ],
+    "image": "desktop_diagram",
+    "source": []
+  },
+  {
+    "id": "inst-primeira",
+    "section": "Primeira abertura",
+    "title": "Conferir se tudo abriu corretamente",
+    "intro": "A primeira abertura serve para conferir a instalação. Produtos reais e movimentos do bar só devem ser lançados depois dessa conferência.",
+    "steps": [
+      "Observe a lateral: Atendimento, Controle e Gestão. O atendimento começa em Venda de balcão.",
+      "Confira o título SALVA AI HEADSHOP e a logo no canto direito. Isso é esperado nesta edição do Bar Simples.",
+      "Abra Produtos e estoque. Em uma instalação nova, a lista estará vazia. Confira também Contas e despesas e Histórico de vendas.",
+      "Veja se o caixa aparece fechado. Isso é normal; abra o caixa apenas quando for começar o turno, com o dinheiro de troco contado.",
+      "Confirme que o programa não pede usuário, senha de login, e-mail ou Supabase para abrir.",
+      "Se aparecerem os testes de outra instalação nesse notebook, não cadastre por cima e não apague arquivos: separe os dados com uma cópia antes."
+    ],
+    "example": "",
+    "notes": [
+      "Nenhum produto visto nas imagens vem pré-cadastrado no seu ZIP. Os exemplos deste manual foram criados somente para fotografar as telas."
+    ],
+    "image": "sales",
+    "source": []
+  },
+  {
+    "id": "inst-pin",
+    "section": "Primeira abertura",
+    "title": "Entender o PIN administrativo",
+    "intro": "O PIN é uma sequência numérica usada apenas em operações sensíveis, como ajustes e reembolsos. Ele não é uma senha para abrir o programa.",
+    "steps": [
+      "Em um banco novo, a primeira operação administrativa pedirá que você crie um PIN de três dígitos.",
+      "Escolha o PIN com o dono do bar. Digite novamente para confirmar. Não use os números de um exemplo impresso no manual.",
+      "Guarde a chave administrativa exibida em um lugar seguro, fora do notebook. Ela serve para recuperar o PIN.",
+      "Quando uma operação pedir autorização, informe esse PIN no próprio programa. O programa pode pedir também um motivo para deixar o registro claro.",
+      "Se já havia um PIN na pasta de dados ou no backup restaurado, esse PIN permanece. Um PIN antigo de seis dígitos não é cortado automaticamente.",
+      "Após várias tentativas erradas, há uma espera temporária. Fechar e abrir não é um método para trocar o PIN."
+    ],
+    "example": "",
+    "notes": [
+      "Sem PIN e sem a chave administrativa, não há senha mestre escondida. Não envie PIN, chave ou códigos por mensagens para pedir suporte."
+    ],
+    "image": "backup",
+    "source": []
+  },
+  {
+    "id": "inst-atualizar",
+    "section": "Atualização e dados",
+    "title": "Atualizar sem perder o movimento do bar",
+    "intro": "Atualizar troca os arquivos do programa; a pasta de dados continua separada. Faça uma cópia dos dados antes de começar.",
+    "steps": [
+      "Feche o programa em todas as janelas desse notebook.",
+      "Guarde uma cópia da pasta SalvaAiHeadshopV2, que fica na pasta do seu usuário do Windows. Ela contém dados, backups e relatórios.",
+      "Extraia a versão nova em uma pasta de programa própria. Evite misturar arquivos de duas versões diferentes.",
+      "Execute CRIAR_ATALHO.vbs da versão nova. O atalho Bar Simples da Área de Trabalho passa a apontar para essa pasta.",
+      "Abra pelo atalho novo e confira produtos, último caixa e histórico antes de atender.",
+      "Mantenha a cópia anterior até concluir a conferência. Não troque o arquivo de dados por um arquivo vazio e não abra um banco atualizado com código antigo por tentativa."
+    ],
+    "example": "",
+    "notes": [
+      "O programa preserva a pasta de dados desta reconstrução. O banco original da referência 0.3.6-beta não é importado automaticamente.",
+      "Se mover a pasta do programa, execute o criador novamente. Mover a pasta não leva os dados para outro notebook."
+    ],
+    "image": "folders_diagram",
+    "source": []
+  },
+  {
+    "id": "inst-transferir",
+    "section": "Atualização e dados",
+    "title": "Levar para o notebook do dono, sem os testes",
+    "intro": "Para começar com dados novos no notebook do dono, leve somente o programa. Este procedimento não exige apagar os testes do seu computador.",
+    "steps": [
+      "No computador onde você fez os testes, localize o ZIP atualizado do programa. Não selecione a pasta de dados.",
+      "Envie somente esse ZIP ao notebook do dono, ou baixe pelo link oficial do projeto.",
+      "Instale o Python nesse notebook se necessário, extraia a pasta e crie o atalho como explicado nas páginas anteriores.",
+      "Abra Produtos e estoque, Histórico de vendas e Contas e despesas. Se nunca houve uso dessa reconstrução no notebook, essas listas começam vazias.",
+      "Se houver dados antigos no notebook do dono, interrompa esta preparação para guardar e separar essa pasta antes de começar a operação real.",
+      "Depois da conferência, cadastre os produtos e as quantidades reais. Use o manual de uso para iniciar o caixa e as vendas."
+    ],
+    "example": "As fotos mostram cervejas, clientes e despesas fictícias para ensinar. Você transfere as ferramentas, não esses cadastros.",
+    "notes": [
+      "Para levar dados reais já existentes a outro notebook, o procedimento é outro: envolve backup verificado e restauração. Use a seção de backups do manual de uso."
+    ],
+    "image": "folders_diagram",
+    "source": []
+  },
+  {
+    "id": "inst-problemas",
+    "section": "Ajuda rápida",
+    "title": "Se o programa ou o atalho não abrir",
+    "intro": "Leia o aviso com calma e resolva uma causa de cada vez. Não apague seus dados para corrigir um atalho ou uma instalação.",
+    "steps": [
+      "Se disser Python não encontrado ou pythonw não encontrado, instale/repare Python 3.12+ com Tcl/Tk pelo site oficial; depois execute CRIAR_ATALHO novamente.",
+      "Se disser que falta a pasta scripts ou Bar_Simples.pyw, extraia todo o ZIP para uma pasta normal. Não abra somente um arquivo copiado do pacote.",
+      "Se o Windows perguntar com qual aplicativo abrir o VBS ou bloquear scripts, procure o responsável pelo notebook. INICIAR_V2.bat pode ser usado para diagnóstico, mostrando mensagens.",
+      "Se aparecer O Bar Simples já está aberto, procure a janela na barra de tarefas e use a instância existente. Feche-a normalmente antes de reabrir.",
+      "Se o atalho deixou de funcionar depois de mover a pasta, execute CRIAR_ATALHO na pasta correta para atualizar o caminho.",
+      "Se persistir, fotografe apenas a mensagem de erro e informe a versão. Não compartilhe banco, PIN ou chave administrativa para uma dúvida simples."
+    ],
+    "example": "",
+    "notes": [
+      "O registro técnico de falha da abertura silenciosa fica em SalvaAiHeadshopV2\\logs\\inicializacao.log, dentro da pasta do seu usuário.",
+      "O BAT abrir uma janela preta é esperado: ele foi mantido para diagnóstico. Para o uso normal, utilize o atalho ou ABRIR_BAR_SIMPLES.vbs."
+    ],
+    "image": "desktop_diagram",
+    "source": []
+  },
+  {
+    "id": "inst-checklist",
+    "section": "Pronto para o primeiro turno",
+    "title": "Lista de conferência da instalação",
+    "intro": "Marque cada item com o dono do bar. A instalação só deve ser considerada conferida depois de abrir o programa nesse notebook.",
+    "steps": [
+      "Python 3.12+ e Tcl/Tk estão instalados; o atalho Bar Simples existe e encontra a pasta permanente.",
+      "O ícone abre diretamente, sem login e sem a janela preta. A logo aparece e as três áreas de navegação estão disponíveis.",
+      "As listas estão vazias quando o objetivo é começar sem os testes. Se havia dados reais, eles foram conferidos e preservados.",
+      "O dono sabe onde os dados são guardados e combinou o cuidado com o PIN e a chave administrativa.",
+      "Foi escolhido um local para uma cópia de backup fora do notebook. O procedimento está no manual de uso.",
+      "Vocês combinaram um ensaio acompanhado antes de usar o programa como único controle do bar."
+    ],
+    "example": "",
+    "notes": [
+      "O envio de Pix, a devolução de cartão, a entrega e a contagem do dinheiro são atividades reais feitas fora do programa. O aplicativo registra e ajuda a conferir essas atividades."
+    ],
+    "image": "sales",
+    "source": []
+  }
+]

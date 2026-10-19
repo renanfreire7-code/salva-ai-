@@ -1,0 +1,1452 @@
+[
+  {
+    "id": "uso-comecar",
+    "section": "Comece por aqui",
+    "title": "Como usar este manual",
+    "intro": "Este é o guia do operador do Bar Simples 0.4.2-dev. Ele explica cada função em páginas curtas: onde clicar, o que preencher, o que muda e o que conferir.",
+    "steps": [
+      "Para preparar o notebook e o atalho, use o PDF separado Manual de instalação. Aqui, partimos do programa já aberto.",
+      "Leia primeiro o roteiro do primeiro turno. Depois, use o sumário e os marcadores do leitor de PDF para ir direto à função que precisa.",
+      "Os nomes em destaque correspondem aos botões e telas do programa. Quando pedimos selecionar, dê um clique na linha do registro antes de usar a ação.",
+      "As fotos são capturas reais com produtos, nomes, telefones e valores fictícios. Cada exemplo ensina uma ação; não some valores de imagens diferentes como se fossem um único fechamento.",
+      "Amplie as imagens no leitor de PDF para ver colunas e detalhes. A aparência das bordas pode mudar no Windows.",
+      "Faça um ensaio acompanhado em dados separados antes do uso como único controle do bar. Anote erros, dúvidas e passos demorados."
+    ],
+    "example": "",
+    "notes": [
+      "O nome comercial destes guias e do atalho é Bar Simples. A operação mantém o cabeçalho SALVA AI HEADSHOP e sua logo, conforme a versão entregue.",
+      "Não há login nem redefinição por e-mail. O PIN é solicitado somente em ações administrativas."
+    ],
+    "image": "sales",
+    "source": []
+  },
+  {
+    "id": "uso-roteiro",
+    "section": "Comece por aqui",
+    "title": "Roteiro do primeiro turno",
+    "intro": "Comece pelo estoque e pelo dinheiro contado. Cadastros bem feitos evitam corrigir vendas, despesas ou entregas no fim do dia.",
+    "steps": [
+      "Em Produtos e estoque, cadastre cada item com preço, unidades por caixa/fardo e mínimo. Depois registre a entrada real para existir quantidade disponível.",
+      "Configure somente as promoções desejadas e associe os atalhos F1 a F12 aos produtos mais usados.",
+      "Em Lucro por produto, use Taxas e DAS para informar percentuais e valores confirmados; se não souber, deixe desconhecido em vez de inventar.",
+      "Em Delivery, configure Taxas fixas: quanto o cliente paga pela entrega e quanto o entregador recebe por corrida.",
+      "Conte o dinheiro inicial da gaveta. Em Caixa, clique em Abrir caixa e informe esse troco inicial, não o total que espera vender.",
+      "Atenda pelo Balcão, Comandas ou Delivery. Confirme recebimentos somente depois de verificar dinheiro, banco ou maquininha.",
+      "Antes de fechar, resolva comandas, pedidos, reembolsos, dinheiro com entregador e fundos de troco. Conte a gaveta e gere o fechamento com backup."
+    ],
+    "example": "",
+    "notes": [
+      "Na primeira ação protegida de uma instalação nova, o dono cria e confirma o PIN e guarda a chave administrativa.",
+      "O programa não consulta Pix, não opera maquininha, não gera link de pagamento e não envia o entregador automaticamente."
+    ],
+    "image": "cash",
+    "source": []
+  },
+  {
+    "id": "uso-navegacao",
+    "section": "Comece por aqui",
+    "title": "Encontrar as telas e preencher os campos",
+    "intro": "A navegação fica à esquerda. O programa separa atendimento rápido, controle dos registros e gestão dos resultados.",
+    "steps": [
+      "Atendimento reúne Venda de balcão, Comandas e Delivery. Controle reúne Produtos e estoque, Compras e devoluções, Caixa e Histórico de vendas.",
+      "Gestão reúne Contas e despesas, Resultado do mês, Lucro por produto e Reposição de estoque. Mudar de tela não conclui um pagamento pendente.",
+      "Na busca de produtos, use nome, código, começo das palavras ou iniciais: por exemplo hei, cer hei ou CHL para uma cerveja com essas palavras.",
+      "Escolha o resultado correto e informe quantidades inteiras. F1 a F12 selecionam produtos previamente associados; não vendem sozinhos.",
+      "Enter avança para o próximo campo válido. No fim de muitos formulários, ele foca o botão; outra confirmação executa a ação. Confira antes de apertar novamente.",
+      "Em valores, use vírgula para centavos, por exemplo 12,50. Em datas, obedeça o formato escrito no campo: DD/MM/AAAA ou AAAA-MM-DD.",
+      "Nos filtros, escolha o período e clique em Filtrar. No seletor mensal, use Consultar. Digitar uma data sem aplicar não muda a consulta."
+    ],
+    "example": "",
+    "notes": [
+      "Se um botão estiver desabilitado, selecione a linha e confira a situação do registro. Não repita cliques para forçar uma ação.",
+      "As listas podem ter barras de rolagem. Arraste-as para ver nomes e colunas completas."
+    ],
+    "image": "history",
+    "source": []
+  },
+  {
+    "id": "estoque-leitura",
+    "section": "Produtos e estoque",
+    "title": "Entenda quanto pode vender",
+    "intro": "A tela Produtos e estoque reúne o cadastro e a posição de cada mercadoria. Comece pela diferença entre o que existe fisicamente e o que já está comprometido com atendimentos. Os números representam unidades individuais, mesmo quando a compra chegou em caixas ou fardos.",
+    "steps": [
+      "Abra Produtos e estoque e localize o nome e o Código do produto. O código identifica o cadastro; não é quantidade.",
+      "Leia Preço como o preço normal de venda de uma unidade. A condição de promoção pode mudar o total de uma venda.",
+      "Confira Físico: é a quantidade registrada no estoque. Compare com uma contagem real quando houver dúvida.",
+      "Confira Reservado: são unidades comprometidas. Disponível é a quantidade física menos as reservas; é esse saldo que limita novas utilizações.",
+      "Leia Mínimo como o nível desejado para reposição. Custo médio é o custo médio de uma unidade em estoque; Sem estoque indica que esse cálculo não pode ser mostrado.",
+      "Antes de usar Editar produto, Entrada / compra ou Ajustar estoque, clique na linha correta. Os botões atuam sobre a seleção."
+    ],
+    "example": "Se há 30 latas físicas e 8 reservadas, o disponível é 22. Uma compra de duas caixas de 12 aumenta o estoque em 24 unidades, não em duas.",
+    "notes": [
+      "Cadastro, preço de venda e custo de compra são informações diferentes. Alterar o preço não registra mercadoria nova.",
+      "Uma reserva não significa dinheiro recebido. Confira o atendimento correspondente antes de tentar corrigir o estoque."
+    ],
+    "image": "products",
+    "source": [
+      "salva_ai_v2/ui/products.py",
+      "salva_ai_v2/inventory/service.py"
+    ]
+  },
+  {
+    "id": "produto-cadastro",
+    "section": "Produtos e estoque",
+    "title": "Cadastrar e editar um produto",
+    "intro": "Cadastre cada mercadoria com um nome claro. O cadastro prepara a venda, mas começa sem estoque. A entrada da mercadoria é feita depois, com o custo da compra. Ao editar, confira também a promoção existente.",
+    "steps": [
+      "Clique em Novo produto. Em Nome, informe algo fácil de distinguir, como Água mineral 500 ml.",
+      "Preencha Preço normal (R$) com o valor de venda por unidade, por exemplo 4,00.",
+      "Informe Unidades por caixa/fardo com um inteiro de pelo menos 1. Use a quantidade real da embalagem comprada.",
+      "Preencha Estoque mínimo com um inteiro a partir de zero. Clique em Salvar; Cancelar fecha sem cadastrar.",
+      "Para corrigir um cadastro existente, selecione a linha e clique em Editar produto. Revise nome, preço, embalagem e mínimo.",
+      "Clique em Salvar e atenda à solicitação de PIN e Motivo. Confira a mensagem e a linha atualizada."
+    ],
+    "example": "Uma água custa 4,00 por garrafa e chega em fardos de 12. Cadastre preço 4,00, embalagem 12 e mínimo 24. Para receber quatro fardos, faça depois Entrada / compra.",
+    "notes": [
+      "Editar produto exige autorização administrativa e motivo. Não use essa edição para alterar a quantidade física.",
+      "Se o novo preço normal fizer a promoção deixar de oferecer economia, ela será desativada e o aplicativo avisará. Reavalie a condição promocional."
+    ],
+    "image": "product_form",
+    "source": [
+      "salva_ai_v2/ui/products.py",
+      "salva_ai_v2/inventory/service.py"
+    ]
+  },
+  {
+    "id": "produto-promocao",
+    "section": "Produtos e estoque",
+    "title": "Configurar promoção por quantidade",
+    "intro": "A promoção dá um preço para um grupo de unidades do mesmo produto. Ela deve representar economia em relação ao preço normal. Configure o grupo completo; o preço informado aqui não é o preço de cada unidade.",
+    "steps": [
+      "Selecione o produto em Produtos e estoque e clique em Promoção.",
+      "Em Quantidade do grupo, informe um inteiro a partir de 2. A quantidade representa quantas unidades formam cada grupo promocional.",
+      "Em Preço do grupo (R$), digite o total cobrado pelo grupo, usando centavos como 12,00.",
+      "Escolha Sim em Promoção ativa? para aplicar a condição. Escolha Não para deixar de aplicá-la.",
+      "Clique em Salvar. Se aparecer mensagem de validação, corrija a quantidade ou o preço antes de tentar novamente.",
+      "Confira a condição em um novo atendimento antes de anunciar a oferta. Atendimentos que já guardaram uma condição precisam ser conferidos individualmente."
+    ],
+    "example": "Com preço normal de 5,00 e grupo de três por 12,00, três unidades custam 12,00. Quatro unidades custam um grupo de 12,00 mais uma unidade de 5,00: total 17,00.",
+    "notes": [
+      "Não informe 4,00 como preço do grupo se a intenção é cobrar 4,00 por unidade: para três unidades, o grupo deve ser 12,00.",
+      "A promoção não cria mercadoria nem altera o custo de compra. Alterações no preço normal podem desativar uma promoção sem economia."
+    ],
+    "image": "promotion_form",
+    "source": [
+      "salva_ai_v2/ui/products.py",
+      "salva_ai_v2/pricing/service.py"
+    ]
+  },
+  {
+    "id": "produto-atalho-desativar",
+    "section": "Produtos e estoque",
+    "title": "Atalhos F1–F12 e desativação",
+    "intro": "Atalhos ajudam a selecionar produtos usados com frequência. Desativar retira um produto do catálogo ativo, preservando seu registro. Escolha a mercadoria com atenção antes de qualquer uma dessas ações.",
+    "steps": [
+      "Para configurar um atalho, selecione o produto e clique em Atalho F1–F12.",
+      "Escolha o Número da tecla F1 a F12, de 1 a 12, e clique em Salvar. A tecla escolhida fica associada ao produto.",
+      "Confira a seleção na tela de atendimento que oferece os atalhos antes de usar durante o movimento do bar.",
+      "Para retirar um produto do catálogo ativo, selecione sua linha e clique em Desativar.",
+      "Informe o PIN administrativo e um Motivo claro, como Produto deixou de ser comercializado. Confira o resultado na lista."
+    ],
+    "example": "Associe F2 à água mais vendida. Se F2 já tinha outra mercadoria, a nova associação passa a usar essa tecla. Ao deixar de vender um item antigo, desative o cadastro correto, sem criar uma venda fictícia.",
+    "notes": [
+      "Desativar não representa venda, perda, devolução ao fornecedor ou devolução de dinheiro. Esses fatos têm procedimentos próprios.",
+      "A tela oferece Desativar, mas não apresenta botão de reativação. Considere essa limitação antes de retirar um produto necessário.",
+      "Não confunda a tecla do atalho com o Código do produto. O número da tecla vai de 1 a 12; o cadastro pode ter outro código."
+    ],
+    "image": "shortcut_form",
+    "source": [
+      "salva_ai_v2/ui/products.py",
+      "salva_ai_v2/inventory/service.py"
+    ]
+  },
+  {
+    "id": "estoque-ajuste",
+    "section": "Produtos e estoque",
+    "title": "Corrigir quantidade com Ajustar estoque",
+    "intro": "O ajuste registra uma diferença entre o estoque do aplicativo e a realidade, como quebra ou erro de contagem. Informe a variação necessária, e não o novo saldo final. O motivo fica no histórico da operação.",
+    "steps": [
+      "Conte a mercadoria e confira Físico, Reservado e Disponível na linha do produto.",
+      "Selecione o produto e clique em Ajustar estoque.",
+      "Em Variação em unidades (+ ou -), informe um inteiro diferente de zero. Use -2 para retirar duas unidades ou 2 para acrescentar duas.",
+      "Preencha Motivo com o fato observado, por exemplo Duas garrafas quebradas na conferência da manhã.",
+      "Clique em Salvar e autorize com o PIN. Confira o novo saldo na lista.",
+      "Se a operação for recusada, leia a mensagem. Verifique reservas e entradas anteriores antes de escolher qualquer correção."
+    ],
+    "example": "O aplicativo mostra 20 unidades físicas, mas a contagem encontra 18. Registre -2, com a explicação da perda. Digitar 18 acrescentaria dezoito unidades e agravaria a diferença.",
+    "notes": [
+      "Uma redução não pode consumir o que está reservado. Confira os atendimentos antes de mexer nas reservas.",
+      "Para aumentar um produto que está sem estoque, registre uma compra com custo. O ajuste positivo precisa de estoque existente para calcular o custo médio.",
+      "Perdas retiram quantidade e custo do estoque e afetam o resultado. Uma compra real deve ser registrada em Entrada / compra."
+    ],
+    "image": "stock_adjust",
+    "source": [
+      "salva_ai_v2/ui/products.py",
+      "salva_ai_v2/inventory/service.py"
+    ]
+  },
+  {
+    "id": "compra-entrada",
+    "section": "Compras e devoluções",
+    "title": "Registrar uma entrada / compra",
+    "intro": "Entrada / compra aumenta o estoque e cria a obrigação financeira da compra. O formulário trabalha com o produto selecionado. O campo de custo recebe o valor total da mercadoria dessa entrada, e o frete tem campo separado.",
+    "steps": [
+      "Selecione o produto e clique em Entrada / compra. Confira a embalagem cadastrada antes de continuar.",
+      "Informe Quantidade e Unidade de entrada: unidade ou caixa/fardo. Caixas e fardos serão convertidos usando Unidades por caixa/fardo do cadastro.",
+      "Em Custo total dos produtos (R$), digite a soma do custo da mercadoria recebida. Informe o Frete (R$) separadamente; use 0,00 se não houver.",
+      "Preencha Data do gasto (AAAA-MM-DD) e Vencimento (AAAA-MM-DD), por exemplo 2026-10-19.",
+      "Escolha Pagamento: Pendente, Pix, Dinheiro da gaveta, Débito ou Crédito. Registre pagamento imediato somente se ele realmente aconteceu.",
+      "Clique em Salvar. Se usar Dinheiro da gaveta, tenha caixa aberto e forneça a autorização solicitada. Confira a confirmação de registro no estoque e no financeiro."
+    ],
+    "example": "Duas caixas de 12 unidades custam 96,00 no total, mais frete de 12,00. Informe quantidade 2, caixa/fardo, custo 96,00 e frete 12,00. Entram 24 unidades e uma obrigação de 108,00.",
+    "notes": [
+      "Não digite 4,00 como custo total nesse exemplo: 4,00 é o custo unitário antes do frete.",
+      "Não cadastre novamente a mesma compra em Nova despesa. A entrada já cria sua conta a pagar."
+    ],
+    "image": "purchase_form",
+    "source": [
+      "salva_ai_v2/ui/products.py",
+      "salva_ai_v2/inventory/service.py"
+    ]
+  },
+  {
+    "id": "compra-reverter",
+    "section": "Compras e devoluções",
+    "title": "Reverter uma compra registrada errada",
+    "intro": "Em Compras / devoluções, Reverter compra cancela toda a entrada e corrige a obrigação de origem. Use essa ação para uma compra lançada incorretamente que ainda pode ser desfeita; registre depois a entrada correta.",
+    "steps": [
+      "Abra Compras / devoluções e a aba Compras e devoluções. Confira Compra, Data, Valor, Pago / abatido e Situação.",
+      "Selecione a compra. Examine os itens exibidos abaixo, inclusive Quantidade, Devolvido e Custo da linha.",
+      "Clique em Reverter compra. Leia a confirmação de que toda a entrada será cancelada e de que valores já pagos gerarão crédito.",
+      "Confirme somente se a compra escolhida estiver correta. Informe o PIN administrativo e o Motivo da reversão.",
+      "Confira a situação Revertida. Se havia pagamento, consulte Créditos do fornecedor e combine a devolução efetiva do valor.",
+      "Registre uma nova Entrada / compra com os dados corretos, se a mercadoria de fato foi comprada."
+    ],
+    "example": "Uma entrada de 24 unidades foi salva duas vezes. Se a entrada duplicada ainda não teve movimentações que impeçam a reversão, reverta a compra duplicada, sem apagar a compra verdadeira.",
+    "notes": [
+      "A reversão é bloqueada se houver saída posterior do produto desde essa entrada, devolução já registrada ou disponível insuficiente. Ter saldo hoje não garante que a compra possa ser revertida.",
+      "Compra já movimentada exige análise e correção auditada adequada ao fato real. A reversão não inventa dinheiro recebido do fornecedor."
+    ],
+    "image": "purchases",
+    "source": [
+      "salva_ai_v2/ui/purchases.py",
+      "salva_ai_v2/inventory/service.py"
+    ]
+  },
+  {
+    "id": "compra-devolucao",
+    "section": "Compras e devoluções",
+    "title": "Devolver mercadoria ao fornecedor",
+    "intro": "Devolver item selecionado registra a saída de mercadoria de uma compra e gera um crédito do fornecedor. A devolução de produtos e a recuperação de dinheiro são etapas diferentes. Use a compra de origem e a quantidade real devolvida.",
+    "steps": [
+      "Na aba Compras e devoluções, selecione a compra e confira sua data e valor.",
+      "Na lista inferior, selecione o produto que será devolvido. Veja Quantidade e Devolvido para saber o que já foi registrado.",
+      "Clique em Devolver item selecionado. Informe Quantidade em unidades, mesmo que a compra tenha sido feita em caixas.",
+      "Clique em Salvar e informe o PIN e o Motivo solicitado. A quantidade deve ser positiva e caber no saldo da compra ainda não devolvido.",
+      "Confira a atualização da devolução e abra Créditos do fornecedor. O valor gerado aparecerá para conferência.",
+      "Quando houver recebimento ou abatimento real, use Confirmar recebimento / abatimento; não marque como liquidado antecipadamente."
+    ],
+    "example": "Uma caixa de 12 veio com três unidades impróprias. Selecione a compra e o item e devolva 3 unidades. O sistema retira essas três do disponível e gera o crédito correspondente ao custo registrado.",
+    "notes": [
+      "A mercadoria precisa estar disponível no estoque. Unidades reservadas não podem ser consumidas pela devolução.",
+      "A devolução não significa que o fornecedor pagou o crédito. Confira o acordo e os comprovantes antes de liquidar.",
+      "Compras já revertidas não aceitam essa devolução. Não repita uma quantidade que já aparece em Devolvido."
+    ],
+    "image": "purchases",
+    "source": [
+      "salva_ai_v2/ui/purchases.py",
+      "salva_ai_v2/inventory/service.py"
+    ]
+  },
+  {
+    "id": "credito-fornecedor",
+    "section": "Compras e devoluções",
+    "title": "Confirmar crédito do fornecedor",
+    "intro": "Crédito do fornecedor é um valor a recuperar, e não dinheiro já recebido. Na aba Créditos do fornecedor, acompanhe Valor, Liquidado e Pendente. Registre somente o recebimento comprovado ou o abatimento permitido.",
+    "steps": [
+      "Selecione o crédito e confira sua Compra de origem e o Motivo. Clique em Confirmar recebimento / abatimento.",
+      "Informe Valor confirmado (R$), maior que zero e sem ultrapassar o Pendente. É possível confirmar apenas parte do crédito.",
+      "Em Forma de confirmação, escolha Recebimento quando o fornecedor devolveu valor ou Abatimento quando descontou da própria compra de origem.",
+      "Para Recebimento, escolha Forma do recebimento: Pix, Dinheiro na gaveta, Dinheiro fora, Débito ou Crédito. Distinga onde o dinheiro realmente ficou.",
+      "Preencha Data da confirmação (AAAA-MM-DD), sem data futura. Clique em Salvar e forneça PIN e Motivo.",
+      "Confira a redução de Pendente. No abatimento, confira também o pagamento/abatimento registrado na obrigação da compra de origem."
+    ],
+    "example": "Há crédito de 30,00 e o fornecedor devolveu 20,00 por Pix. Registre Recebimento, Pix e 20,00. Restam 10,00 pendentes; a gaveta permanece igual.",
+    "notes": [
+      "Abatimento só alcança o saldo pendente da mesma compra de origem. Não transfere crédito para outra compra.",
+      "Compra revertida exige confirmação de devolução de dinheiro; não oferece saldo ativo para abater.",
+      "Dinheiro na gaveta acrescenta entrada física e exige caixa aberto. Dinheiro fora não aumenta a gaveta."
+    ],
+    "image": "supplier_credit",
+    "source": [
+      "salva_ai_v2/ui/purchases.py",
+      "salva_ai_v2/inventory/purchases.py"
+    ]
+  },
+  {
+    "id": "caixa-abertura",
+    "section": "Caixa",
+    "title": "Abrir o caixa e ler os saldos",
+    "intro": "O caixa controla uma sessão de atendimento e o dinheiro físico da gaveta. O resumo também mostra recebimentos por modalidade, mas Pix e cartões não são notas ou moedas dentro da gaveta. Comece cada sessão com o troco real.",
+    "steps": [
+      "Abra Caixa. Se aparecer Caixa fechado — abra antes de atender, clique em Abrir caixa.",
+      "Conte o dinheiro reservado para troco e preencha Troco inicial (R$). Use 0,00 se a gaveta realmente começa vazia.",
+      "Clique em Salvar. Confira o número do caixa e Esperado na gaveta.",
+      "Leia Recebido / reembolsado / líquido por modalidade. Cada linha separa Dinheiro, Pix, Débito e Crédito; líquido é recebido menos reembolsado naquela modalidade.",
+      "Confira Dinheiro ainda com entregador e Fundo de troco a devolver antes da conferência do dia. Esses valores precisam de acerto, não de suposição.",
+      "Use a lista Data, Movimento, Valor e Motivo para entender entradas e saídas físicas registradas."
+    ],
+    "example": "O caixa abriu com 100,00 e recebeu uma venda Pix de 40,00. Sem outra movimentação, Esperado na gaveta continua em 100,00. O Pix aparece na modalidade correspondente.",
+    "notes": [
+      "Uma sessão aberta não prova que todas as vendas foram recebidas. Confira os atendimentos e os acertos com entregadores.",
+      "Se houver Fechamento pendente, use Retomar fechamento antes de tentar abrir ou atender.",
+      "Troco inicial é dinheiro trazido para a operação; não é faturamento de produtos."
+    ],
+    "image": "cash_open",
+    "source": [
+      "salva_ai_v2/ui/cash.py",
+      "salva_ai_v2/cash/service.py"
+    ]
+  },
+  {
+    "id": "caixa-movimentos",
+    "section": "Caixa",
+    "title": "Reforço e retirada de dinheiro",
+    "intro": "Reforço acrescenta dinheiro de troco à gaveta. Retirada tira dinheiro físico dela, por exemplo para levar ao cofre. Essas transferências não criam venda nem despesa operacional. Registre o fato e explique sua finalidade.",
+    "steps": [
+      "Confira se o caixa está aberto e conte o valor que será colocado ou retirado.",
+      "Clique em Reforço para colocar dinheiro na gaveta ou Retirada para tirar. Confira o título Reforçar troco ou Retirar dinheiro.",
+      "Preencha Valor (R$) com o valor efetivo. Em Motivo, descreva destino ou origem, por exemplo Reforço de troco vindo do cofre.",
+      "Clique em Salvar e forneça o PIN solicitado. Reforço e retirada são ações administrativas protegidas.",
+      "Confira o movimento na tabela e a mudança em Esperado na gaveta. Guarde o comprovante ou controle interno correspondente.",
+      "Quando o dinheiro saiu para pagar uma conta cadastrada, registre o pagamento pela conta e marque a saída da gaveta naquele processo."
+    ],
+    "example": "Você leva 200,00 da gaveta ao cofre. Registre Retirada de 200,00 com esse motivo. O esperado diminui 200,00, mas o faturamento e o lucro não mudam por essa transferência.",
+    "notes": [
+      "Não registre a mesma saída em Retirada e também como pagamento de conta pela gaveta: isso duplicaria o movimento físico.",
+      "Se houver recusa por saldo insuficiente, confira movimentos e dinheiro real. Não use reforço fictício para liberar uma operação.",
+      "Para despesas reais, use Contas e despesas. Um motivo escrito em Retirada não cria automaticamente uma despesa."
+    ],
+    "image": "cash",
+    "source": [
+      "salva_ai_v2/ui/cash.py",
+      "salva_ai_v2/cash/service.py"
+    ]
+  },
+  {
+    "id": "caixa-fechamento",
+    "section": "Caixa",
+    "title": "Fechar, retomar e consultar o relatório",
+    "intro": "O fechamento compara a contagem física com o esperado e gera relatório e backup. Resolva os atendimentos pendentes e acertos antes de contar. Uma diferença precisa ser declarada; não altere o número contado para fazê-lo coincidir.",
+    "steps": [
+      "Confira comandas, pedidos, reembolsos e valores com entregadores. Se o fechamento listar impedimentos, resolva os processos indicados nas telas de origem.",
+      "Conte apenas o dinheiro da gaveta. Clique em Fechar caixa e informe Dinheiro contado na gaveta (R$).",
+      "Clique em Salvar. Se a contagem diferir do esperado, informe PIN e Motivo para registrar a diferença.",
+      "Aguarde a confirmação do fechamento, relatório e backup verificado. Observe eventual aviso Cópia externa indisponível e confira o destino adicional.",
+      "Se aparecer Fechamento pendente, restaure o acesso à pasta necessária e clique em Retomar fechamento. Essa ação continua a preparação dos arquivos do fechamento iniciado.",
+      "Clique em Último relatório para abrir o relatório HTML mais recente no navegador. Se nenhum foi gerado, o aplicativo informará."
+    ],
+    "example": "O esperado é 350,00 e a contagem encontra 345,00. Informe 345,00 e explique a falta de 5,00. O relatório preserva a diferença para conferência.",
+    "notes": [
+      "Fechamento pendente pode significar falha na geração de relatório ou backup, mesmo após o caixa ter mudado de estado. Retome antes de operar outra sessão.",
+      "Último relatório abre o arquivo mais recente; não oferece seleção de todos os fechamentos nem exportação Excel nessa tela."
+    ],
+    "image": "cash_close",
+    "source": [
+      "salva_ai_v2/ui/cash.py",
+      "salva_ai_v2/cash/closing.py"
+    ]
+  },
+  {
+    "id": "balcao-montar",
+    "section": "Atendimento",
+    "title": "Venda de balcão: montar o pedido",
+    "intro": "Use Venda de balcão quando o cliente vai comprar e pagar agora. Antes, abra o caixa e confira se os produtos estão cadastrados, ativos e com estoque disponível.",
+    "steps": [
+      "Abra Venda de balcão. À esquerda ficam os produtos; à direita, Pedido atual.",
+      "Em Buscar produto · nome, código ou iniciais, digite parte do nome, o código ou as iniciais. Quando houver vários resultados, escolha o produto correto na lista.",
+      "Use as setas para percorrer resultados. Pressione Enter para escolher e levar o cursor a Quantidade; também pode dar duplo clique no produto.",
+      "Digite uma quantidade inteira positiva. Clique em Adicionar ou pressione Enter no campo Quantidade.",
+      "Confira Produto, Qtd., Total e Economia no pedido. Adicionar novamente o mesmo produto soma unidades à linha existente.",
+      "Repita até completar o pedido. A busca volta a ficar pronta para o próximo produto."
+    ],
+    "example": "Para vender duas águas, escolha Água, escreva 2 em Quantidade e use Adicionar. Confira duas unidades no Pedido atual antes de receber.",
+    "notes": [
+      "Disponível é o estoque que pode ser usado; reservas de comandas e deliveries reduzem esse número.",
+      "Se aparecer Escolha um produto na lista, a busca ainda não identificou um único produto. Selecione o resultado desejado.",
+      "F1 a F12 escolhem os produtos previamente associados em Produtos e estoque e levam o cursor à quantidade; não concluem a venda."
+    ],
+    "image": "sales",
+    "source": [
+      "salva_ai_v2/ui/sales.py",
+      "salva_ai_v2/ui/shared.py",
+      "salva_ai_v2/sales/service.py"
+    ]
+  },
+  {
+    "id": "balcao-ajustar",
+    "section": "Atendimento",
+    "title": "Corrigir quantidades e conferir promoções",
+    "intro": "Revise o pedido antes do pagamento. O programa calcula a promoção cadastrada conforme a quantidade; o atendimento não oferece desconto digitado livremente.",
+    "steps": [
+      "Clique na linha do produto em Pedido atual.",
+      "Clique em Alterar quantidade e informe a quantidade total correta, não apenas a diferença.",
+      "Para retirar a linha, informe zero. Para desistir da alteração, feche a pergunta ou use Cancelar.",
+      "Confira o Total e a Economia depois da mudança. Quantidades de uma mesma linha podem ativar ou deixar de ativar uma promoção.",
+      "Para abandonar todo o carrinho, clique em Novo pedido. Se houver valor, confirme Descartar o carrinho atual? somente se deseja começar novamente.",
+      "Quando o pedido estiver correto, clique em Receber para abrir a conferência do pagamento."
+    ],
+    "example": "Produto de R$ 5,00 com promoção de 3 por R$ 12,00: três unidades custam R$ 12,00, com economia de R$ 3,00. Quatro custam R$ 17,00: um grupo promocional e uma unidade normal.",
+    "notes": [
+      "Os preços e a promoção da linha são guardados quando o produto entra no atendimento. Não prometa que editar o cadastro atualizará um pedido já iniciado.",
+      "Novo pedido descarta o carrinho em edição; não cancela uma venda já recebida.",
+      "Um carrinho de balcão não reserva estoque. Se outro atendimento usar as unidades antes do recebimento, será necessário revisar o pedido."
+    ],
+    "image": "sales",
+    "source": [
+      "salva_ai_v2/ui/sales.py",
+      "salva_ai_v2/sales/service.py",
+      "salva_ai_v2/pricing/service.py"
+    ]
+  },
+  {
+    "id": "balcao-receber",
+    "section": "Atendimento",
+    "title": "Receber no balcão: dinheiro, Pix e cartão",
+    "intro": "Receber abre a janela; Confirmar recebimento grava o pagamento depois de sua conferência. O aplicativo não recebe Pix nem aprova cartão por conta própria.",
+    "steps": [
+      "Clique em Receber e confira o Total na janela Receber pagamento.",
+      "Em Forma de pagamento, escolha Dinheiro, Pix, Débito ou Crédito à vista. É uma única forma para o total inteiro.",
+      "Em Dinheiro, conte as notas e moedas e preencha Valor recebido em dinheiro (R$). Leia Troco ou Faltam antes de continuar.",
+      "Em Pix ou cartão, confirme o recebimento na conta ou maquininha do bar. O campo de dinheiro fica desabilitado.",
+      "Clique em Confirmar recebimento. Na pergunta Pagamento efetivamente recebido?, confira os valores e responda Sim somente após receber.",
+      "Confira a mensagem Venda #… registrada e o troco informado. O pedido é concluído e a tela fica pronta para outra venda."
+    ],
+    "example": "Total R$ 32,00, cliente entrega R$ 50,00: informe 50,00. O programa calcula R$ 18,00 de troco; entregue esse valor e confirme o recebimento real.",
+    "notes": [
+      "Valor menor que o total impede confirmar dinheiro. Fechar ou cancelar a janela permite voltar ao pedido.",
+      "Não há pagamento dividido, fiado nem parcelamento nesta tela. Crédito à vista é uma cobrança integral.",
+      "Uma venda já concluída deve ser corrigida pelo histórico, com autorização administrativa; Novo pedido não desfaz o recebimento."
+    ],
+    "image": "payment_money",
+    "source": [
+      "salva_ai_v2/ui/payment.py",
+      "salva_ai_v2/ui/sales.py",
+      "salva_ai_v2/sales/service.py"
+    ]
+  },
+  {
+    "id": "comanda-abrir",
+    "section": "Comandas",
+    "title": "Abrir uma comanda identificada",
+    "intro": "Comanda guarda um atendimento em aberto para receber depois. Ela não é uma venda paga nem uma autorização para registrar fiado. É necessário manter o caixa aberto.",
+    "steps": [
+      "Abra Comandas. O título da tela é Comandas por cliente.",
+      "No campo ao lado de Abrir comanda, digite uma identificação clara do cliente, como Ana — mesa 3.",
+      "Clique em Abrir comanda. Pelo teclado, Enter no nome leva o foco ao botão; outro Enter abre a comanda.",
+      "Se houver nome igual, leia Nome já utilizado. Confirme outra comanda apenas quando forem atendimentos diferentes.",
+      "Clique na comanda desejada na lista Comanda, Cliente e Total. Confira o número, principalmente se houver nomes parecidos.",
+      "Busque o produto, informe Quantidade e use Adicionar. Os itens da comanda selecionada aparecem à direita."
+    ],
+    "example": "Há duas pessoas chamadas João. Identifique como João — mesa 1 e João — balcão para reduzir o risco de lançar produtos no atendimento errado.",
+    "notes": [
+      "Nome vazio não abre comanda.",
+      "A seleção da comanda determina onde os produtos serão lançados. Confira-a a cada troca de cliente.",
+      "Produtos adicionados ficam reservados para essa comanda: ainda existem fisicamente, mas deixam de estar disponíveis para outros atendimentos."
+    ],
+    "image": "tabs",
+    "source": [
+      "salva_ai_v2/ui/tabs.py",
+      "salva_ai_v2/sales/service.py"
+    ]
+  },
+  {
+    "id": "comanda-manter",
+    "section": "Comandas",
+    "title": "Adicionar, reduzir e cancelar comanda",
+    "intro": "A comanda protege os produtos já separados. Aumentar itens exige estoque; reduzir ou cancelar exige PIN administrativo e motivo.",
+    "steps": [
+      "Selecione a comanda e confira o cliente. Use a busca por nome, código ou iniciais; F1 a F12 funcionam quando houver produtos associados.",
+      "Escolha o produto, informe Quantidade e clique em Adicionar. Repetir o mesmo produto soma unidades.",
+      "Para corrigir, selecione a linha de produto e clique em Alterar quantidade. Informe a nova quantidade total; zero remove a linha.",
+      "Se reduzir, peça ao responsável para autorizar com o PIN e descreva o motivo solicitado, com pelo menos cinco caracteres.",
+      "Confira os itens e o Total atualizado. A redução libera a reserva correspondente para outros atendimentos.",
+      "Para encerrar sem vender, selecione a comanda e use Cancelar comanda. Autorize com PIN e informe o motivo; as reservas são liberadas."
+    ],
+    "example": "Uma comanda tem três refrigerantes, mas o cliente consumiu dois. Informe 2, autorize a redução e registre um motivo claro, como Lançada uma unidade a mais.",
+    "notes": [
+      "Cancelar comanda é para comanda aberta. Uma comanda recebida exige correção da venda.",
+      "A tela mostra somente comandas abertas; uma cancelada ou recebida deixa de aparecer aqui.",
+      "Se aparecer Este atendimento não está aberto, confira se o recebimento ou cancelamento já foi feito. Evite abrir outra comanda para ocultar a divergência."
+    ],
+    "image": "tabs",
+    "source": [
+      "salva_ai_v2/ui/tabs.py",
+      "salva_ai_v2/sales/service.py",
+      "salva_ai_v2/ui/shared.py"
+    ]
+  },
+  {
+    "id": "comanda-receber",
+    "section": "Comandas",
+    "title": "Receber e, quando necessário, reabrir uma comanda",
+    "intro": "Receber comanda conclui todos os itens selecionados em uma venda integral. Confira o cliente e o consumo antes de cobrar.",
+    "steps": [
+      "Selecione a comanda correta e revise todos os produtos e quantidades.",
+      "Clique em Receber comanda. Escolha uma única Forma de pagamento para o valor total.",
+      "Em dinheiro, informe o valor efetivamente entregue e confira o troco. Em Pix ou cartão, confira primeiro a conta ou a maquininha.",
+      "Use Confirmar recebimento e responda à conferência final somente após o pagamento real. Anote o número da venda mostrado na mensagem.",
+      "Se precisar corrigir uma comanda já recebida, abra Histórico de alterações e manutenção e use Corrigir venda / reabrir comanda.",
+      "Informe o Número da venda, a situação real da mercadoria e do reembolso e, quando aplicável, Reabrir comanda? sim/não. O responsável deve autorizar com PIN e motivo."
+    ],
+    "example": "A comanda foi recebida cedo demais e o cliente continuará consumindo. O responsável deve conferir a venda original antes de usar a correção e a reabertura; não basta criar uma comanda com o mesmo nome.",
+    "notes": [
+      "Reabrir só é permitido no caixa original da venda e com devolução ao estoque registrada. Ao reabrir, os itens voltam a ficar reservados.",
+      "Não marque reembolso confirmado sem ter devolvido o dinheiro ou concluído o estorno digital de fato.",
+      "A correção completa da venda e a conclusão de reembolso estão explicadas no capítulo do histórico."
+    ],
+    "image": "tabs",
+    "source": [
+      "salva_ai_v2/ui/tabs.py",
+      "salva_ai_v2/ui/audit.py",
+      "salva_ai_v2/sales/service.py"
+    ]
+  },
+  {
+    "id": "delivery-painel",
+    "section": "Delivery",
+    "title": "Entender a lista e encontrar pedidos",
+    "intro": "Delivery separa a situação da entrega da situação do pagamento. Um pedido Entregue pode continuar Pendente de recebimento.",
+    "steps": [
+      "Abra Delivery. A lista mostra Pedido, Cliente, Situação, Pagamento, Total, Entrega e Entregador.",
+      "Comece por Pendentes: aparecem pedidos em preparação, na rua, entregues sem recebimento e reembolsos a conferir, inclusive de dias anteriores.",
+      "Para consultar pedidos concluídos, escolha Todos no período e ajuste o período exibido.",
+      "Combine Todas as situações ou uma situação específica com Todos os pagamentos ou o pagamento desejado.",
+      "No campo de busca, digite nome, endereço ou número exato do pedido. Clique em Filtrar para aplicar.",
+      "Use Limpar para voltar aos filtros iniciais. Selecione um pedido e leia a orientação logo acima da lista; os botões disponíveis dependem da situação."
+    ],
+    "example": "Um pedido de ontem já está Entregue, mas o Pix ainda não foi confirmado. Ele continua em Pendentes hoje; não é necessário procurar apenas pela data de hoje.",
+    "notes": [
+      "Entrega é a taxa cobrada do cliente. Entregador é o valor combinado por corrida; são números diferentes.",
+      "Pago significa recebimento registrado. Não substitui a conferência do comprovante real.",
+      "Os totais Dinheiro com entregador e Corridas a pagar ajudam a conferir o acerto; não são o faturamento total do delivery."
+    ],
+    "image": "delivery",
+    "source": [
+      "salva_ai_v2/ui/delivery.py"
+    ]
+  },
+  {
+    "id": "delivery-taxas",
+    "section": "Delivery",
+    "title": "Configurar as duas taxas fixas",
+    "intro": "As taxas são valores fixos por pedido e por saída. Configure-as antes de criar os pedidos; o sistema guarda as taxas de cada atendimento.",
+    "steps": [
+      "Na tela Delivery, clique em Taxas fixas.",
+      "Em Taxa cobrada do cliente (R$), informe quanto será somado aos produtos no total do pedido.",
+      "Em Valor pago ao entregador (R$), informe o custo de cada corrida gerada por uma saída.",
+      "Salve a janela e confira os valores antes de abrir Novo pedido.",
+      "No novo pedido, revise Produtos, Entrega e Total. Depois, em Detalhes, confira também Valor por corrida."
+    ],
+    "example": "Produtos de R$ 40,00, taxa do cliente de R$ 5,00 e corrida de R$ 7,00: o cliente paga R$ 45,00. Quando o pedido sair, haverá R$ 7,00 a acertar com o entregador.",
+    "notes": [
+      "A taxa do cliente não precisa ser igual ao valor do entregador.",
+      "Alterar Taxas fixas vale para pedidos novos; os pedidos já confirmados mantêm as taxas que receberam.",
+      "Os valores devem ser zero ou positivos. Não há cálculo automático por distância, bairro ou quilometragem nesta tela.",
+      "Confirmar um pedido não cria a corrida. A corrida nasce em Saiu para entrega e continua devida mesmo se a entrega falhar."
+    ],
+    "image": "delivery",
+    "source": [
+      "salva_ai_v2/ui/delivery.py",
+      "salva_ai_v2/delivery/service.py"
+    ]
+  },
+  {
+    "id": "delivery-novo",
+    "section": "Delivery",
+    "title": "Novo pedido: identificar e separar produtos",
+    "intro": "Novo pedido de delivery reúne os dados de entrega, os produtos e o pagamento combinado. Confirmar pedido reserva estoque e deixa o atendimento Em preparação.",
+    "steps": [
+      "Clique em Novo pedido. Preencha Cliente *, Telefone * e Endereço * com os dados confirmados com o cliente.",
+      "Use Complemento (opcional) para apartamento, bloco ou casa dos fundos; em Ponto de referência, escreva uma referência útil.",
+      "Escolha Quando o cliente vai pagar? e Forma combinada. Veja os próximos exemplos antes de confirmar.",
+      "Busque cada produto, escolha a quantidade inteira e use Adicionar. Enter na busca escolhe o produto; Enter na quantidade adiciona.",
+      "Confira Produto, Qtd. e Total. Para corrigir uma linha, selecione-a e use Remover item; adicione novamente a quantidade correta.",
+      "Confira Produtos, Entrega e Total e clique em Confirmar pedido. Veja a mensagem com o número do pedido e o total."
+    ],
+    "example": "Cliente: Maria; Telefone: número confirmado; Endereço: Rua das Flores, 120; Complemento: apartamento 22; Ponto de referência: portão azul. Revise esses dados com Maria antes de confirmar.",
+    "notes": [
+      "Cliente, telefone, endereço e pelo menos um produto são obrigatórios. O estoque precisa estar disponível.",
+      "No cadastro do pedido, Enter avança pelos campos; é possível continuar usando o mouse.",
+      "A tela não oferece edição geral de um pedido já confirmado. Por isso, revise endereço, produtos e forma combinada antes de Confirmar pedido.",
+      "Fechar a janela antes da confirmação abandona o preenchimento sem criar o pedido."
+    ],
+    "image": "delivery_editor",
+    "source": [
+      "salva_ai_v2/ui/delivery_editor.py",
+      "salva_ai_v2/delivery/service.py"
+    ]
+  },
+  {
+    "id": "delivery-antecipado",
+    "section": "Delivery",
+    "title": "Pagamento antecipado: Pix ou link",
+    "intro": "Antecipado significa que o bar deve receber antes de registrar a saída. Escolher essa opção não confirma que o dinheiro já chegou.",
+    "steps": [
+      "No Novo pedido de delivery, escolha Antecipado em Quando o cliente vai pagar?.",
+      "Em Forma combinada, escolha Pix ou Link de pagamento.",
+      "Para link, selecione Modalidade do link (conforme comprovante): Débito ou Crédito à vista. Use Link / referência (opcional) para guardar uma identificação.",
+      "Confira os dados e os produtos e clique em Confirmar pedido. Ele fica Em preparação.",
+      "Realize a cobrança pelo meio usado pelo bar e confira a entrada efetiva. Selecione o pedido e clique em Receber para registrar o recebimento real.",
+      "Depois da confirmação do pagamento, confira o pedido e use Saiu para entrega quando o entregador sair de fato."
+    ],
+    "example": "Pedido de R$ 45,00 combinado como Pix antecipado: confirmar o pedido apenas reserva os produtos. Quando os R$ 45,00 estiverem na conta, use Receber; depois registre a saída.",
+    "notes": [
+      "Enquanto o antecipado estiver pendente, Saiu para entrega fica desabilitado.",
+      "O campo Link / referência armazena uma referência; o programa não cria, envia ou aprova links de pagamento.",
+      "No recebimento de link, confira a modalidade real do comprovante: Débito ou Crédito à vista.",
+      "Não há parcelamento nem combinação de Pix com dinheiro para um mesmo pedido."
+    ],
+    "image": "delivery_editor",
+    "source": [
+      "salva_ai_v2/ui/delivery_editor.py",
+      "salva_ai_v2/delivery/payment_plan.py",
+      "salva_ai_v2/ui/delivery_receipt.py"
+    ]
+  },
+  {
+    "id": "delivery-na-entrega",
+    "section": "Delivery",
+    "title": "Pagamento na entrega e previsão de troco",
+    "intro": "Na entrega registra o combinado com o cliente. A previsão de troco ajuda a preparar a saída, mas não registra pagamento recebido.",
+    "steps": [
+      "No novo pedido, escolha Na entrega em Quando o cliente vai pagar?.",
+      "Escolha Forma combinada: Dinheiro, Pix, Débito ou Crédito à vista.",
+      "Se for Dinheiro, pergunte se Precisa de troco?. Escolha Não para valor exato ou Sim quando precisar devolver diferença.",
+      "Em Troco para quanto? (R$), informe a nota ou quantia que o cliente pretende entregar. Ela deve ser maior que o Total.",
+      "Leia Troco previsto e confirme o pedido somente quando o combinado estiver correto.",
+      "Antes de usar Saiu para entrega, envie fisicamente o fundo de troco e registre-o em Acertar entregas quando necessário."
+    ],
+    "example": "Total R$ 45,00, cliente pagará com R$ 50,00: escolha Sim e informe 50,00. Troco previsto será R$ 5,00. Se pagará R$ 45,00 exatos, escolha Não.",
+    "notes": [
+      "Pix e cartão são confirmados pelo bar na conta ou maquininha; o sistema não presume que o entregador recebeu digitalmente.",
+      "Sem troco registrado suficiente com o entregador, a saída de um pedido em dinheiro com troco fica bloqueada.",
+      "Se o cliente mudar a quantia na hora, o recebimento permite informar o valor real e exige conferência da diferença. Prepare troco suficiente."
+    ],
+    "image": "delivery_editor",
+    "source": [
+      "salva_ai_v2/ui/delivery_editor.py",
+      "salva_ai_v2/delivery/payment_plan.py",
+      "salva_ai_v2/delivery/service.py"
+    ]
+  },
+  {
+    "id": "delivery-saida",
+    "section": "Delivery",
+    "title": "Registrar a saída e a conclusão da entrega",
+    "intro": "A saída registra a venda dos produtos e gera a corrida devida ao entregador. A entrega concluída e o recebimento são confirmações separadas.",
+    "steps": [
+      "Selecione o pedido Em preparação. Use Detalhes para conferir cliente, endereço, itens e pagamento combinado.",
+      "Se for antecipado, confirme primeiro o pagamento em Receber. Se houver troco a levar, confira o fundo registrado.",
+      "Quando o entregador sair, clique em Saiu para entrega. Leia a mensagem de que essa saída gera corrida mesmo sem entrega concluída.",
+      "Confirme a saída. O pedido passa a Saiu para entrega e os produtos deixam o estoque.",
+      "Quando houver confirmação de entrega ao cliente, selecione o pedido e clique em Marcar entregue.",
+      "Confira a coluna Pagamento. Se estiver Pendente, use Receber somente depois de conferir o pagamento real."
+    ],
+    "example": "O entregador entregou a mercadoria, mas o cliente ainda não concluiu o Pix. Marque Entregue quando a entrega aconteceu; mantenha o recebimento pendente até a entrada na conta.",
+    "notes": [
+      "Marcar entregue não quita o pedido, não transfere dinheiro para a gaveta e não paga a corrida.",
+      "Um pedido que ainda não saiu não pode ser marcado como entregue.",
+      "Cancelar depois da saída não apaga a corrida. O serviço de deslocamento continua a pagar.",
+      "Evite clicar em saída antes do deslocamento real: é nesse momento que a corrida e a baixa dos produtos são registradas."
+    ],
+    "image": "delivery",
+    "source": [
+      "salva_ai_v2/ui/delivery.py",
+      "salva_ai_v2/delivery/service.py",
+      "salva_ai_v2/delivery/receipts.py"
+    ]
+  },
+  {
+    "id": "delivery-receber",
+    "section": "Delivery",
+    "title": "Registrar o recebimento efetivo do delivery",
+    "intro": "Receber registra o total integral pago, quem ficou com o dinheiro e o troco real. Pode ser feito em preparação, na rua ou após a entrega, conforme o momento real do pagamento.",
+    "steps": [
+      "Selecione o pedido e clique em Receber. Confira o número, Total do pedido e Troco combinado.",
+      "Em Modalidade real conforme comprovante, confira a forma combinada. Para link, escolha Débito ou Crédito à vista conforme o comprovante.",
+      "Em dinheiro, escolha Quem recebeu?: Bar ou Entregador. Essa escolha determina se o valor entra na gaveta ou fica com o entregador.",
+      "Informe Valor entregue pelo cliente em dinheiro (R$). Para Pix ou cartão, o campo fica desabilitado e o recebedor é Bar.",
+      "Clique em Confirmar recebimento. Confira total, forma, recebedor e troco real; se a quantia mudou, leia o aviso de diferença.",
+      "Responda Pagamento efetivamente recebido? apenas após a conferência. Confirme a indicação Pago na lista ou em Detalhes."
+    ],
+    "example": "Pedido R$ 45,00: cliente entrega R$ 50,00 ao entregador e recebe R$ 5,00 de troco. Registre Entregador e 50,00. O valor do pedido a acertar será R$ 45,00; o fundo de troco é controlado separadamente.",
+    "notes": [
+      "Não registre Entregador se o dinheiro entrou diretamente na gaveta do bar.",
+      "O recebimento é integral e único. Um pedido pago ou cancelado não aceita novo recebimento.",
+      "Valor em dinheiro menor que o total e troco superior ao registrado com o entregador impedem concluir."
+    ],
+    "image": "delivery_receive",
+    "source": [
+      "salva_ai_v2/ui/delivery_receipt.py",
+      "salva_ai_v2/delivery/receipts.py"
+    ]
+  },
+  {
+    "id": "delivery-detalhes",
+    "section": "Delivery",
+    "title": "Detalhes: conferir fatos do pedido",
+    "intro": "Detalhes reúne o que foi combinado e o que efetivamente aconteceu. Use essa consulta antes de cancelar, reembolsar ou acertar dinheiro.",
+    "steps": [
+      "Selecione um pedido na lista e clique em Detalhes.",
+      "No resumo, confira número, cliente, data, total, situação e Pagamento. Modalidade real só aparece quando houve recebimento.",
+      "Na tabela, confira Produto, Qtd., Preço unit., Promoção e Total de cada item.",
+      "Role o texto para conferir telefone, endereço, complemento, referência, momento e canal de pagamento, taxa cobrada e valor por corrida.",
+      "Confira Recebimento: modalidade, valor, recebedor e data. Em dinheiro, compare Cliente entregou com troco real.",
+      "Confira corridas e valores pendentes, reembolsos, retornos de mercadoria, dinheiro ainda com entregador, acertos vinculados e eventual nova tentativa."
+    ],
+    "example": "Cliente diz que já pagou. Em Detalhes aparece Recebimento ainda não confirmado. Confira o banco ou a maquininha antes de registrar: a ausência de lançamento não prova que o cliente ainda deva pagar novamente.",
+    "notes": [
+      "Produtos e taxas do pedido guardam o retrato do atendimento; consulte-os para entender diferenças em relação ao cadastro atual.",
+      "Pedidos de versão anterior podem mostrar pagamento Não informado ou Troco combinado: não registrado nesta versão anterior. Confira o combinado fora do sistema.",
+      "Esta janela é de consulta: não altera produtos, endereço, dinheiro ou situação.",
+      "Use a barra de rolagem para ver fatos que não cabem de uma vez na janela."
+    ],
+    "image": "delivery_details",
+    "source": [
+      "salva_ai_v2/ui/order_details.py",
+      "salva_ai_v2/delivery/queries.py"
+    ]
+  },
+  {
+    "id": "delivery-cancelar",
+    "section": "Delivery",
+    "title": "Cancelar sem confundir dinheiro e mercadoria",
+    "intro": "Cancelar encerra o atendimento. Produtos devolvidos e dinheiro reembolsado exigem registros próprios depois da conferência física e financeira.",
+    "steps": [
+      "Selecione o pedido correto e consulte Detalhes para verificar se saiu, se recebeu e se há corrida.",
+      "Clique em Cancelar e leia o resumo com cliente, endereço, itens, recebimentos, reembolso e corridas.",
+      "Se algo estiver errado, use Voltar ou feche a conferência. Para prosseguir, clique em Confirmar operação.",
+      "O responsável deve autorizar com PIN e informar um motivo de pelo menos cinco caracteres.",
+      "Se o pedido ainda não saiu, sua reserva de produtos é liberada. Se já saiu, aguarde o retorno e confira os produtos separadamente.",
+      "Se houve pagamento, devolva o valor pelo meio apropriado e use Registrar reembolso somente após essa devolução real."
+    ],
+    "example": "Pedido saiu, cliente desistiu e não pagou. Cancele com motivo, confira o retorno dos itens em condição de revenda e mantenha a corrida no acerto do entregador.",
+    "notes": [
+      "A corrida já gerada continua devida mesmo sem entrega concluída.",
+      "Cancelar um pedido pago cria reembolso pendente; não faz Pix, estorno de cartão nem entrega de dinheiro automaticamente.",
+      "Cancelar depois da saída não devolve automaticamente os produtos ao estoque.",
+      "Pedido cancelado não pode receber pagamento nem ser marcado como entregue. Use os fluxos de devolução, reembolso e nova tentativa quando cabíveis."
+    ],
+    "image": "delivery",
+    "source": [
+      "salva_ai_v2/ui/delivery.py",
+      "salva_ai_v2/ui/delivery_actions.py",
+      "salva_ai_v2/delivery/cancellation.py"
+    ]
+  },
+  {
+    "id": "delivery-reembolso",
+    "section": "Delivery",
+    "title": "Registrar dinheiro que já foi reembolsado",
+    "intro": "Registrar reembolso é uma anotação do valor realmente devolvido ao cliente. A ação não transfere Pix, não estorna cartão e não devolve mercadoria ao estoque.",
+    "steps": [
+      "Cancele o pedido quando o atendimento foi desfeito. Confira o recebimento original e o reembolso pendente em Detalhes.",
+      "Faça a devolução real no meio do recebimento original: dinheiro, Pix, débito ou crédito.",
+      "Clique em Registrar reembolso. Confira Modalidade do recebimento efetivo e Valor devolvido (R$). Informe somente o valor já devolvido, até o pendente.",
+      "Em dinheiro, responda Se dinheiro, saiu da gaveta?: Sim se o bar retirou da gaveta; Não se o entregador devolveu usando dinheiro desse pedido ainda em sua posse.",
+      "Leia a conferência, use Confirmar operação e autorize com PIN e motivo.",
+      "Confira em Detalhes quanto foi reembolsado e se ainda há valor pendente. Repita depois apenas para uma devolução adicional efetivamente realizada."
+    ],
+    "example": "Recebimento Pix de R$ 45,00 cancelado: devolva pelo banco. Depois registre R$ 45,00 como reembolso Pix; o programa não movimentará dinheiro na gaveta.",
+    "notes": [
+      "O reembolso pode ser parcial, mas não pode ultrapassar o saldo pendente.",
+      "Se o entregador já acertou o dinheiro, não indique que ele devolveu um valor que não está mais sob sua responsabilidade; use a situação real.",
+      "Reembolso digital aceita somente Não em saiu da gaveta. Não há recebimento confirmado para reembolsar quando o pedido nunca foi pago."
+    ],
+    "image": "delivery_refund",
+    "source": [
+      "salva_ai_v2/ui/delivery.py",
+      "salva_ai_v2/delivery/cancellation.py",
+      "salva_ai_v2/ui/delivery_actions.py"
+    ]
+  },
+  {
+    "id": "delivery-retorno",
+    "section": "Delivery",
+    "title": "Conferir os produtos que realmente voltaram",
+    "intro": "Conferir produtos devolvidos devolve unidades ao estoque. Registre apenas produtos fisicamente recebidos e em condição de revenda, depois de cancelar um pedido que saiu.",
+    "steps": [
+      "Separe e conte os produtos que voltaram. Examine embalagem, integridade e condição de venda.",
+      "Selecione o pedido cancelado e clique em Conferir produtos devolvidos.",
+      "Selecione um produto na lista Produto e Quantidade enviada. Em Unidades conferidas, informe quantas unidades boas está conferindo agora.",
+      "Clique em Confirmar devolução. Leia o resumo e a quantidade desta operação antes de Confirmar operação.",
+      "Autorize com PIN e informe o motivo. A janela fecha após concluir.",
+      "Para outro produto ou um retorno posterior, abra novamente e registre apenas as unidades adicionais; consulte Detalhes para conferir os retornos já registrados."
+    ],
+    "example": "Saíram seis garrafas; voltaram cinco intactas e uma quebrada. Registre cinco unidades. A unidade quebrada não pode ser devolvida ao estoque como produto vendável.",
+    "notes": [
+      "A Quantidade enviada mostra o que saiu, não o saldo que falta devolver. O sistema impede que a soma dos retornos ultrapasse a quantidade enviada.",
+      "Pedido que não saiu teve a reserva liberada no cancelamento e não tem baixa de estoque para devolver.",
+      "Esta ação não reembolsa o cliente nem apaga a corrida.",
+      "Para criar nova tentativa de pedido que saiu, todos os produtos anteriores precisam ter retorno conferido; mercadoria sem condição de revenda pode impedir essa opção."
+    ],
+    "image": "delivery_return",
+    "source": [
+      "salva_ai_v2/ui/delivery.py",
+      "salva_ai_v2/delivery/cancellation.py"
+    ]
+  },
+  {
+    "id": "delivery-nova-tentativa",
+    "section": "Delivery",
+    "title": "Criar outra tentativa sem duplicar o pedido antigo",
+    "intro": "Criar nova tentativa de entrega cria outro pedido vinculado, com os produtos do anterior e os preços e taxas atuais. Resolva o pedido anterior antes de usar.",
+    "steps": [
+      "Cancele o pedido anterior. Se houve pagamento, realize e registre o reembolso completo.",
+      "Se os produtos saíram, confira o retorno de todos eles em condição de revenda. Confira também o estoque disponível para a nova reserva.",
+      "Selecione o cancelado e clique em Criar nova tentativa de entrega. Leia o resumo: ele informa como a nova tentativa será criada.",
+      "Use Confirmar operação. Para pedidos atuais em dinheiro, confira Precisa de troco? e Troco para quanto? (R$) na janela Troco da nova tentativa.",
+      "Autorize com PIN e motivo. Anote o número da nova tentativa e confira os dados e o total em Detalhes.",
+      "Nos pedidos atuais, ela fica Em preparação: confirme o antecipado, quando houver, e registre Saiu para entrega somente na nova saída real."
+    ],
+    "example": "Primeira saída custou R$ 7,00 e falhou. Depois do cancelamento e retorno completo, crie nova tentativa. Na nova saída, mais R$ 7,00 serão devidos: duas corridas somam R$ 14,00.",
+    "notes": [
+      "Existe apenas uma nova tentativa diretamente vinculada a cada pedido; repetir a ação gera impedimento.",
+      "Pedidos antigos sem momento de pagamento informado têm comportamento diferente: a nova tentativa sai imediatamente e já gera outra corrida. Leia a conferência antes de confirmar.",
+      "Se faltarem retornos ou houver valor pago ainda não reembolsado, o sistema impede a nova tentativa."
+    ],
+    "image": "delivery_retry",
+    "source": [
+      "salva_ai_v2/ui/delivery.py",
+      "salva_ai_v2/ui/delivery_actions.py",
+      "salva_ai_v2/delivery/cancellation.py"
+    ]
+  },
+  {
+    "id": "entregador-fundo",
+    "section": "Acerto com entregador",
+    "title": "Enviar e receber de volta o fundo de troco",
+    "intro": "Fundo de troco é dinheiro do bar levado pelo entregador para devolver diferenças aos clientes. Ele é controlado separadamente dos recebimentos dos pedidos e das corridas.",
+    "steps": [
+      "Abra Delivery e clique em Acertar entregas. Na aba Conferir pendências, clique em Enviar troco.",
+      "Entregue o dinheiro de fato ao entregador. Informe Valor (R$) e Motivo, como Troco para entregas.",
+      "Autorize com PIN. O valor sai da gaveta e passa a compor o dinheiro sob responsabilidade do entregador.",
+      "Confira a tabela Fundo, Enviado e Pendente. Antes de uma saída com troco, confira se o dinheiro registrado é suficiente.",
+      "Quando o entregador devolver o fundo, conte o valor e selecione o fundo correto na tabela.",
+      "Clique em Receber troco devolvido, informe Valor devolvido à gaveta (R$) e confirme apenas o dinheiro realmente devolvido."
+    ],
+    "example": "O bar envia R$ 20,00 para troco. Registre Enviar troco de 20,00. No fim, ao devolver esses R$ 20,00 de fundo, selecione o fundo e registre a devolução; os recebimentos de pedidos serão conferidos no acerto próprio.",
+    "notes": [
+      "A devolução pode ser parcial, mas não pode exceder o Pendente daquele fundo nem o dinheiro registrado com o entregador.",
+      "Enviar troco não paga uma corrida. Receber troco devolvido não quita recebimentos de clientes.",
+      "Mantenha o caixa aberto para movimentar a gaveta.",
+      "O controle de dinheiro com entregador é conjunto; a tela não separa nomes ou carteiras de vários entregadores."
+    ],
+    "image": "settlement",
+    "source": [
+      "salva_ai_v2/ui/settlement.py",
+      "salva_ai_v2/delivery/settlement.py"
+    ]
+  },
+  {
+    "id": "entregador-selecionar",
+    "section": "Acerto com entregador",
+    "title": "Escolher o que entra no acerto",
+    "intro": "O acerto pode conferir recebimentos em dinheiro, corridas ou ambos. Primeiro escolha as pendências; depois registre o dinheiro físico e a compensação combinada.",
+    "steps": [
+      "Em Acertar entregas, abra Conferir pendências. A lista reúne pedidos com dinheiro do cliente ainda com entregador e/ou corridas a pagar.",
+      "Clique em um pedido. Leia os detalhes à direita e confira Total, A entregar e Corridas.",
+      "Marque Incluir recebimento para conferir o dinheiro desse pedido, Incluir corrida para acertar seu serviço, ou ambos.",
+      "Duplo clique no pedido inclui ou retira os dois grupos disponíveis. Não precisa segurar Ctrl. Confira a coluna Incluído.",
+      "Use Selecionar todos para incluir as pendências exibidas ou Limpar seleção para começar de novo.",
+      "Confira Selecionado: recebimentos … · corridas … e clique em Conferir acerto para informar os valores realmente movimentados."
+    ],
+    "example": "Um pedido foi pago por Pix e tem corrida de R$ 7,00. Nesse pedido há corrida a selecionar, mas não dinheiro de cliente para entregar à gaveta. Outro pedido pago em dinheiro ao entregador pode ter as duas pendências.",
+    "notes": [
+      "Recebimentos digitais e dinheiro recebido diretamente pelo bar não entram como dinheiro a devolver pelo entregador.",
+      "As pendências incluem registros antigos ainda não resolvidos; confira os números e as datas nos detalhes.",
+      "Fundo de troco ainda a devolver aparece separado. Use os botões do fundo para devolvê-lo.",
+      "Se não houver valores selecionados, Conferir acerto informa que é necessário selecionar recebimentos ou corridas."
+    ],
+    "image": "settlement",
+    "source": [
+      "salva_ai_v2/ui/settlement.py",
+      "salva_ai_v2/delivery/queries.py",
+      "salva_ai_v2/delivery/settlement.py"
+    ]
+  },
+  {
+    "id": "entregador-valores",
+    "section": "Acerto com entregador",
+    "title": "Conferir dinheiro físico e compensação",
+    "intro": "Compensação combinada é a parte dos recebimentos que o entregador retém para quitar corridas. Não passa fisicamente pela gaveta. Confira o acordo real antes de salvar.",
+    "steps": [
+      "Em Conferir acerto, confira os recebimentos selecionados e o total de corridas selecionadas.",
+      "Informe Dinheiro entregue à gaveta (R$): o dinheiro dos pedidos que o entregador realmente entregou ao bar.",
+      "Informe Dinheiro pago da gaveta (R$): o dinheiro que o bar realmente retirou para pagar as corridas.",
+      "Informe Compensação combinada (R$): a parcela dos recebimentos que ficou com o entregador como pagamento das corridas.",
+      "Para quitar tudo, confira as duas contas: entregue à gaveta + compensação = recebimentos; pago da gaveta + compensação = corridas.",
+      "Autorize com PIN e confirme. Confira a mensagem Acerto #… registrado e consulte Acertos anteriores."
+    ],
+    "example": "Recebimentos R$ 100,00 e corridas R$ 21,00: entregue à gaveta 79,00; pago da gaveta 0,00; compensação 21,00. Assim, 79 + 21 = 100 e 0 + 21 = 21. Se preferirem tudo separado: entregue 100,00, pago 21,00, compensação 0,00.",
+    "notes": [
+      "A janela sugere compensar o menor dos dois totais e movimentar só a diferença. Edite se o acordo físico foi outro.",
+      "Acerto parcial é permitido: as somas podem ser menores que as pendências, mas não maiores. O restante continua pendente.",
+      "Se houver R$ 10,00 de recebimentos e R$ 21,00 de corridas, a sugestão será entregar 0,00, pagar 11,00 e compensar 10,00.",
+      "Não registre dinheiro físico e compensação em duplicidade para o mesmo valor."
+    ],
+    "image": "settlement",
+    "source": [
+      "salva_ai_v2/ui/settlement.py",
+      "salva_ai_v2/delivery/settlement.py"
+    ]
+  },
+  {
+    "id": "entregador-historico",
+    "section": "Acerto com entregador",
+    "title": "Consultar acertos anteriores e fechar a conferência",
+    "intro": "Acertos anteriores preserva os registros dos valores físicos e das parcelas conferidas. Use a consulta para explicar o que já foi resolvido antes de registrar outro acerto.",
+    "steps": [
+      "Abra Acertar entregas e clique na aba Acertos anteriores.",
+      "Na lista, confira Acerto, Data, Entregue à gaveta, Pago da gaveta e Compensado.",
+      "Selecione um acerto. No texto abaixo, confira os três valores e cada Recebimento ou Corrida, com seu número, pedido e parcela incluída.",
+      "Role o texto para ler os pedidos vinculados: itens, pagamentos, corridas, reembolsos, retornos e demais acertos.",
+      "Volte a Conferir pendências para verificar o que ainda falta. Um acerto parcial deixa somente o saldo por resolver.",
+      "Confira também o fundo de troco pendente e a situação de cada pedido em Delivery antes de encerrar a conferência do turno."
+    ],
+    "example": "Um recebimento de R$ 100,00 foi acertado parcialmente em R$ 60,00. O acerto antigo mostra a parcela de R$ 60,00; a conferência atual deve tratar somente os R$ 40,00 restantes, além das corridas ainda pendentes.",
+    "notes": [
+      "Os acertos anteriores são de consulta. Esta tela não oferece editar ou apagar um acerto já registrado.",
+      "Não crie outro lançamento para repetir o mesmo dinheiro que já foi entregue ou compensado.",
+      "A palavra parcela nesse histórico significa parte do valor incluída no acerto; não é parcelamento do cartão do cliente.",
+      "Pedido entregue e pago pode ter corrida ainda a acertar. Resolver o dinheiro com entregador é uma conferência adicional ao atendimento do cliente."
+    ],
+    "image": "settlement_history",
+    "source": [
+      "salva_ai_v2/ui/settlement.py",
+      "salva_ai_v2/delivery/queries.py"
+    ]
+  },
+  {
+    "id": "historico-auditoria",
+    "section": "Histórico e manutenção",
+    "title": "Pesquisar vendas e alterações",
+    "intro": "Histórico de vendas localiza os atendimentos comerciais. Auditoria e manutenção consulta alterações e motivos. Use a primeira tela para encontrar a venda e seu número; use a segunda para entender correções e executar ações administrativas.",
+    "steps": [
+      "Abra Histórico de vendas. O padrão é Hoje. Escolha tipo Todos, Balcão, Comanda ou Delivery e, se necessário, Número, cliente ou produto e a situação.",
+      "Escolha o período ou preencha De e Até em DD/MM/AAAA. Clique em Filtrar e confira Período aplicado. Limpar filtros restaura a consulta padrão.",
+      "Selecione a linha para ver os detalhes ao lado. Compare número, valor, situação, pagamento e Modalidade real.",
+      "Para balcão e comanda, o período corresponde à data do recebimento da venda. Para delivery, corresponde à criação do pedido.",
+      "Clique em Auditoria e manutenção. Informe De, Até e, se necessário, ID do registro. Clique em Consultar; essa tela começa no mês atual.",
+      "Leia Data, Operação, Registro e Detalhes / motivo. Anote os números certos antes de usar Corrigir venda / reabrir comanda, Concluir reembolso ou Backups."
+    ],
+    "example": "Uma comanda aparece como número da comanda acompanhado de venda. Para corrigir o recebimento, anote o número da venda, pois o formulário administrativo pede Número da venda.",
+    "notes": [
+      "Alterar filtros sem clicar em Filtrar mantém a consulta anterior no histórico de vendas.",
+      "ID do registro na auditoria pode identificar objetos de tipos diferentes. Leia também Operação e Detalhes / motivo para reconhecer o fato.",
+      "Um pedido delivery ainda não recebido não tem a mesma situação de uma venda de balcão paga."
+    ],
+    "image": "history",
+    "source": [
+      "salva_ai_v2/ui/history.py",
+      "salva_ai_v2/ui/audit.py",
+      "salva_ai_v2/reporting/queries.py"
+    ]
+  },
+  {
+    "id": "venda-corrigir",
+    "section": "Histórico e manutenção",
+    "title": "Corrigir venda ou reabrir comanda",
+    "intro": "Corrigir venda / reabrir comanda estorna uma venda inteira de balcão ou comanda, preservando registro. A mercadoria e o dinheiro são tratados separadamente. Verifique a realidade de cada um antes de responder ao formulário.",
+    "steps": [
+      "Localize a venda no Histórico de vendas e anote o número da venda. Abra Auditoria e manutenção e clique em Corrigir venda / reabrir comanda.",
+      "Preencha Número da venda. Em Mercadoria retornou? sim/não, escreva sim somente se todas as mercadorias dessa venda devem voltar ao estoque.",
+      "Em Reembolso confirmado? sim/não, informe sim somente se a devolução completa ao cliente já ocorreu. Com não, fica reembolso pendente.",
+      "Informe Dinheiro / Pix / Débito / Crédito conforme a modalidade original. Em dinheiro, preencha Valor devolvido em dinheiro (R$) com o total da venda quando confirmar o reembolso.",
+      "Em Reabrir comanda? sim/não, use sim apenas para comanda, no caixa original ainda aberto, com retorno da mercadoria ao estoque.",
+      "Salve e informe PIN e Motivo. Confira a venda estornada, eventual reembolso pendente e, se reaberta, a comanda e suas reservas."
+    ],
+    "example": "Uma comanda foi recebida por engano. No mesmo caixa, é possível estornar, devolver os itens ao estoque e reabrir a comanda; os itens voltam a ficar reservados para ela.",
+    "notes": [
+      "Esta ação exige caixa aberto e não corrige parcialmente apenas um item. Uma venda já estornada não aceita novo estorno.",
+      "Reembolso deve manter a modalidade original. Estornar sem reembolso não tira dinheiro da gaveta.",
+      "Delivery deve ser cancelado, devolvido e reembolsado pela tela Delivery."
+    ],
+    "image": "sale_correction",
+    "source": [
+      "salva_ai_v2/ui/audit.py",
+      "salva_ai_v2/sales/service.py"
+    ]
+  },
+  {
+    "id": "venda-reembolso",
+    "section": "Histórico e manutenção",
+    "title": "Concluir um reembolso pendente",
+    "intro": "Concluir reembolso registra a devolução ao cliente de uma venda de balcão ou comanda já estornada com reembolso pendente. O procedimento confirma o fato completo; não realiza Pix ou estorno na máquina de cartão por você.",
+    "steps": [
+      "Confira a venda estornada e o valor pendente. Faça a devolução real ao cliente no meio de pagamento original e guarde seu comprovante.",
+      "Com caixa aberto, abra Auditoria e manutenção e clique em Concluir reembolso.",
+      "Informe Número da venda. Em Dinheiro / Pix / Débito / Crédito, escreva a modalidade original da venda.",
+      "Para Dinheiro, informe em Valor devolvido em dinheiro (R$) o valor pendente completo. Para outras modalidades, o valor em dinheiro não é usado.",
+      "Salve e forneça PIN e Motivo, identificando a devolução realizada e o comprovante quando houver.",
+      "Confira o reembolso registrado. Em Dinheiro, o esperado na gaveta diminui; nas outras modalidades, confira o resumo do meio correspondente."
+    ],
+    "example": "Uma venda de 45,00 em dinheiro foi estornada com reembolso não confirmado. Depois de devolver 45,00 ao cliente, use Concluir reembolso, Dinheiro e 45,00. O pendente passa a zero.",
+    "notes": [
+      "Esta tela não parcela o reembolso: exige o pendente completo em dinheiro.",
+      "Não use uma modalidade diferente só porque ela seria mais conveniente. O sistema confere o meio original.",
+      "Se não há pendência, a venda já foi reembolsada ou o número está errado, a confirmação será recusada. Confira antes de repetir.",
+      "Reembolsos de delivery pertencem ao fluxo Delivery e não são concluídos por este botão."
+    ],
+    "image": "sale_refund",
+    "source": [
+      "salva_ai_v2/ui/audit.py",
+      "salva_ai_v2/sales/service.py"
+    ]
+  },
+  {
+    "id": "despesa-filtros",
+    "section": "Contas e despesas",
+    "title": "Localizar contas com os filtros",
+    "intro": "Contas e despesas começa em Este mês e consulta pela Data do gasto. Trocar uma opção não aplica a consulta sozinho. Use Filtrar e leia Período aplicado antes de concluir que uma conta está ausente.",
+    "steps": [
+      "Escolha Hoje, Últimos 7 dias, Este mês ou Personalizado. Para um intervalo próprio, informe De e Até em DD/MM/AAAA.",
+      "Em Consultar por, escolha Data do gasto, Vencimento ou Pagamento. Gasto é quando ocorreu; vencimento é o prazo; pagamento é quando foi pago.",
+      "Use Categoria e Descrição para restringir a busca. Escolha Todas, Paga, Pendente ou Vencida conforme sua necessidade.",
+      "Marque Mostrar excluídas se quiser localizar lançamentos retirados dos cálculos ativos.",
+      "Clique em Filtrar. Confira Período aplicado, a lista e os totais. Se houver erro nas datas, corrija antes de filtrar novamente.",
+      "Use Limpar filtros para voltar ao padrão desta tela, inclusive Este mês e Data do gasto. A limpeza já aplica a consulta."
+    ],
+    "example": "Uma conta foi lançada em setembro, vence em outubro e foi paga em novembro. Ela aparece em meses diferentes conforme Consultar por. Para encontrar o pagamento, consulte novembro por Pagamento.",
+    "notes": [
+      "Vencido está incluído no pendente; não some os dois como dívidas distintas.",
+      "Pago/abatido no período usa o período dos pagamentos. Nas outras bases, o resumo mostra o acumulado das contas encontradas e o saldo pendente atual.",
+      "Compromissos e saldo da gaveta são medidas diferentes. Uma conta pode existir sem estar paga."
+    ],
+    "image": "finance",
+    "source": [
+      "salva_ai_v2/ui/finance.py",
+      "salva_ai_v2/finance/service.py",
+      "salva_ai_v2/ui/period.py"
+    ]
+  },
+  {
+    "id": "despesa-criar",
+    "section": "Contas e despesas",
+    "title": "Cadastrar uma nova despesa",
+    "intro": "Nova despesa registra uma obrigação, como aluguel, energia ou material de limpeza. Cadastrar a despesa não confirma pagamento. Use a data em que o gasto ocorreu e o prazo de vencimento para organizar consultas e resultado.",
+    "steps": [
+      "Clique em Nova despesa. Em Descrição, identifique a conta de modo claro, por exemplo Energia — outubro.",
+      "Preencha Categoria. Use nomes consistentes para facilitar filtros e análise; o formulário começa com Outras despesas.",
+      "Informe Valor (R$) com o total da obrigação, por exemplo 285,90. Confira centavos antes de salvar.",
+      "Preencha Data do gasto (DD/MM/AAAA) e Vencimento (DD/MM/AAAA). Essas datas têm funções diferentes.",
+      "Clique em Salvar. Se aparecer Possível duplicidade com números de lançamentos semelhantes, confira se a conta já existe antes de confirmar outro cadastro.",
+      "Localize a nova conta na consulta adequada. Quando o pagamento realmente acontecer, selecione a conta e use Quitar."
+    ],
+    "example": "A energia de outubro custa 285,90 e vence em 10/11/2026. Cadastre o gasto com sua data correspondente e vencimento 10/11/2026. A conta continua pendente até o pagamento registrado.",
+    "notes": [
+      "Compras registradas em Entrada / compra já criam obrigação financeira. Não repita a mesma compra como despesa.",
+      "Para o resultado, a categoria DAS MEI tem tratamento específico e Compra de estoque fica fora das despesas operacionais. Digite essas categorias exatamente quando o fato corresponder.",
+      "Cancelar fecha o formulário sem criar a despesa. Uma mensagem de validação pede correção, não um novo cadastro."
+    ],
+    "image": "expense_form",
+    "source": [
+      "salva_ai_v2/ui/finance.py",
+      "salva_ai_v2/finance/service.py",
+      "salva_ai_v2/reporting/queries.py"
+    ]
+  },
+  {
+    "id": "despesa-editar-excluir",
+    "section": "Contas e despesas",
+    "title": "Editar ou excluir uma despesa",
+    "intro": "Editar corrige os dados de uma despesa; Excluir retira a obrigação dos cálculos ativos e preserva histórico. Nenhuma dessas ações deve simular uma devolução de dinheiro. Revise pagamentos existentes antes de diminuir ou retirar uma conta.",
+    "steps": [
+      "Localize a despesa com os filtros e clique na linha correta. Confira ID, Descrição, Valor e Situação.",
+      "Clique em Editar para mudar descrição, categoria, valor, data do gasto ou vencimento. Revise o formulário e clique em Salvar.",
+      "Informe PIN e Motivo. Se houver aviso de possível duplicidade, compare os lançamentos antes de confirmar.",
+      "Para retirar uma despesa indevida dos cálculos ativos, clique em Excluir. Leia a confirmação de preservação do histórico e ausência de devolução à gaveta.",
+      "Confirme e forneça PIN e Motivo. Para localizar depois, marque Mostrar excluídas e clique em Filtrar.",
+      "Se o problema estiver no pagamento, use Pagamentos e o procedimento de correção, em vez de excluir a despesa para tentar recuperar dinheiro."
+    ],
+    "example": "Uma despesa foi digitada como 150,00, mas a nota é de 105,00. Se ainda não há pagamento que impeça a redução, edite para 105,00 e explique Erro de digitação conforme nota.",
+    "notes": [
+      "Não é permitido reduzir o valor abaixo do que já foi pago; corrija o pagamento quando houver erro real nele.",
+      "Obrigações originadas por compras ou outros processos precisam de correção na origem, conforme a mensagem do aplicativo.",
+      "Excluir uma conta paga não coloca notas na gaveta. Confirme qualquer devolução física separadamente, pelo processo correto."
+    ],
+    "image": "finance",
+    "source": [
+      "salva_ai_v2/ui/finance.py",
+      "salva_ai_v2/finance/service.py"
+    ]
+  },
+  {
+    "id": "despesa-quitar",
+    "section": "Contas e despesas",
+    "title": "Quitar o saldo de uma conta",
+    "intro": "Quitar registra o saldo pendente completo da obrigação selecionada. Faça isso depois do pagamento real. A forma escolhida e a resposta sobre a gaveta determinam se a operação também reduz o dinheiro físico do caixa.",
+    "steps": [
+      "Selecione a conta e confira valor, situação e saldo. Clique em Quitar; o título mostra o saldo a quitar.",
+      "Preencha Pago em (DD/MM/AAAA) com a data real do pagamento. Data futura não é permitida.",
+      "Escolha Forma de pagamento: Dinheiro, Pix, Débito ou Crédito à vista.",
+      "Em Dinheiro saiu da gaveta?, escolha Sim somente se houve retirada física da gaveta. Para Pix e cartões, mantenha Não.",
+      "Clique em Salvar. Uma saída da gaveta exige caixa aberto e PIN administrativo para autorizar a retirada.",
+      "Confira a situação e, se necessário, abra Pagamentos para verificar data, modalidade, valor e origem do registro."
+    ],
+    "example": "Uma conta de 80,00 foi paga em dinheiro retirado do caixa. Escolha Dinheiro e Sim; a obrigação é quitada e o esperado na gaveta cai 80,00. Se foi paga por Pix, escolha Pix e Não.",
+    "notes": [
+      "O formulário Quitar não oferece campo para escolher uma parcela: ele usa todo o pendente apresentado.",
+      "Não faça também Retirada no Caixa para o mesmo pagamento com origem Gaveta. A quitação já registra essa saída.",
+      "Dinheiro pago de fora da gaveta pode ser registrado com Dinheiro e Não. Isso quita a conta sem reduzir a gaveta."
+    ],
+    "image": "expense_pay",
+    "source": [
+      "salva_ai_v2/ui/finance.py",
+      "salva_ai_v2/finance/payments.py"
+    ]
+  },
+  {
+    "id": "pagamento-corrigir",
+    "section": "Contas e despesas",
+    "title": "Consultar e corrigir data ou modalidade",
+    "intro": "Pagamentos mostra os registros que quitaram ou abateram uma obrigação. Corrigir data/modalidade serve para dados escritos errados, sem movimentar dinheiro. O registro tem regras adicionais quando está ligado a saída física ou outro processo.",
+    "steps": [
+      "Selecione a obrigação em Contas e despesas e clique em Pagamentos.",
+      "Confira ID, Data, Modalidade, Valor, Origem e Situação. Gaveta indica saída física; Fora da gaveta indica registro sem aquela saída.",
+      "Selecione o pagamento correto e clique em Corrigir data/modalidade.",
+      "No formulário Corrigir dados sem movimentar dinheiro, revise Pago em (DD/MM/AAAA) e Modalidade: Dinheiro, Pix, Débito ou Crédito.",
+      "Clique em Salvar e forneça PIN e Motivo. A data corrigida não pode ser futura.",
+      "Confira a linha atualizada. Se o erro envolveu dinheiro que saiu de fato, analise a anulação e a devolução física antes de tentar trocar a modalidade."
+    ],
+    "example": "Um Pix realmente pago em 18/10 foi registrado em 19/10. Corrija a data para 18/10/2026, informe o motivo e mantenha Pix. O saldo físico da gaveta não muda.",
+    "notes": [
+      "Pagamento originado na gaveta não permite trocar diretamente sua modalidade. É preciso corrigir primeiro a situação física.",
+      "Pagamentos anulados e vínculos com acerto, crédito de fornecedor ou compra revertida têm restrições. Consulte a origem indicada.",
+      "Crédito do fornecedor representa abatimento vinculado; sua correção não é feita pela edição comum de pagamento."
+    ],
+    "image": "payments",
+    "source": [
+      "salva_ai_v2/ui/finance.py",
+      "salva_ai_v2/finance/payments.py"
+    ]
+  },
+  {
+    "id": "pagamento-anular",
+    "section": "Contas e despesas",
+    "title": "Anular pagamento e declarar devolução real",
+    "intro": "Anular pagamento retira a validade do registro e pode voltar a deixar saldo pendente. O dinheiro só aumenta na gaveta pelo valor que foi realmente devolvido e informado. Anular um registro não executa transferência bancária nem devolução pelo fornecedor.",
+    "steps": [
+      "Abra Pagamentos da obrigação e confira o registro selecionado. Leia a Origem e o Valor.",
+      "Clique em Anular pagamento. No campo Dinheiro realmente devolvido à gaveta (R$), informe apenas a devolução física já ocorrida.",
+      "Use 0,00 quando nenhum dinheiro voltou. Para um pagamento que saiu da gaveta, a devolução pode ser parcial, limitada ao valor pago.",
+      "Clique em Salvar e informe PIN e Motivo, descrevendo o erro e a situação real do dinheiro.",
+      "Confira Situação Anulado e o saldo da obrigação. Se necessário, registre depois o pagamento correto pela conta.",
+      "Confira também a gaveta. O sistema registra somente a entrada física declarada; mantenha o controle dos valores ainda fora do caixa."
+    ],
+    "example": "Um pagamento de 100,00 saiu da gaveta por engano. Voltaram fisicamente apenas 60,00. Ao anular, informe 60,00: o pagamento perde validade e a gaveta recebe só 60,00, não 100,00.",
+    "notes": [
+      "Não pode informar devolução à gaveta de pagamento que não saiu dela, nem valor acima do pagamento.",
+      "Anulação exige análise: uma conta efetivamente paga ao fornecedor não deve ser anulada apenas para mudar o relatório.",
+      "Pagamentos vinculados a acerto, crédito do fornecedor ou compra revertida são tratados na origem. O aplicativo impede correções comuns nesses casos."
+    ],
+    "image": "payments",
+    "source": [
+      "salva_ai_v2/ui/finance.py",
+      "salva_ai_v2/finance/payments.py"
+    ]
+  },
+  {
+    "id": "contas-mensais",
+    "section": "Contas e despesas",
+    "title": "Criar regras de contas mensais",
+    "intro": "Contas mensais guarda regras para despesas que se repetem. A regra é um modelo: a conta do mês só nasce quando você usa Gerar mês consultado. Mesmo depois de gerada, ela continua pendente até o pagamento registrado.",
+    "steps": [
+      "Em Contas e despesas, clique em Contas mensais. No Mês (AAAA-MM), escolha o mês de trabalho e clique em Consultar.",
+      "Clique em Nova regra. Informe Descrição, Categoria, Valor previsto (R$) e Dia do vencimento (1 a 31). Salve.",
+      "Para alterar o modelo, selecione a regra e clique em Editar futuras. Ajuste os dados e, se necessário, escolha Não em Regra ativa?.",
+      "Salve a edição com PIN e Motivo. A alteração vale para ocorrências futuras ainda não geradas.",
+      "Selecione a regra, confira Mês aplicado e clique em Gerar mês consultado. Confirme a criação da previsão para aquele mês.",
+      "Abra a conta gerada em Contas e despesas, confira seu valor real e use Quitar somente quando pagar."
+    ],
+    "example": "Crie aluguel de 1.200,00 com vencimento dia 10. Consulte 2026-11 e gere a conta. Se o aluguel de novembro mudou, confira e corrija a conta gerada; editar futuras não reescreve essa ocorrência.",
+    "notes": [
+      "Gerar não paga a conta e não retira dinheiro da gaveta. Não existe pagamento automático por criar a regra.",
+      "Em meses curtos, um vencimento como dia 31 usa o último dia do mês.",
+      "Repetir a geração da mesma ocorrência não deve ser usado para criar outra conta igual; confira o lançamento existente."
+    ],
+    "image": "recurrence",
+    "source": [
+      "salva_ai_v2/ui/recurrence.py",
+      "salva_ai_v2/finance/recurrence.py"
+    ]
+  },
+  {
+    "id": "resultado-mensal",
+    "section": "Relatórios e planejamento",
+    "title": "Interpretar Resultado do mês",
+    "intro": "Resultado do mês é uma estimativa gerencial. Ele reúne venda, custo, taxas e despesas do período; não mede quanto há disponível na gaveta ou no banco. Confira o mês e os avisos antes de usar o resultado para decidir.",
+    "steps": [
+      "Abra Resultado do mês. Informe Mês (AAAA-MM), por exemplo 2026-10, e clique em Consultar. Confira Mês aplicado.",
+      "Leia Faturamento de produtos e Custo dos produtos vendidos. O custo corresponde ao que saiu em vendas e aos ajustes relevantes, não a toda compra feita no mês.",
+      "Confira Taxas de pagamentos, Despesas operacionais e DAS. Despesas são consideradas pela Data do gasto, mesmo quando ainda pendentes.",
+      "Leia Resultado dos produtos como venda menos custos, taxas dos produtos, despesas operacionais e DAS.",
+      "Confira Taxas de entrega cobradas e Custo das corridas. O Resultado gerencial total incorpora também a operação de entregas.",
+      "Leia os avisos de taxa ou DAS desconhecidos. Confirme esses valores antes de tratar a estimativa como completa."
+    ],
+    "example": "Comprar estoque por 500,00 não significa descontar 500,00 como despesa operacional do mês. O custo das unidades vendidas entra no custo dos produtos vendidos; o restante continua em estoque.",
+    "notes": [
+      "Não duplique a compra como despesa. A categoria Compra de estoque fica fora das despesas operacionais do relatório.",
+      "Se existem despesas com categoria exata DAS MEI no mês, elas fornecem o DAS considerado. Na ausência delas, é usada a provisão configurada.",
+      "Correções são consideradas no período em que ocorreram; por isso um mês pode mostrar efeitos de vendas antigas corrigidas."
+    ],
+    "image": "monthly",
+    "source": [
+      "salva_ai_v2/ui/monthly.py",
+      "salva_ai_v2/reporting/queries.py"
+    ]
+  },
+  {
+    "id": "lucro-produto",
+    "section": "Relatórios e planejamento",
+    "title": "Ler Lucro por produto",
+    "intro": "Lucro por produto ajuda a comparar mercadorias no mês. A contribuição mostra quanto sobra antes do rateio; o resultado já inclui uma parte das despesas e do DAS. Essa divisão é uma estimativa de gestão, não dinheiro separado por produto.",
+    "steps": [
+      "Abra Lucro por produto, informe Mês (AAAA-MM) e clique em Consultar. Confira Mês aplicado.",
+      "Leia Quantidade e Faturamento. Correções e devoluções podem reduzir os números do período.",
+      "Entenda CMV como custo da mercadoria vendida, incluindo efeitos de correções e perdas consideradas no mês. Ele não é preço de venda.",
+      "Compare Taxas e Contribuição. A contribuição é faturamento menos CMV e taxas atribuídas ao produto.",
+      "Leia Rateio como a parcela das despesas operacionais e do DAS distribuída pelo faturamento positivo dos produtos. Resultado é contribuição menos rateio.",
+      "Confira Margem, os totais de produtos e entregas e os avisos no topo. Use Taxas e DAS para revisar valores confirmados ou Exportar Excel para salvar o mês consultado."
+    ],
+    "example": "Um produto faturou 1.000,00, teve CMV de 600,00 e taxas de 20,00. A contribuição é 380,00. Com rateio de 100,00, o resultado fica 280,00 e a margem 28%.",
+    "notes": [
+      "Quando não há faturamento positivo para calcular a margem, aparece um traço.",
+      "Taxas desconhecidas ou DAS não confirmado deixam o resultado incompleto. Não interprete ausência de configuração como certeza de custo zero.",
+      "Comprar mercadoria para estoque e pagar uma conta têm efeitos diferentes de vender produtos; compare as datas e o significado de cada coluna."
+    ],
+    "image": "results",
+    "source": [
+      "salva_ai_v2/ui/results.py",
+      "salva_ai_v2/reporting/queries.py"
+    ]
+  },
+  {
+    "id": "taxas-das",
+    "section": "Relatórios e planejamento",
+    "title": "Configurar Taxas e DAS",
+    "intro": "Informe taxas confirmadas pelo meio de recebimento e a provisão mensal do DAS. Esses dados ajudam a estimativa gerencial. Uma taxa de 2,50 significa dois e meio por cento, e não 250 reais. Campos desconhecidos podem permanecer vazios.",
+    "steps": [
+      "Em Lucro por produto, clique em Taxas e DAS. Abre Taxas confirmadas e provisão de DAS.",
+      "Preencha Taxa Pix (%), Taxa débito (%) e Taxa crédito à vista (%) conforme seus contratos ou comprovantes.",
+      "Use números entre 0 e 100, com até duas casas decimais, por exemplo 0,00 ou 2,50. Não digite o símbolo % no valor.",
+      "Em DAS mensal (R$); vazio se desconhecido, informe um valor em reais, como 80,00, ou deixe vazio enquanto não souber.",
+      "Clique em Salvar. Informe o Motivo e o PIN administrativo solicitado para a configuração financeira.",
+      "Volte aos relatórios e confira os avisos. Compare as taxas com seus recebimentos e atualize a configuração quando o contrato mudar."
+    ],
+    "example": "Se o cartão cobra 2,50%, digite 2,50 em Taxa crédito à vista (%). Em uma base de 100,00, essa taxa corresponde a 2,50. No DAS, digite o valor mensal em reais.",
+    "notes": [
+      "Dinheiro tem taxa configurada como zero; o formulário oferece campos apenas para Pix, débito e crédito à vista.",
+      "Vazio significa desconhecido; 0,00 significa taxa confirmada de zero. A diferença importa para os avisos.",
+      "Alterar a configuração não reescreve a taxa guardada em recebimentos anteriores.",
+      "O DAS informado aqui é provisão para resultado; não gera conta nem pagamento. Despesas DAS MEI do mês substituem a provisão no relatório."
+    ],
+    "image": "rates",
+    "source": [
+      "salva_ai_v2/ui/results.py",
+      "salva_ai_v2/finance/settings.py",
+      "salva_ai_v2/reporting/queries.py"
+    ]
+  },
+  {
+    "id": "excel-exportar",
+    "section": "Relatórios e planejamento",
+    "title": "Exportar o relatório em Excel",
+    "intro": "A exportação está disponível pelo botão Exportar Excel em Lucro por produto. Ela salva uma planilha do mês aplicado, com várias abas para conferência. O arquivo exportado é uma fotografia da consulta; novas alterações no aplicativo não atualizam o arquivo salvo.",
+    "steps": [
+      "Abra Lucro por produto. Escolha Mês (AAAA-MM), clique em Consultar e confira Mês aplicado.",
+      "Leia os avisos de taxas ou DAS. Se os dados ainda estão incompletos, considere essa limitação ao compartilhar o relatório.",
+      "Clique em Exportar Excel. Escolha uma pasta que você consiga localizar depois.",
+      "Informe o nome do arquivo e mantenha a extensão .xlsx. Confira o mês no nome proposto antes de salvar.",
+      "Confirme o salvamento e aguarde Relatório Excel salvo. Se cancelar a escolha do arquivo, nenhuma exportação é feita.",
+      "Abra a planilha e confira as abas Resumo, Lucro por produto, Despesas e Auditoria. Compare o mês e os totais com a tela."
+    ],
+    "example": "Para enviar a análise de outubro ao responsável, consulte 2026-10 e exporte como Bar_Simples_2026-10.xlsx. Se uma despesa for corrigida depois, exporte novamente para obter os valores atualizados.",
+    "notes": [
+      "As despesas exportadas usam a data do gasto no mês e incluem indicação de exclusão. Confira essa coluna ao somar por conta própria.",
+      "Editar a planilha não altera os dados do Bar Simples. As correções devem ser feitas no aplicativo.",
+      "O botão não fica em todas as telas. Caixa oferece relatório HTML; Resultado do mês e Previsão de compras não apresentam Exportar Excel."
+    ],
+    "image": "results",
+    "source": [
+      "salva_ai_v2/ui/results.py",
+      "salva_ai_v2/reporting/queries.py",
+      "salva_ai_v2/reporting/xlsx.py"
+    ]
+  },
+  {
+    "id": "reposicao",
+    "section": "Relatórios e planejamento",
+    "title": "Usar a Previsão de compras",
+    "intro": "Previsão de compras sugere reposição a partir do disponível e do estoque mínimo cadastrado. Ela não registra compra nem pagamento. Use como lista de apoio e confirme demanda, preço, embalagem e prazo com o fornecedor antes de comprar.",
+    "steps": [
+      "Confira em Produtos e estoque se Estoque mínimo e Unidades por caixa/fardo representam sua operação atual.",
+      "Abra Previsão de compras. A lista mostra produtos ativos cujo disponível está abaixo do mínimo.",
+      "Compare Disponível e Faltam unidades. A falta é a diferença necessária para alcançar o mínimo.",
+      "Leia Caixas/fardos como a quantidade de embalagens inteiras sugerida. O arredondamento pode trazer mais unidades que a falta exata.",
+      "Confira Custo estimado. Ele usa o custo disponível no cadastro de estoque ou a informação de compra anterior; Custo não informado exige cotação.",
+      "Depois de negociar e receber a mercadoria, faça Entrada / compra com quantidade e custo reais. O relatório sozinho não muda o estoque."
+    ],
+    "example": "Com disponível 7, mínimo 24 e caixa de 12, faltam 17 unidades. A sugestão é comprar duas caixas, ou 24 unidades. Confirme se esse volume faz sentido para o consumo e o orçamento.",
+    "notes": [
+      "Vendas e reservas alteram o disponível e podem mudar a sugestão. Estoque físico alto não elimina a falta se parte dele está reservada.",
+      "O custo estimado é da quantidade de embalagens sugerida, não garantia de preço do fornecedor.",
+      "Esta tela não oferece confirmação de pedido, pagamento ou exportação Excel. A compra precisa ser registrada no processo de entrada."
+    ],
+    "image": "replenishment",
+    "source": [
+      "salva_ai_v2/ui/results.py",
+      "salva_ai_v2/reporting/queries.py"
+    ]
+  },
+  {
+    "id": "backup-criar",
+    "section": "Backups e recuperação",
+    "title": "Criar, verificar e copiar backups",
+    "intro": "Backups protegem os dados salvos no computador. Uma cópia adicional em outro local reduz a dependência de uma única pasta. A lista mostra arquivos encontrados, mas a integridade de cada um precisa ser conferida pela ação de verificação.",
+    "steps": [
+      "Abra Histórico de vendas, Auditoria e manutenção e Backups. Leia o aviso sobre substituição de dados e PIN de cópias antigas.",
+      "Clique em Criar backup. Aguarde a mensagem Backup local verificado e confira se aparece aviso de cópia externa indisponível.",
+      "Na lista Arquivo e Integridade, selecione uma cópia e clique em Verificar selecionado. Confira Integridade OK.",
+      "Para definir outra pasta, clique em Pasta adicional, escolha o destino e autorize com PIN. A configuração não comprova que uma cópia já foi gravada ali.",
+      "Crie uma nova cópia para conferir o resultado do destino adicional. Mantenha o disco ou pasta acessível e com espaço.",
+      "Guarde cópias importantes fora do computador e anote a data e o contexto. Proteja os arquivos, pois contêm informações do estabelecimento."
+    ],
+    "example": "Antes de corrigir dados importantes, crie um backup manual. Se configurou um pendrive como pasta adicional, mantenha-o conectado durante a próxima cópia e confira se houve aviso de falha.",
+    "notes": [
+      "Não verificada nesta consulta significa que você ainda não executou a verificação nessa lista; não é confirmação de arquivo danificado.",
+      "Fechar caixa também gera backup verificado. Criar backup manual permite proteger dados em outros momentos.",
+      "Verificar integridade não escolhe se aquele é o período certo para restaurar. Confira data e conteúdo esperado."
+    ],
+    "image": "backup",
+    "source": [
+      "salva_ai_v2/ui/audit.py",
+      "salva_ai_v2/maintenance/backup.py"
+    ]
+  },
+  {
+    "id": "backup-restaurar",
+    "section": "Backups e recuperação",
+    "title": "Restaurar um arquivo com cuidado",
+    "intro": "Restaurar arquivo substitui o conjunto atual de dados pelo estado do backup escolhido. Vendas e alterações posteriores àquela cópia não são somadas automaticamente. Faça uma cópia do estado atual e reserve tempo para conferir o resultado antes de voltar a atender.",
+    "steps": [
+      "Em Backups, use Criar backup e guarde a cópia atual. Confira a origem e a data do arquivo que pretende restaurar.",
+      "Clique em Restaurar arquivo e escolha um arquivo .sqlite3 de backup. Não selecione o banco ativo como origem.",
+      "Autorize com PIN. Leia a confirmação com o nome do backup e a versão de estrutura. Só confirme Substituir os dados atuais? se a escolha estiver correta.",
+      "Aguarde a operação. O processo preserva uma cópia anterior do banco; não desligue o computador durante a substituição.",
+      "Nesta versão, a mensagem final ou o fechamento da janela pode falhar após a substituição. Se isso ocorrer, encerre e abra novamente o aplicativo antes de retomar o atendimento.",
+      "Confira os dados que esperava recuperar: produtos, vendas, contas e caixa. Em ações protegidas, use o PIN que existia no backup, se ele for diferente do atual."
+    ],
+    "example": "Restaurar uma cópia de segunda-feira faz o aplicativo voltar àquele conjunto de dados. Antes de confirmar, preserve o estado de hoje e considere as operações feitas depois de segunda-feira.",
+    "notes": [
+      "Não conclua que nada foi restaurado apenas porque faltou a mensagem final. Reabra e confira o conteúdo antes de tentar novamente.",
+      "Se houver erro de recuperação, preserve os arquivos e a cópia anterior; não faça exclusões manuais para forçar a abertura."
+    ],
+    "image": "backup",
+    "source": [
+      "salva_ai_v2/ui/audit.py",
+      "salva_ai_v2/maintenance/restore.py"
+    ]
+  },
+  {
+    "id": "pin-administrativo",
+    "section": "Backups e recuperação",
+    "title": "Criar e recuperar o PIN administrativo",
+    "intro": "O Bar Simples abre diretamente, sem pedir usuário, senha ou email. O PIN continua protegendo ações administrativas. Em uma instalação nova, sua criação aparece na primeira ação protegida. Um PIN já existente é preservado; observe a quantidade de dígitos pedida na tela.",
+    "steps": [
+      "Na primeira ação protegida sem PIN configurado, crie um PIN de três dígitos e digite novamente para confirmar. Se os números diferirem, refaça a confirmação.",
+      "Guarde a chave de recuperação mostrada fora do computador. Ela não será exibida novamente. Não coloque a chave em local acessível a qualquer operador.",
+      "Quando aparecer Autorização administrativa, informe o PIN atual com a quantidade de dígitos indicada. Se a ação pedir Motivo, descreva o fato real da correção.",
+      "Se esquecer o PIN, abra Histórico de vendas, Auditoria e manutenção, Backups e clique em Recuperar PIN.",
+      "Informe Chave de recuperação, escolha Novo PIN de três dígitos e confirme novamente. Uma chave correta permite trocar o PIN.",
+      "Guarde a Nova chave de recuperação exibida. A chave anterior deixa de funcionar. Use o novo PIN nas próximas ações protegidas."
+    ],
+    "example": "Ao tentar Ajustar estoque em uma instalação nova, crie e confirme seu PIN. Copie a chave para um local seguro. Meses depois, essa chave permite definir outro PIN sem usar email.",
+    "notes": [
+      "Recuperar PIN altera o PIN administrativo; não é recuperação por email e não restaura vendas ou contas.",
+      "Um backup antigo pode trazer um PIN anterior. Após restaurar, a autorização usa o PIN existente naquela cópia.",
+      "Cancelar uma solicitação de autorização interrompe a ação protegida; não substitui o PIN nem concede acesso."
+    ],
+    "image": "backup",
+    "source": [
+      "salva_ai_v2/ui/dialogs.py",
+      "salva_ai_v2/security/service.py",
+      "salva_ai_v2/desktop.py"
+    ]
+  },
+  {
+    "id": "uso-rotina",
+    "section": "Rotina e consulta rápida",
+    "title": "Conferência de fim de turno",
+    "intro": "Fechar o caixa é conferir dinheiro e pendências. Um pedido marcado como entregue, uma conta cadastrada ou um pagamento combinado não comprovam recebimento.",
+    "steps": [
+      "Confira balcão e comandas: todas as compras pagas devem ter sido recebidas no programa. Resolva ou cancele corretamente as comandas abertas.",
+      "Confira Delivery: preparação, na rua, entregues sem pagamento e cancelados com reembolso pendente exigem atenção. Verifique também corridas em Acertar entregas.",
+      "Converse com o entregador e registre o acerto real. Receba o fundo de troco que precisa voltar. Pix/cartão não são dinheiro físico entregue por ele.",
+      "Confira gastos e saídas da gaveta. Uma retirada de dinheiro não é, sozinha, despesa; uma despesa paga pela gaveta não pede outra retirada manual igual.",
+      "Conte o dinheiro físico. Em Caixa, use Fechar caixa. Se houver diferença, investigue e registre PIN/motivo quando solicitado.",
+      "Confira relatório e backup. Se o fechamento ficar pendente, use Retomar fechamento antes de abrir outro caixa ou voltar a atender."
+    ],
+    "example": "",
+    "notes": [
+      "Guarde uma cópia de backup fora do notebook. Uma segunda pasta no mesmo disco não protege contra perda do equipamento.",
+      "Fechamentos e resultados devem ser comparados com dinheiro, comprovantes e a realidade do bar."
+    ],
+    "image": "cash_close",
+    "source": []
+  },
+  {
+    "id": "uso-duvidas",
+    "section": "Rotina e consulta rápida",
+    "title": "Dúvidas frequentes durante o atendimento",
+    "intro": "Leia a mensagem da tela antes de corrigir. Resolva a causa sem inventar um lançamento para fazer o número fechar.",
+    "steps": [
+      "Sem estoque disponível: confira Físico, Reservado e Disponível. Uma comanda ou delivery pode estar reservando unidades. Não faça ajuste positivo só para passar uma venda.",
+      "Pagamento antecipado impede saída: em Delivery, use Receber e confirme o valor realmente recebido. Salvar o plano de pagamento não é receber.",
+      "Troco impede saída: registre e entregue o fundo em Acertar entregas antes de usar Saiu para entrega. Confira Troco para quanto e o troco previsto.",
+      "Produto ou conta não aparece: revise filtros aplicados, datas, situação e texto. Use Limpar e Filtrar. No delivery, pedidos concluídos podem estar fora de Pendentes.",
+      "Diferença na gaveta: compare dinheiro, retiradas, reforços, pagamentos de despesa, dinheiro com entregador e fundos enviados. Pix e cartão não entram na contagem física.",
+      "Programa já aberto ou atalho falhou: procure a janela existente. Se moveu a pasta de programa, execute CRIAR_ATALHO de novo. O manual de instalação detalha o diagnóstico."
+    ],
+    "example": "",
+    "notes": [
+      "Se ocorrer erro após confirmar uma operação, consulte histórico e valores antes de repetir. Isso evita cadastrar duas vezes um fato que já foi gravado.",
+      "Em restauração, a mensagem final pode falhar nesta edição. Reabra e confira os dados antes de tentar restaurar outra vez."
+    ],
+    "image": "delivery",
+    "source": []
+  },
+  {
+    "id": "uso-glossario",
+    "section": "Rotina e consulta rápida",
+    "title": "Palavras do programa, em linguagem simples",
+    "intro": "Use este resumo quando um termo aparecer na tela. Os exemplos são didáticos; não são indicação de preço, taxa ou regra fiscal para o seu bar.",
+    "steps": [
+      "Físico é a quantidade no estoque. Reservado é a parte comprometida com atendimentos ainda não concluídos. Disponível é o físico menos as reservas.",
+      "Custo médio é o valor médio das unidades em estoque. CMV é o custo dos produtos efetivamente vendidos; ele não é o preço de venda.",
+      "Receita é o valor da venda ou da taxa de entrega. Margem de contribuição é o que sobra da venda depois do custo do produto e das taxas de pagamento.",
+      "Despesa é um gasto reconhecido na gestão. Conta pendente é uma obrigação ainda não quitada. Vencido é o pedaço pendente cujo prazo passou; não some vencido e pendente de novo.",
+      "Reembolso é dinheiro devolvido ao cliente. Devolução de mercadoria é produto que voltou e foi conferido. Estorno/correção é o registro que desfaz ou corrige um fato no histórico.",
+      "Fundo de troco é dinheiro temporariamente entregue ao entregador. Custódia é dinheiro do bar que ainda está com ele. Compensação é usar parte do recebimento para quitar uma corrida, quando combinado.",
+      "Backup é uma cópia para recuperar dados. Restaurar substitui o conjunto atual pelo conteúdo de uma cópia. Resultado gerencial é uma estimativa, não o saldo da gaveta ou do banco."
+    ],
+    "example": "",
+    "notes": [
+      "Crédito de fornecedor é um valor a receber ou abater, não dinheiro que já entrou.",
+      "O aplicativo não substitui conferência bancária, orientação contábil ou emissão fiscal."
+    ],
+    "image": null,
+    "source": []
+  }
+]
