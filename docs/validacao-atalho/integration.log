@@ -1,0 +1,19 @@
+test_already_open_error_is_shown_without_resetting_data (tests_v2.test_desktop.DesktopTests.test_already_open_error_is_shown_without_resetting_data) ... ok
+test_check_only_never_opens_program_or_creates_account (tests_v2.test_desktop.DesktopTests.test_check_only_never_opens_program_or_creates_account) ... ok
+test_launch_uses_argument_list_correct_directory_and_no_console (tests_v2.test_desktop.DesktopTests.test_launch_uses_argument_list_correct_directory_and_no_console) ... ok
+test_launcher_selects_pythonw_beside_actual_interpreter (tests_v2.test_desktop.DesktopTests.test_launcher_selects_pythonw_beside_actual_interpreter) ... ok
+test_missing_launcher_returns_visible_actionable_error (tests_v2.test_desktop.DesktopTests.test_missing_launcher_returns_visible_actionable_error) ... ok
+test_silent_entry_runs_and_closes_direct_application (tests_v2.test_desktop.DesktopTests.test_silent_entry_runs_and_closes_direct_application) ... ok
+test_startup_error_is_visible_logged_without_secrets_and_resources_close (tests_v2.test_desktop.DesktopTests.test_startup_error_is_visible_logged_without_secrets_and_resources_close) ... ok
+test_clean_package_and_extracted_entrypoint (tests_v2.test_distribution.DistributionTest.test_clean_package_and_extracted_entrypoint) ... ok
+test_single_instance_guard (tests_v2.test_distribution.DistributionTest.test_single_instance_guard) ... ok
+test_default_data_directory_is_unchanged (tests_v2.test_direct_access.DirectAccessTests.test_default_data_directory_is_unchanged) ... ok
+test_first_start_opens_all_operations_without_credentials_or_email (tests_v2.test_direct_access.DirectAccessTests.test_first_start_opens_all_operations_without_credentials_or_email) ... ok
+test_forgotten_and_blocked_account_and_pin_are_preserved (tests_v2.test_direct_access.DirectAccessTests.test_forgotten_and_blocked_account_and_pin_are_preserved) ... ok
+test_new_install_creates_pin_only_when_admin_operation_is_requested (tests_v2.test_direct_access.DirectAccessTests.test_new_install_creates_pin_only_when_admin_operation_is_requested) ... ok
+test_restore_rebuilds_operations_without_login_and_invalidates_grants (tests_v2.test_direct_access.DirectAccessTests.test_restore_rebuilds_operations_without_login_and_invalidates_grants) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 7.658s
+
+OK

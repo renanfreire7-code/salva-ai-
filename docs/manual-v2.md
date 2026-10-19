@@ -3,7 +3,7 @@
 ## Estado desta evolução
 
 O Bar Simples sucede a reconstrução Salva AI 0.2.0-dev, mantendo a mesma pasta
-de dados. Esta é a versão de desenvolvimento **0.4.1-dev**, para ensaio com dados fictícios.
+de dados. Esta é a versão de desenvolvimento **0.4.2-dev**, para ensaio com dados fictícios.
 Os resultados de verificação estão no relatório da versão sem login no repositório do projeto.
 Windows nativo nas escalas 100% e 125% ainda precisa de ensaio antes de uso real.
 
@@ -33,11 +33,25 @@ o PIN passa a ser o que estava no backup restaurado.
 
 1. Feche todas as versões anteriores do programa.
 2. Faça uma cópia da pasta de dados `SalvaAiHeadshopV2`, na sua pasta de usuário.
-3. Extraia **Bar_Simples_0.4.1-dev_sem_login.zip** em uma nova pasta de programa.
-4. Abra essa pasta e dê dois cliques em **INICIAR_V2.bat**.
-5. O atendimento será aberto diretamente, com os dados existentes da reconstrução.
+3. Extraia **Bar_Simples_0.4.2-dev_sem_login.zip** em uma nova pasta de programa.
+4. Guarde a pasta extraída em um local permanente, por exemplo `Documentos\Bar Simples`.
+5. Dê dois cliques em **CRIAR_ATALHO.vbs**. Aguarde a mensagem de que foi criado.
+6. Na Área de Trabalho, abra **Bar Simples**, com a logo do balcão/copo. O programa abre direto, sem login e sem janela preta.
 
-Use o BAT da pasta nova: atalhos da versão anterior ainda podem abrir o login antigo.
+O criador verifica Python3.12+ com Tcl/Tk e pythonw.exe. Usa a Área de Trabalho
+configurada pelo Windows, inclusive quando redirecionada ao OneDrive. O atalho
+aponta para esta pasta e é atualizado ao executar CRIAR_ATALHO novamente.
+Não mova/apague a pasta depois; se mudar de lugar, execute CRIAR_ATALHO novamente.
+O processo não instala dependências, não muda o registro e não pede administrador.
+
+Para abrir sem atalho, use **ABRIR_BAR_SIMPLES.vbs**. O **INICIAR_V2.bat** continua
+incluído para diagnóstico, com a janela de mensagens. Se o programa já estiver
+aberto, aparece um aviso: não é aberta outra instância da mesma pasta de dados.
+Erros da abertura silenciosa aparecem em uma caixa de mensagem; o registro técnico
+sem senhas/dados da exceção fica em `~/SalvaAiHeadshopV2/logs/inicializacao.log`.
+Se o Windows bloquear scripts VBS, consulte o responsável pelo computador; o BAT
+continua disponível para diagnóstico, sem alterar a política de segurança.
+Atalhos da versão anterior ainda podem abrir o código antigo; use o recém-criado.
 O ZIP não contém banco vazio para substituir seus dados. A pasta de dados permanece
 `~/SalvaAiHeadshopV2`; não volte ao pacote0.2 sem login e sua pasta isolada.
 O banco de referência0.3.6-beta original não é importado automaticamente.
@@ -70,7 +84,7 @@ Use um PIN fictício no ensaio. Não altere HOME para testar.
 ## Atualizar das reconstruções 0.1.0-dev ou 0.2.0-dev
 
 Feche a versão anterior, faça uma cópia da pasta `~/SalvaAiHeadshopV2` e
-extraia o ZIP Bar Simples 0.4.1-dev em outra pasta de programa. Inicie pelo novo BAT.
+extraia o ZIP Bar Simples 0.4.2-dev em outra pasta de programa. Inicie pelo novo BAT.
 A pasta de dados continua a mesma: não copie nem substitua o banco pelo ZIP.
 A migração é aditiva e cria um backup antes de alterar a estrutura; preserva
 IDs, PIN, estoque e movimentos. A versão 0.3.6-beta de referência não é importada.

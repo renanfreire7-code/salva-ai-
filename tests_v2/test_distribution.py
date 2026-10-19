@@ -14,12 +14,17 @@ class DistributionTest(unittest.TestCase):
             archive=build_v2(root/'dist')
             with zipfile.ZipFile(archive) as z:
                 names=z.namelist()
-                self.assertEqual(archive.name,'Bar_Simples_0.4.1-dev_sem_login.zip')
+                self.assertEqual(archive.name,'Bar_Simples_0.4.2-dev_sem_login.zip')
                 import json,hashlib
                 manifest=json.loads(z.read('MANIFEST-SHA256.json'))
                 self.assertEqual(set(manifest),set(names)-{'MANIFEST-SHA256.json'})
                 for name,digest in manifest.items():self.assertEqual(hashlib.sha256(z.read(name)).hexdigest(),digest,name)
                 self.assertIn('INICIAR_V2.bat',names)
+                for required in ('CRIAR_ATALHO.vbs','ABRIR_BAR_SIMPLES.vbs','Bar_Simples.pyw','scripts/windows_launch.py','salva_ai_v2/assets/bar_simples.ico'):
+                    self.assertIn(required,names)
+                import struct
+                reserved,kind,count=struct.unpack('<HHH',z.read('salva_ai_v2/assets/bar_simples.ico')[:6])
+                self.assertEqual((reserved,kind),(0,1));self.assertGreaterEqual(count,5)
                 for removed in ('CONFIGURAR_EMAIL.bat','CONFIGURAR_EMAIL.md','scripts/configure_email.py','auth_service.example.json'):
                     self.assertNotIn(removed,names)
                 self.assertFalse(any(name.endswith('auth_service.json') for name in names))
@@ -40,6 +45,18 @@ class DistributionTest(unittest.TestCase):
             self.assertIn('--data-dir',result.stdout)
             code="from pathlib import Path; from scripts.demo_v2 import main; from salva_ai_v2.bootstrap import build_application; app=build_application(Path('dados fictícios')); assert len(app.views)==11; assert not hasattr(app,'access_view'); assert not hasattr(app,'accounts'); assert not hasattr(app,'emails'); assert not app.security.configured; assert 'SALVA AI HEADSHOP' in app.window.title(); app.window.update(); app.close()"
             result=subprocess.run([sys.executable,'-c',code],cwd=root/'extraído com espaços',capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            silent="""import runpy
+from unittest.mock import patch
+from pathlib import Path
+from salva_ai_v2.bootstrap import build_application
+app=build_application(Path('dados do atalho'))
+assert len(app.views)==11 and not hasattr(app,'access_view')
+app.window.after(50,app.close)
+with patch('salva_ai_v2.bootstrap.build_application',return_value=app):
+    runpy.run_path('Bar_Simples.pyw',run_name='__main__')
+"""
+            result=subprocess.run([sys.executable,'-c',silent],cwd=root/'extraído com espaços',capture_output=True,text=True,timeout=20)
             self.assertEqual(result.returncode,0,result.stderr)
 
     def test_single_instance_guard(self):

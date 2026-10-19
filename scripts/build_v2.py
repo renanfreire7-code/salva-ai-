@@ -14,8 +14,10 @@ def build_v2(output_dir):
     target=output_dir/f"Bar_Simples_{__version__}_sem_login.zip"
     files={}
     for path in sorted((ROOT/"salva_ai_v2").rglob("*")):
-        if path.is_file() and "__pycache__" not in path.parts and path.suffix in (".py",".sql",".txt",".png"):
+        if path.is_file() and "__pycache__" not in path.parts and path.suffix in (".py",".sql",".txt",".png",".ico"):
             files[path.relative_to(ROOT).as_posix()]=path.read_bytes()
+    for name in ('Bar_Simples.pyw','ABRIR_BAR_SIMPLES.vbs','CRIAR_ATALHO.vbs','scripts/windows_launch.py'):
+        files[name]=(ROOT/name).read_bytes()
     files["scripts/demo_v2.py"]=(ROOT/"scripts/demo_v2.py").read_bytes()
     files["INICIAR_V2.bat"]=(ROOT/"INICIAR_V2.bat").read_text(encoding="utf-8").replace("\r\n","\n").replace("\n","\r\n").encode("utf-8")
     files["LEIA-ME.md"]=(ROOT/"docs/manual-v2.md").read_bytes()
