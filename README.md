@@ -6,6 +6,7 @@ A nova aplicação está em `salva_ai_v2/`, com **banco vazio e separado do lega
 Inclui atendimento, comandas, promoções por quantidade, estoque com custo médio,
 caixa, financeiro auditável, delivery/acertos, resultados e backups.
 
+- **Kit para instalar no cliente:** [programa + atalho + manuais PDF](dist/Kit_Instalacao_Bar_Simples_0.4.3.zip) e [COMECE AQUI](docs/instalacao-cliente.txt).
 - **Iniciar:** `python3 -m salva_ai_v2`; no Windows, execute `CRIAR_ATALHO.vbs` uma vez e use o ícone Bar Simples da Área de Trabalho. Abertura silenciosa: `ABRIR_BAR_SIMPLES.vbs`; diagnóstico: `INICIAR_V2.bat`.
 - **Apresentação do protótipo:** [roteiro curto com dados fictícios](docs/roteiro-apresentacao.md).
 - **Ensaio isolado:** `python3 -m scripts.demo_v2`.

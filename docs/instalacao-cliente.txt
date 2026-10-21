@@ -1,0 +1,77 @@
+BAR SIMPLES — COMECE AQUI
+Kit de instalação da versão 0.4.3-dev — 21/10/2026
+
+1. PREPARAR O WINDOWS
+Se o Bar Simples já funciona neste notebook, o Python provavelmente já está
+instalado. Caso contrário, instale Python 3.12 ou superior com Tcl/Tk:
+https://www.python.org/downloads/windows/
+Escolha uma versão estável e o instalador compatível com o notebook.
+Em um Windows comum de 64 bits, escolha Windows installer (64-bit).
+Se aparecer Add Python to PATH, marque. Mantenha Tcl/Tk e IDLE selecionados.
+Não é necessário instalar pacotes com pip, cadastrar login ou configurar e-mail.
+Este kit não inclui o instalador do Python e não é um executável independente.
+
+2. EXTRAIR O KIT COMPLETO
+Feche o Bar Simples, se estiver aberto.
+No ZIP baixado, clique com o botão direito e escolha Extrair Tudo.
+Escolha uma pasta definitiva, por exemplo Documentos\Bar Simples 0.4.3.
+Entre na pasta extraída até encontrar CRIAR_ATALHO.vbs.
+Não execute os arquivos de dentro do ZIP. Mantenha todas as pastas juntas.
+
+3. CRIAR O ATALHO COM A LOGO
+Dê dois cliques em CRIAR_ATALHO.vbs.
+Aguarde a mensagem: Atalho Bar Simples criado na Area de Trabalho.
+O ícone tem o balcão e o copo da identidade Bar Simples.
+Se já existir um atalho chamado Bar Simples, ele será atualizado.
+Não precisa excluir o atalho antes. Outros atalhos podem continuar apontando
+para versões antigas; use o recém-criado.
+
+4. ABRIR O PROGRAMA
+Na Área de Trabalho, dê dois cliques no ícone Bar Simples.
+A abertura foi preparada para ser direta, sem login e sem console preto.
+Dentro do programa, o nome e a logo permanecem SALVA AI HEADSHOP.
+Se o atalho não aparecer, ABRIR_BAR_SIMPLES.vbs, nesta pasta, também abre.
+Não mova nem apague esta pasta depois de criar o atalho. Se movê-la, execute
+CRIAR_ATALHO.vbs novamente no novo lugar.
+
+5. COMEÇAR NO NOTEBOOK DO DONO, SEM OS SEUS TESTES
+Transfira somente este kit, não a pasta SalvaAiHeadshopV2 do computador de testes.
+Em um usuário Windows onde o programa nunca foi utilizado, ele cria dados novos.
+Confira Produtos e estoque e Contas e despesas antes de cadastrar valores reais.
+Se aparecerem testes antigos, pare antes de atender: extrair outro ZIP não limpa
+esses dados. Preserve os arquivos e peça orientação para separar os testes.
+O kit não contém banco de dados, produtos, despesas ou vendas de demonstração.
+
+6. PRESERVAR DADOS E PIN
+Os dados ficam separados do programa, na pasta SalvaAiHeadshopV2 do usuário.
+Não apague essa pasta. Atualização no mesmo usuário continua usando os dados.
+Se este notebook já tem dados do bar, crie um backup antes de atualizar e guarde
+uma cópia fora do notebook. Não substitua o banco por nenhum arquivo deste kit.
+O PIN não é necessário para abrir. Na primeira ação administrativa, uma instalação
+nova pede criar e confirmar um PIN de três dígitos. Guarde a chave administrativa
+que aparecer; ela recupera o PIN. Não envie PIN ou chave por mensagem.
+Um PIN já existente é preservado, inclusive um PIN antigo de seis dígitos.
+
+7. USO E BACKUP
+Leia os PDFs na pasta MANUAIS. Cadastre os produtos reais, registre as entradas
+de estoque e abra o caixa com o troco inicial realmente contado antes de vender.
+Histórico de vendas > Auditoria e manutenção > Backups permite criar e verificar
+uma cópia. Ao fechar o caixa, confira o resultado do backup e da cópia externa.
+
+SE NÃO ABRIR
+- Confira se extraiu o ZIP inteiro e se Python com Tcl/Tk está instalado.
+- Confira se não há outra janela do Bar Simples aberta.
+- INICIAR_V2.bat serve para diagnóstico e pode mostrar uma janela preta.
+- Se o Windows bloquear VBS, não desative a segurança: consulte o responsável
+  pelo computador. Copie a mensagem do erro, sem incluir dados ou credenciais.
+
+SOBRE O PROTÓTIPO
+A versão foi testada em Linux/Xvfb. A criação real do atalho, a ausência de console,
+a escala e os botões precisam ser conferidos neste notebook Windows.
+Inicie com acompanhamento e controle paralelo; os testes técnicos não substituem
+a conferência de caixa, estoque e entregas na rotina do bar.
+
+CONTEÚDO
+Arquivos do programa 0.4.3-dev, ícone, criador de atalho, manuais PDF e este guia.
+O MANIFEST-SHA256.json original verifica os arquivos do programa.
+O MANIFEST-KIT-SHA256.json verifica os arquivos deste kit, exceto ele próprio.
