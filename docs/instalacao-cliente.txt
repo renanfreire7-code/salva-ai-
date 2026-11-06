@@ -1,5 +1,16 @@
 BAR SIMPLES — COMECE AQUI
-Kit de instalação da versão 0.4.3-dev — 21/10/2026
+Kit de instalação da versão 0.4.4-dev — 05/11/2026
+
+SE JÁ ESTÁ INSTALADO NO NOTEBOOK DO BAR
+Abra a versão atual e crie um backup em Histórico de vendas > Auditoria e
+manutenção > Backups > Criar backup. Verifique-o e guarde também fora do notebook.
+Feche o programa. Extraia esta versão em uma nova pasta definitiva, como
+Documentos\Bar Simples 0.4.4, e execute CRIAR_ATALHO.vbs dessa nova pasta.
+Use o mesmo usuário do Windows de antes. Os dados continuam na mesma pasta
+SalvaAiHeadshopV2. NÃO apague, substitua ou transfira outro banco para essa pasta.
+Abra pelo atalho e confira os cadastros existentes antes de registrar o saldo.
+Mantenha a pasta da versão anterior por enquanto. Não é preciso cadastrar tudo
+novamente. Estoque inicial serve apenas para produtos ainda sem movimentos.
 
 1. PREPARAR O WINDOWS
 Se o Bar Simples já funciona neste notebook, o Python provavelmente já está
@@ -14,7 +25,7 @@ Este kit não inclui o instalador do Python e não é um executável independent
 2. EXTRAIR O KIT COMPLETO
 Feche o Bar Simples, se estiver aberto.
 No ZIP baixado, clique com o botão direito e escolha Extrair Tudo.
-Escolha uma pasta definitiva, por exemplo Documentos\Bar Simples 0.4.3.
+Escolha uma pasta definitiva, por exemplo Documentos\Bar Simples 0.4.4.
 Entre na pasta extraída até encontrar CRIAR_ATALHO.vbs.
 Não execute os arquivos de dentro do ZIP. Mantenha todas as pastas juntas.
 
@@ -52,7 +63,18 @@ nova pede criar e confirmar um PIN de três dígitos. Guarde a chave administrat
 que aparecer; ela recupera o PIN. Não envie PIN ou chave por mensagem.
 Um PIN já existente é preservado, inclusive um PIN antigo de seis dígitos.
 
-7. USO E BACKUP
+7. CADASTRAR O ESTOQUE JÁ EXISTENTE
+Para um produto já cadastrado sem movimentos: Produtos e estoque > selecione
+produto > Estoque inicial. Informe quantidade em unidades e custo por unidade.
+Exemplo: 24 unidades x R$ 4,50 = R$ 108,00. Confirme com o PIN.
+No Novo produto, os dois campos iniciais permitem fazer isso no mesmo cadastro.
+Deixe quantidade e custo iniciais em zero quando não houver mercadoria.
+A entrada inicial é de mercadoria já paga: não cria despesas nem retira dinheiro.
+Inicial registrado mostra o total cadastrado nessa abertura; Valor atual mostra
+o valor das mercadorias que restam. Produtos já movimentados não podem receber
+outra abertura; use as compras e os ajustes normais.
+
+8. USO E BACKUP
 Leia os PDFs na pasta MANUAIS. Cadastre os produtos reais, registre as entradas
 de estoque e abra o caixa com o troco inicial realmente contado antes de vender.
 Histórico de vendas > Auditoria e manutenção > Backups permite criar e verificar
@@ -72,6 +94,6 @@ Inicie com acompanhamento e controle paralelo; os testes técnicos não substitu
 a conferência de caixa, estoque e entregas na rotina do bar.
 
 CONTEÚDO
-Arquivos do programa 0.4.3-dev, ícone, criador de atalho, manuais PDF e este guia.
+Arquivos do programa 0.4.4-dev, ícone, criador de atalho, manuais PDF e este guia.
 O MANIFEST-SHA256.json original verifica os arquivos do programa.
 O MANIFEST-KIT-SHA256.json verifica os arquivos deste kit, exceto ele próprio.

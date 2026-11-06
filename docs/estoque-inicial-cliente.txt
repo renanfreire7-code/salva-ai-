@@ -1,0 +1,40 @@
+BAR SIMPLES 0.4.4 — ESTOQUE INICIAL JÁ PAGO
+
+ANTES DE ATUALIZAR
+1. No programa atual, crie e verifique um backup. Guarde uma cópia fora do notebook.
+2. Feche o programa e extraia TODO o kit novo em Documentos\Bar Simples 0.4.4.
+3. Execute CRIAR_ATALHO.vbs da pasta nova. Use o mesmo usuário do Windows.
+4. Abra pelo atalho Bar Simples e confira os cadastros que já existiam.
+NÃO apague SalvaAiHeadshopV2 e NÃO substitua o banco por outro arquivo.
+
+PARA OS PRODUTOS QUE ELE JÁ CADASTROU
+1. Abra Produtos e estoque.
+2. Selecione o produto.
+3. Clique em Estoque inicial.
+4. Informe a quantidade existente em UNIDADES.
+5. Informe o custo de CADA unidade.
+6. Salve e confirme o PIN.
+7. Confira Físico, Custo médio e Valor em estoque na linha.
+
+EXEMPLO
+Duas caixas de 12 unidades = 24 unidades.
+Cada caixa custou R$ 54,00: custo de cada unidade = R$ 4,50.
+Informe quantidade 24 e custo unitário 4,50.
+O programa registra R$ 108,00 de estoque, sem criar despesa ou saída de caixa.
+
+PARA UM PRODUTO NOVO
+Em Novo produto, preencha quantidade inicial e custo por unidade na mesma tela.
+Se não há mercadoria, deixe ambos em zero.
+
+ENTENDA OS TOTAIS
+Inicial registrado: valor das entradas iniciais. Permanece após vender.
+Valor atual: custo dos produtos que ainda existem. Muda com os movimentos.
+Se registrou R$ 144,00 e vendeu mercadorias que custaram R$ 18,00,
+o inicial continua R$ 144,00 e o valor atual passa a R$ 126,00.
+Esses valores não são todo o gasto histórico nem despesas de hoje.
+
+CUIDADOS
+A entrada inicial só funciona uma vez, antes de qualquer movimento ou reserva.
+Se já registrou a mercadoria por compra, não entre de novo com o mesmo estoque.
+Compras futuras: Entrada / compra. Perdas e correções: Ajustar estoque.
+O custo informado passa a ser usado nas vendas futuras.

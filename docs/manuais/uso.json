@@ -3,7 +3,7 @@
     "id": "uso-comecar",
     "section": "Comece por aqui",
     "title": "Como usar este manual",
-    "intro": "Este é o guia do operador do Bar Simples 0.4.3-dev. Ele explica cada função em páginas curtas: onde clicar, o que preencher, o que muda e o que conferir.",
+    "intro": "Este é o guia do operador do Bar Simples 0.4.4-dev. Ele explica cada função em páginas curtas: onde clicar, o que preencher, o que muda e o que conferir.",
     "steps": [
       "Para preparar o notebook e o atalho, use o PDF separado Manual de instalação. Aqui, partimos do programa já aberto.",
       "Leia primeiro o roteiro do primeiro turno. Depois, use o sumário e os marcadores do leitor de PDF para ir direto à função que precisa.",
@@ -26,7 +26,7 @@
     "title": "Roteiro do primeiro turno",
     "intro": "Comece pelo estoque e pelo dinheiro contado. Cadastros bem feitos evitam corrigir vendas, despesas ou entregas no fim do dia.",
     "steps": [
-      "Em Produtos e estoque, cadastre cada item com preço, unidades por caixa/fardo e mínimo. Depois registre a entrada real para existir quantidade disponível.",
+      "Em Produtos e estoque, cadastre nome, preço, embalagem e mínimo. Para mercadoria já paga que já existe no bar, informe quantidade e custo iniciais. Novas compras seguem em Entrada / compra.",
       "Configure somente as promoções desejadas e associe os atalhos F1 a F12 aos produtos mais usados.",
       "Em Lucro por produto, use Taxas e DAS para informar percentuais e valores confirmados; se não souber, deixe desconhecido em vez de inventar.",
       "Em Delivery, configure Taxas fixas: quanto o cliente paga pela entrega e quanto o entregador recebe por corrida.",
@@ -80,9 +80,10 @@
     "example": "Se há 30 latas físicas e 8 reservadas, o disponível é 22. Uma compra de duas caixas de 12 aumenta o estoque em 24 unidades, não em duas.",
     "notes": [
       "Cadastro, preço de venda e custo de compra são informações diferentes. Alterar o preço não registra mercadoria nova.",
-      "Uma reserva não significa dinheiro recebido. Confira o atendimento correspondente antes de tentar corrigir o estoque."
+      "Uma reserva não significa dinheiro recebido. Confira o atendimento correspondente antes de tentar corrigir o estoque.",
+      "Valor em estoque é quantidade física valorizada ao custo. Inicial registrado soma entradas iniciais já pagas; Valor atual muda com os movimentos. Ambos incluem produtos desativados."
     ],
-    "image": "products",
+    "image": "initial_stock_products",
     "source": [
       "salva_ai_v2/ui/products.py",
       "salva_ai_v2/inventory/service.py"
@@ -92,21 +93,48 @@
     "id": "produto-cadastro",
     "section": "Produtos e estoque",
     "title": "Cadastrar e editar um produto",
-    "intro": "Cadastre cada mercadoria com um nome claro. O cadastro prepara a venda, mas começa sem estoque. A entrada da mercadoria é feita depois, com o custo da compra. Ao editar, confira também a promoção existente.",
+    "intro": "Cadastre cada mercadoria com um nome claro e o preço de venda. Se já existe estoque pago no bar, informe também a quantidade e o custo inicial. Ao editar um cadastro, confira a promoção existente.",
     "steps": [
-      "Clique em Novo produto. Em Nome, informe algo fácil de distinguir, como Água mineral 500 ml.",
-      "Preencha Preço normal (R$) com o valor de venda por unidade, por exemplo 4,00.",
-      "Informe Unidades por caixa/fardo com um inteiro de pelo menos 1. Use a quantidade real da embalagem comprada.",
-      "Preencha Estoque mínimo com um inteiro a partir de zero. Clique em Salvar; Cancelar fecha sem cadastrar.",
-      "Para corrigir um cadastro existente, selecione a linha e clique em Editar produto. Revise nome, preço, embalagem e mínimo.",
-      "Clique em Salvar e atenda à solicitação de PIN e Motivo. Confira a mensagem e a linha atualizada."
+      "Clique em Novo produto. Em Nome, informe algo fácil de distinguir, como Cerveja Heineken Latão.",
+      "Preencha Preço normal (R$) com o valor de venda por unidade, por exemplo 8,00.",
+      "Informe Unidades por caixa/fardo como um inteiro a partir de um. Use a quantidade real da embalagem comprada.",
+      "Preencha Estoque mínimo com um inteiro a partir de zero. Esse número ajuda a planejar a reposição.",
+      "Se já existe mercadoria paga, informe Quantidade inicial em unidades e Custo por unidade do estoque inicial. Para cadastrar sem saldo, deixe ambos em zero.",
+      "Clique em Salvar. Havendo saldo inicial, confirme o PIN. Confira o aviso e a linha criada. Cancelar fecha sem cadastrar.",
+      "Para editar um cadastro existente, selecione a linha e clique em Editar produto. Revise nome, preço, embalagem e mínimo; confirme PIN e motivo ao salvar."
     ],
-    "example": "Uma água custa 4,00 por garrafa e chega em fardos de 12. Cadastre preço 4,00, embalagem 12 e mínimo 24. Para receber quatro fardos, faça depois Entrada / compra.",
+    "example": "Heineken: preço de venda R$ 8,00; 24 unidades iniciais com custo de R$ 4,50 cada. O estoque inicial vale R$ 108,00. O preço de venda e o custo de aquisição são informações diferentes.",
     "notes": [
       "Editar produto exige autorização administrativa e motivo. Não use essa edição para alterar a quantidade física.",
-      "Se o novo preço normal fizer a promoção deixar de oferecer economia, ela será desativada e o aplicativo avisará. Reavalie a condição promocional."
+      "Se o novo preço normal fizer a promoção deixar de oferecer economia, ela será desativada e o aplicativo avisará. Reavalie a condição promocional.",
+      "O saldo inicial não gera compra, despesa ou saída de dinheiro. Use o botão Estoque inicial para produtos já cadastrados e ainda sem movimentação."
     ],
-    "image": "product_form",
+    "image": "initial_stock_create",
+    "source": [
+      "salva_ai_v2/ui/products.py",
+      "salva_ai_v2/inventory/service.py"
+    ]
+  },
+  {
+    "id": "estoque-inicial",
+    "section": "Produtos e estoque",
+    "title": "Registrar o estoque que já existe no bar",
+    "intro": "Use esta entrada para mercadorias já pagas que o bar tinha ao começar o sistema. Não é uma compra de hoje. Produtos já cadastrados não precisam ser criados novamente.",
+    "steps": [
+      "Abra Produtos e estoque e selecione o produto já cadastrado. Confira o nome antes de continuar.",
+      "Clique em Estoque inicial. Informe a quantidade existente em unidades, não em caixas. Para duas caixas com 12 unidades, informe 24.",
+      "Informe Custo por unidade (R$). Se a caixa de 12 custou R$ 54,00, o custo unitário é R$ 4,50.",
+      "Clique em Salvar e autorize com o PIN. O sistema multiplica quantidade pelo custo e registra a entrada uma única vez.",
+      "Confira Físico, Custo médio e Valor em estoque. O aviso confirma o valor registrado sem lançamento financeiro.",
+      "Confira Inicial registrado e Valor atual no alto da tela. O primeiro guarda o valor das aberturas; o segundo acompanha o saldo atual. Nas reposições futuras, use Entrada / compra."
+    ],
+    "example": "24 Heineken a R$ 4,50 = R$ 108,00; 30 águas a R$ 1,20 = R$ 36,00. Inicial registrado e Valor atual começam em R$ 144,00. Após vender parte dos produtos, o valor atual cai e o inicial permanece.",
+    "notes": [
+      "A entrada exige produto ativo, sem movimentos anteriores e sem reservas. Não pode ser repetida para acrescentar reposição.",
+      "Não há compra, conta a pagar, despesa ou movimento na gaveta. O custo registrado será usado nas vendas futuras.",
+      "Se já cadastrou o produto sem estoque, use esse botão. Se a mercadoria já entrou por uma compra, não registre o mesmo saldo outra vez."
+    ],
+    "image": "initial_stock_form",
     "source": [
       "salva_ai_v2/ui/products.py",
       "salva_ai_v2/inventory/service.py"
@@ -176,8 +204,9 @@
     "example": "O aplicativo mostra 20 unidades físicas, mas a contagem encontra 18. Registre -2, com a explicação da perda. Digitar 18 acrescentaria dezoito unidades e agravaria a diferença.",
     "notes": [
       "Uma redução não pode consumir o que está reservado. Confira os atendimentos antes de mexer nas reservas.",
-      "Para aumentar um produto que está sem estoque, registre uma compra com custo. O ajuste positivo precisa de estoque existente para calcular o custo médio.",
-      "Perdas retiram quantidade e custo do estoque e afetam o resultado. Uma compra real deve ser registrada em Entrada / compra."
+      "Para um produto já movimentado que ficou sem estoque, registre uma compra com custo. O ajuste positivo usa o custo médio do saldo existente.",
+      "Perdas retiram quantidade e custo do estoque e afetam o resultado. Uma compra real deve ser registrada em Entrada / compra.",
+      "Se nunca houve movimento e ainda não há custo, use Estoque inicial com quantidade e custo unitário. Depois de movimentar o produto, use as compras e os ajustes normais."
     ],
     "image": "stock_adjust",
     "source": [
