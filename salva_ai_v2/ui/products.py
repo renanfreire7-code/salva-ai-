@@ -1,8 +1,10 @@
+import tkinter as tk
 from tkinter import ttk
 from .shared import View, table, fill, ask_fields, command,FieldSpec
 from ..common.service import integer
 from ..common.money import parse_money, money, round_half_up
 from ..inventory.models import PurchaseLine
+from ..common.errors import BusinessError
 
 
 class ProductsView(View):
@@ -13,17 +15,22 @@ class ProductsView(View):
         for label,callback in (("Novo produto",self.create),("Editar produto",self.edit),("Promoção",self.promotion),("Atalho F1–F12",self.shortcut),("Desativar",self.deactivate)):
             ttk.Button(actions,text=label,command=lambda f=callback:self.act(f)).pack(side="left",padx=(0,6))
         actions=ttk.Frame(self);actions.pack(fill='x',pady=(0,4))
-        for label,callback in (("Entrada / compra",self.purchase),("Compras / devoluções",self.purchase_history),("Ajustar estoque",self.adjust)):
+        for label,callback in (("Estoque inicial",self.initial_stock),("Entrada / compra",self.purchase),("Compras / devoluções",self.purchase_history),("Ajustar estoque",self.adjust)):
             ttk.Button(actions,text=label,command=lambda f=callback:self.act(f)).pack(side='left',padx=(0,6))
-        self.tree=table(self,["Código","Produto","Preço","Físico","Reservado","Disponível","Mínimo","Custo médio"])
+        self.stock_summary=tk.StringVar()
+        ttk.Label(self,textvariable=self.stock_summary,wraplength=960).pack(anchor='w',pady=(5,2))
+        ttk.Label(self,text='Estoque inicial registra mercadoria já paga, sem despesa ou saída de caixa. Totais incluem produtos desativados.',wraplength=960).pack(anchor='w')
+        self.tree=table(self,["Código","Produto","Preço","Físico","Reservado","Disponível","Mínimo","Custo médio","Valor em estoque"])
 
     def refresh(self):
         rows=[]
         for p in self.s.inventory.products():
             pos=self.s.inventory.position(p["id"])
             cost=money(round_half_up(pos.value_cents,pos.physical)) if pos.physical else "Sem estoque"
-            rows.append((p["id"],(f'{p["id"]:03d}',p["name"],money(p["price_cents"]),pos.physical,pos.reserved,pos.available,p["min_stock"],cost)))
+            rows.append((p["id"],(f'{p["id"]:03d}',p["name"],money(p["price_cents"]),pos.physical,pos.reserved,pos.available,p["min_stock"],cost,money(pos.value_cents))))
         fill(self.tree,rows)
+        totals=self.s.inventory.stock_totals()
+        self.stock_summary.set(f"Inicial registrado: {money(totals['initial_value_cents'])}  |  Valor atual: {money(totals['current_value_cents'])}")
 
     def purchase_history(self):
         view=self.s.application.purchases_view
@@ -33,12 +40,35 @@ class ProductsView(View):
     def create(self):
         cmd=command()
         def submit(values):
-            result=self.s.inventory.create_product(values['name'],parse_money(values['price']),int(values['pack']),int(values['minimum']),cmd)
-            self.s.application.notify('Produto cadastrado.');return result
+            qty=int(values['initial_qty']);cost=parse_money(values['initial_cost'])
+            if (qty>0)!=(cost>0):
+                raise BusinessError('Informe quantidade e custo positivos para o estoque inicial; ou deixe ambos em zero.')
+            args=(values['name'],parse_money(values['price']),int(values['pack']),int(values['minimum']))
+            if qty:
+                result=self.s.inventory.create_product_with_initial_stock(*args,qty,cost,self.grant('stock.adjust'),cmd)
+                self.s.application.notify(f'Produto cadastrado com estoque inicial de {money(qty*cost)}. Sem lançamento financeiro.')
+            else:
+                result=self.s.inventory.create_product(*args,cmd)
+                self.s.application.notify('Produto cadastrado sem estoque inicial.')
+            return result
         ask_fields(self,'Novo produto',[
             FieldSpec('name','Nome',required=True),FieldSpec('price','Preço normal (R$)',required=True,validator=parse_money),
             FieldSpec('pack','Unidades por caixa/fardo',1,validator=lambda value:integer(int(value),'Unidades',1)),
-            FieldSpec('minimum','Estoque mínimo',0,validator=lambda value:integer(int(value),'Mínimo'))],on_submit=submit)
+            FieldSpec('minimum','Estoque mínimo',0,validator=lambda value:integer(int(value),'Mínimo')),
+            FieldSpec('initial_qty','Quantidade inicial em unidades (0 = sem estoque)',0,validator=lambda value:integer(int(value),'Quantidade inicial')),
+            FieldSpec('initial_cost','Custo por unidade do estoque inicial (R$)','0,00',validator=parse_money)],on_submit=submit)
+
+    def initial_stock(self):
+        pid=self.selected(self.tree);cmd=command()
+        def submit(values):
+            qty=int(values['qty']);cost=parse_money(values['unit_cost'])
+            integer(qty,'Quantidade inicial',1);integer(cost,'Custo por unidade',1)
+            result=self.s.inventory.initialize_stock(pid,qty,cost,self.grant('stock.adjust'),cmd)
+            self.s.application.notify(f'Estoque inicial registrado: {qty} unidades, valor de {money(qty*cost)}. Sem lançamento financeiro.')
+            return result
+        return ask_fields(self,'Estoque inicial já pago',[
+            FieldSpec('qty','Quantidade existente em unidades',required=True,validator=lambda value:integer(int(value),'Quantidade inicial',1)),
+            FieldSpec('unit_cost','Custo por unidade (R$)',required=True,validator=lambda value:integer(parse_money(value),'Custo por unidade',1))],on_submit=submit)
 
     def purchase(self):
         pid=self.selected(self.tree)

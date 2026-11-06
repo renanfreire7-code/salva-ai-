@@ -66,6 +66,37 @@ class InventoryService(PurchasesMixin,Service):
         return [dict(r) for r in self.db.conn.execute(
             "SELECT * FROM products WHERE active=1 OR ? ORDER BY name", (include_inactive,))]
 
+    def initialize_stock(self, product_id, qty, unit_cost_cents, grant, command_id):
+        integer(qty, 'Quantidade inicial', 1)
+        integer(unit_cost_cents, 'Custo por unidade', 1)
+        total = qty * unit_cost_cents
+        if total > 9223372036854775807:
+            raise BusinessError('Valor do estoque inicial acima do limite permitido.')
+        reason = 'Cadastro de estoque inicial já pago'
+        def perform():
+            product = self.one('products', product_id)
+            moved = self.db.conn.execute('SELECT 1 FROM stock_movements WHERE product_id=? LIMIT 1', (product_id,)).fetchone()
+            reserved = self.db.conn.execute('SELECT 1 FROM reservations WHERE product_id=? LIMIT 1', (product_id,)).fetchone()
+            if not product['active']:
+                raise BusinessError('Produto desativado.')
+            if moved or reserved or product['stock'] or product['value_cents']:
+                raise BusinessError('Este produto já tem movimentação. Use Entrada / compra ou Ajustar estoque.')
+            self.protect(grant, 'stock.adjust', reason)
+            self._movement(product_id, qty, total, 'INITIAL_STOCK', reason=reason)
+            return product_id
+        return self.run(command_id, 'stock.initialized', dict(product_id=product_id,qty=qty,unit_cost_cents=unit_cost_cents,total_cents=total,reason=reason), perform)
+
+    def create_product_with_initial_stock(self, name, price_cents, pack_size, min_stock, qty, unit_cost_cents, grant, command_id):
+        def perform():
+            product_id = self.create_product(name, price_cents, pack_size, min_stock, command_id+':product')
+            return self.initialize_stock(product_id, qty, unit_cost_cents, grant, command_id+':initial')
+        return self.run(command_id, 'product.created_with_initial_stock', dict(name=name,price=price_cents,pack=pack_size,minimum=min_stock,qty=qty,unit_cost_cents=unit_cost_cents), perform)
+
+    def stock_totals(self):
+        initial = sum(row[0] for row in self.db.conn.execute("SELECT value_cents FROM stock_movements WHERE kind='INITIAL_STOCK'"))
+        current = sum(row[0] for row in self.db.conn.execute('SELECT value_cents FROM products'))
+        return dict(initial_value_cents=initial,current_value_cents=current)
+
     def position(self, product_id):
         p = self.one("products", product_id)
         reserved = self.db.conn.execute("SELECT COALESCE(SUM(qty),0) FROM reservations WHERE product_id=?", (product_id,)).fetchone()[0]
@@ -143,7 +174,7 @@ class InventoryService(PurchasesMixin,Service):
                 cost = self.consume(product_id, -delta, "LOSS", reason=reason)
             else:
                 if not pos.physical:
-                    raise BusinessError("Registre uma compra com custo para iniciar este estoque.")
+                    raise BusinessError("Para o primeiro saldo, use Estoque inicial e informe o custo. Para reposição, use Entrada / compra.")
                 cost = round_half_up(pos.value_cents * delta, pos.physical)
                 self._movement(product_id, delta, cost, "ADJUSTMENT", reason=reason)
             return product_id
